@@ -61,11 +61,11 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center border-b border-purple-100 dark:border-purple-900 pb-2">
-        <h2 className="text-4xl font-aladin text-purple-600">Blog Posts</h2>
+      <div className="flex justify-between items-center border-b border-purple-100 dark:border-purple-900 pb-2 uppercase tracking-wide">
+        <h2 className="text-2xl font-aladin text-purple-600">Blog Posts</h2>
         <button 
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg font-aladin hover:bg-purple-700 transition-all"
+          className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-lg font-aladin text-lg hover:bg-purple-700 transition-all shadow-md"
         >
           <Plus size={18} /> New Post
         </button>
@@ -73,10 +73,10 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
 
       <div className="space-y-4">
         {posts && Array.isArray(posts) && posts.map((post: any) => (
-          <div key={post.id} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex justify-between items-center group">
+          <div key={post.id} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center group border border-transparent hover:border-purple-500/20 transition-all">
             <div>
-              <h3 className="font-aladin text-xl text-slate-900 dark:text-white uppercase">{post.title}</h3>
-              <p className="text-xs font-mono text-slate-400 uppercase">{post.date} • {post.readTime} {post.category && `• ${post.category}`}</p>
+              <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
+              <p className="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">{post.date} • {post.readTime} {post.category && `• ${post.category}`}</p>
             </div>
             <div className="flex gap-2">
               <button 
@@ -99,12 +99,12 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl p-8 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-800"
           >
             <div className="flex justify-between items-center border-b pb-4 dark:border-slate-800">
-              <h3 className="text-3xl font-aladin text-purple-600">{editingPost.id ? 'Edit Post' : 'New Post'}</h3>
+              <h3 className="text-2xl font-aladin text-purple-600 uppercase tracking-wide">{editingPost.id ? 'Edit Post' : 'New Post'}</h3>
               <button onClick={() => setIsModalOpen(false)}><X size={24} /></button>
             </div>
             <div className="space-y-4">
@@ -113,7 +113,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
                 <input 
                   value={editingPost.title}
                   onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-aladin text-xl"
+                  className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-aladin text-lg border border-transparent focus:border-purple-500 placeholder:font-aladin"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -160,9 +160,9 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
               </div>
               <button 
                 onClick={handleSave}
-                className="w-full py-3 bg-purple-600 text-white rounded-xl flex items-center justify-center gap-2 font-aladin text-xl hover:bg-purple-700 transition-all"
+                className="w-full py-1.5 bg-purple-600 text-white rounded-lg flex items-center justify-center gap-2 font-aladin text-base hover:bg-purple-700 transition-all shadow-md mt-2"
               >
-                <Save size={20} /> Save Post
+                <Save size={18} /> Save Post
               </button>
             </div>
           </motion.div>

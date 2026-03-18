@@ -70,3 +70,18 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* Global Interactive Cursor Fix */
+button, 
+a, 
+input[type="submit"], 
+input[type="button"], 
+[role="button"] {
+  cursor: pointer;
+}
+
+/* Ensure disabled elements don't show pointer */
+button:disabled,
+button[disabled] {
+  cursor: not-allowed !important;
+}

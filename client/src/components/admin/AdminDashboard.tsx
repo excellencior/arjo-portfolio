@@ -42,8 +42,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="max-w-6xl mx-auto pt-10 px-4">
       {/* Search Header */}
-      <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 className="text-5xl font-aladin text-slate-900 dark:text-white uppercase tracking-tight">Admin <span className="text-blue-600">Sanctuary</span></h1>
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <h1 className="text-3xl font-aladin text-slate-900 dark:text-white uppercase tracking-tight">Admin <span className="text-blue-600">Sanctuary</span></h1>
         <div className="relative w-full md:w-96">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
           <input 
@@ -51,7 +51,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             placeholder={`Search ${activeTab}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-mono"
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-aladin placeholder:font-aladin text-base"
           />
         </div>
       </div>
@@ -61,46 +61,46 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="w-full md:w-64 space-y-2">
           <button 
             onClick={() => { onFetchContent('home'); setActiveTab('home'); setSearchQuery(''); }}
-            className={`w-full flex items-center gap-3 px-6 py-3 rounded-xl font-aladin text-xl transition-all ${activeTab === 'home' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
+            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'home' ? 'bg-blue-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
-            <Home size={20} /> Home Page
+            <Home size={18} /> Home Page
           </button>
           <button 
             onClick={() => { onFetchContent('blog'); setActiveTab('blog'); setSearchQuery(''); }}
-            className={`w-full flex items-center gap-3 px-6 py-3 rounded-xl font-aladin text-xl transition-all ${activeTab === 'blog' ? 'bg-purple-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
+            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'blog' ? 'bg-purple-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
-            <FileText size={20} /> Blog Posts
+            <FileText size={18} /> Blog Posts
           </button>
           <button 
             onClick={() => { onFetchContent('academics'); setActiveTab('academics'); setSearchQuery(''); }}
-            className={`w-full flex items-center gap-3 px-6 py-3 rounded-xl font-aladin text-xl transition-all ${activeTab === 'academics' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
+            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'academics' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
-            <GraduationCap size={20} /> Academics
+            <GraduationCap size={18} /> Academics
           </button>
           <button 
             onClick={() => { onFetchContent('extra'); setActiveTab('extra'); setSearchQuery(''); }}
-            className={`w-full flex items-center gap-3 px-6 py-3 rounded-xl font-aladin text-xl transition-all ${activeTab === 'extra' ? 'bg-orange-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
+            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'extra' ? 'bg-orange-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
-            <Sparkles size={20} /> Extra
+            <Sparkles size={18} /> Extra
           </button>
           <button 
             onClick={() => {/* Photography logic */}}
-            className="w-full flex items-center gap-3 px-6 py-3 rounded-xl font-aladin text-xl bg-white dark:bg-slate-900 text-slate-400 border border-gray-100 dark:border-gray-800 opacity-50 cursor-not-allowed"
+            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg bg-white dark:bg-slate-900 text-slate-400 border border-gray-100 dark:border-gray-800 opacity-50 cursor-not-allowed"
           >
-            <Camera size={20} /> Photography
+            <Camera size={18} /> Photography
           </button>
-          <div className="pt-10">
+          <div className="pt-6">
             <button 
               onClick={onLogout}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl font-aladin text-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-all border border-red-200 dark:border-red-900/50"
+              className="w-full flex items-center justify-center gap-2 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg font-aladin text-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-all border border-red-200 dark:border-red-900/50"
             >
-              <LogOut size={20} /> Logout
+              <LogOut size={16} /> Logout
             </button>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-8 shadow-2xl relative">
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-xl relative">
           {activeTab === 'home' && content && (
             <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} />
           )}
