@@ -1,8 +1,14 @@
 {
-  "title": "ARJO PORTFOLIO",
+  "title": "ARJO Shrestha",
   "subtitle": "A minimalistic sanctuary showcasing photography, academics, and personal stories.",
   "links": [
-    { "text": "Explore Photography", "to": "/photography" },
-    { "text": "Start a Conversation", "to": "/contact" }
+    {
+      "text": "Explore Photography",
+      "to": "/photography"
+    },
+    {
+      "text": "Start a Conversation",
+      "to": "/contact"
+    }
   ]
 }

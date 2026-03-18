@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
+const cron = require('node-cron');
+const crypto = require('crypto');
 
 dotenv.config();
 
@@ -52,11 +54,29 @@ const readData = (filename) => JSON.parse(fs.readFileSync(getDataPath(filename),
 const writeData = (filename, data) => fs.writeFileSync(getDataPath(filename), JSON.stringify(data, null, 2));
 
 // Auth Middleware
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    
+    // Check session in Supabase
+    const { data: session, error } = await supabase
+      .from('admin_sessions')
+      .select('*')
+      .eq('token_hash', token)
+      .single();
+      
+    if (error || !session) {
+      return res.status(401).json({ error: 'Session expired due to inactivity' });
+    }
+    
+    // Update last activity
+    await supabase.from('admin_sessions')
+      .update({ last_activity: new Date().toISOString() })
+      .eq('token_hash', token);
+    
     req.user = decoded;
     next();
   } catch (error) {
@@ -101,17 +121,43 @@ app.post('/api/auth/send-code', async (req, res) => {
   }
 });
 
-app.post('/api/auth/verify-code', (req, res) => {
+app.post('/api/auth/verify-code', async (req, res) => {
   const { email, code } = req.body;
   const stored = verificationCodes[email];
 
   if (stored && stored.code === code && stored.expires > Date.now()) {
     const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1d' });
+    
+    // Register session in Supabase
+    const { error: sessionError } = await supabase
+      .from('admin_sessions')
+      .insert([{ token_hash: token, last_activity: new Date().toISOString() }]);
+      
+    if (sessionError) console.error('Session record failed:', sessionError);
+
     delete verificationCodes[email];
     res.json({ token });
   } else {
     res.status(400).json({ error: 'Invalid or expired code' });
   }
+});
+
+// Background task: Purge sessions inactive for > 10 mins
+cron.schedule('* * * * *', async () => {
+  // Check if any active sessions exist first to avoid unnecessary overhead
+  const { data: activeSessions, error: findError } = await supabase
+    .from('admin_sessions')
+    .select('id', { head: true, count: 'exact' });
+    
+  if (findError || !activeSessions || activeSessions.length === 0) return;
+
+  const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const { error } = await supabase
+    .from('admin_sessions')
+    .delete()
+    .lt('last_activity', tenMinsAgo);
+    
+  if (error) console.error('Cron purge error:', error);
 });
 
 // Content Management Endpoints

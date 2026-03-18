@@ -1,9 +1,10 @@
-import { Home, FileText, Camera, GraduationCap, Sparkles, Search, LogOut } from 'lucide-react';
+import { Home, FileText, Camera, GraduationCap, Sparkles, Search, LogOut, Globe } from 'lucide-react';
 import HomeEditor from './HomeEditor';
 import BlogEditor from './BlogEditor';
 import AcademicsEditor from './AcademicsEditor';
 import ExtraEditor from './ExtraEditor';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 interface AdminDashboardProps {
   activeTab: string;
@@ -22,6 +23,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   activeTab, setActiveTab, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout 
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // 10-minute Inactivity Logout
+  useEffect(() => {
+    if (!token) return;
+    
+    let timer: any;
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        onLogout();
+      }, 10 * 60 * 1000);
+    };
+
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(event => window.addEventListener(event, resetTimer));
+    
+    resetTimer();
+
+    return () => {
+      events.forEach(event => window.removeEventListener(event, resetTimer));
+      clearTimeout(timer);
+    };
+  }, [token, onLogout]);
 
   const filteredContent = () => {
     if (!content || !searchQuery) return content;
@@ -42,23 +66,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="max-w-6xl mx-auto pt-10 px-4">
       {/* Search Header */}
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4 min-h-[44px]">
         <h1 className="text-3xl font-aladin text-slate-900 dark:text-white uppercase tracking-tight">Admin <span className="text-blue-600">Sanctuary</span></h1>
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-          <input 
-            type="text"
-            placeholder={`Search ${activeTab}...`}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-aladin placeholder:font-aladin text-base"
-          />
-        </div>
+        {activeTab === 'blog' && (
+          <div className="relative w-full md:w-96">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <input 
+              type="text"
+              placeholder={`Search ${activeTab}...`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-aladin placeholder:font-aladin text-base"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-64 space-y-2">
+          <Link 
+            to="/" 
+            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-gray-200 dark:border-gray-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all mb-4"
+          >
+            <Globe size={18} /> Go to main site
+          </Link>
           <button 
             onClick={() => { onFetchContent('home'); setActiveTab('home'); setSearchQuery(''); }}
             className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'home' ? 'bg-blue-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
