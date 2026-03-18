@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark, .dark *));
+
+@theme {
+  --color-primary-60: #F5F5F5;
+  --color-primary-30: #4B5563; /* Refined for better contrast */
+  --color-accent: #3B82F6;
+  
+  --color-dark-60: #0F172A;
+  --color-dark-30: #94A3B8;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  :root {
+    background-color: var(--color-primary-60);
+    color: var(--color-primary-30);
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark {
+    background-color: var(--color-dark-60);
+    color: var(--color-dark-30);
+  }
+}
+
+/* Matte Finish Utility */
+.matte {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Sharp Edges per Spec */
+.sharp {
+  border-radius: 2px;
+}
