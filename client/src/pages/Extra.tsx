@@ -1,13 +1,27 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const Extra = () => {
-  const activities = [
-    { title: "Photography Club", role: "Member", description: "Participating in photo walks and exhibitions." },
-    { title: "Volunteer Work", role: "Contributor", description: "Helping out at local community centers." }
-  ];
+  const [activities, setActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/content/extra')
+      .then(res => res.json())
+      .then(data => {
+        setActivities(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch extra', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Loading passions...</div>;
 
   return (
-    <div className="pt-2 space-y-10 animate-in transition-all duration-700">
+    <div className="pt-5 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-rose-950 to-rose-900 dark:from-white dark:via-rose-100 dark:to-rose-200 bg-clip-text text-transparent uppercase">
           Extracurriculars

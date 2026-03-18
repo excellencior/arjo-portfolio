@@ -1,18 +1,32 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const Academics = () => {
-  const education = [
-    { title: "Bachelor of Science", institution: "University Name", duration: "2020 - 2024", description: "Focused on Computer Science and Engineering." },
-    { title: "High School", institution: "College Name", duration: "2018 - 2020", description: "Completed with honors in Science." }
-  ];
+  const [education, setEducation] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/content/academics')
+      .then(res => res.json())
+      .then(data => {
+        setEducation(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch academics', err);
+        setLoading(false);
+      });
+  }, []);
 
   const projects = [
     { title: "Portfolio Website", description: "A minimalistic personal portfolio built with React and Tailwind CSS.", tech: "React, Tailwind, Express" },
     { title: "E-Commerce Platform", description: "A full-stack e-commerce solution with payment integration.", tech: "Next.js, Node.js, Stripe" }
   ];
 
+  if (loading) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Gathering wisdom...</div>;
+
   return (
-    <div className="pt-2 space-y-10 animate-in transition-all duration-700">
+    <div className="pt-5 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-emerald-950 to-emerald-900 dark:from-white dark:via-emerald-100 dark:to-emerald-200 bg-clip-text text-transparent uppercase">
           Academics

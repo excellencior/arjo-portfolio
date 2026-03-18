@@ -26,7 +26,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto pt-2 space-y-10 animate-in transition-all duration-700">
+    <div className="max-w-4xl mx-auto pt-5 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-cyan-950 to-cyan-900 dark:from-white dark:via-cyan-100 dark:to-cyan-200 bg-clip-text text-transparent uppercase">
           Contact

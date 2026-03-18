@@ -1,13 +1,27 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const posts = [
-  { id: '1', title: 'Starting my Journey', date: 'March 18, 2026', excerpt: 'Looking back at how it all started and where I am headed.', readTime: '5 min read' },
-  { id: '2', title: 'Why Minimalism Matters', date: 'March 15, 2026', excerpt: 'Exploring the beauty of simple design in a complex world.', readTime: '3 min read' }
-];
-
 const Blog = () => {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/content/blog')
+      .then(res => res.json())
+      .then(data => {
+        setPosts(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch posts', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Unfolding stories...</div>;
+
   return (
-    <div className="pt-2 space-y-10 animate-in transition-all duration-700">
+    <div className="pt-5 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase">
           Blog
