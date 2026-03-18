@@ -14,16 +14,16 @@ const Academics = () => {
   return (
     <div className="pt-10 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
-        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 bg-clip-text text-transparent uppercase">
+        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-900 dark:from-emerald-300 dark:via-emerald-100 dark:to-teal-200 bg-clip-text text-transparent uppercase">
           Academics
         </h1>
-        <p className="block text-xl font-aladin bg-gradient-to-r from-slate-600 via-slate-500 to-blue-400 bg-clip-text text-transparent leading-tight">
+        <p className="block text-xl font-aladin bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-800 dark:from-emerald-400 dark:to-teal-500 bg-clip-text text-transparent leading-tight">
           My educational journey and academic achievements.
         </p>
       </div>
 
       <section className="space-y-4">
-        <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+        <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-900 dark:from-emerald-300 dark:via-emerald-100 dark:to-teal-200 bg-clip-text text-transparent">
           Education
         </h2>
         <div className="grid gap-6">
@@ -31,13 +31,13 @@ const Academics = () => {
             <motion.div
               key={idx}
               whileHover={{ x: 5 }}
-              className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-blue-500/30"
+              className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-emerald-600/30"
             >
-              <h3 className="inline-block text-2xl font-aladin bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-500 bg-clip-text text-transparent">
+              <h3 className="inline-block text-2xl font-aladin bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-900 dark:from-emerald-300 dark:via-emerald-100 dark:to-teal-200 bg-clip-text text-transparent">
                 {edu.title}
               </h3>
               <p className="text-sm font-mono text-slate-400 mt-1">{edu.institution} | {edu.duration}</p>
-              <p className="mt-3 font-aladin text-lg bg-gradient-to-r from-slate-600 via-slate-500 to-slate-400 dark:from-slate-300 dark:to-slate-500 bg-clip-text text-transparent leading-tight">
+              <p className="mt-3 font-aladin text-lg bg-gradient-to-r from-emerald-900 via-emerald-800 to-emerald-700 dark:from-emerald-400 dark:to-emerald-600 bg-clip-text text-transparent leading-tight border-l-4 border-emerald-900 dark:border-emerald-500 pl-4">
                 {edu.description}
               </p>
             </motion.div>
@@ -46,20 +46,20 @@ const Academics = () => {
       </section>
 
       <section className="space-y-4">
-        <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+        <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-900 dark:from-emerald-300 dark:via-emerald-100 dark:to-teal-200 bg-clip-text text-transparent">
           Projects
         </h2>
         <div className="grid md:grid-cols-2 gap-6">
           {projects.map((project, idx) => (
-            <div key={idx} className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-blue-500/30">
-              <h3 className="inline-block text-2xl font-aladin bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-500 bg-clip-text text-transparent">
+            <div key={idx} className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-emerald-600/30">
+              <h3 className="inline-block text-2xl font-aladin bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-900 dark:from-emerald-300 dark:via-emerald-100 dark:to-teal-200 bg-clip-text text-transparent">
                 {project.title}
               </h3>
-              <p className="mt-3 font-aladin text-lg bg-gradient-to-r from-slate-600 via-slate-500 to-slate-400 dark:from-slate-300 dark:to-slate-500 bg-clip-text text-transparent leading-tight">
+              <p className="mt-3 font-aladin text-lg bg-gradient-to-r from-emerald-900 via-emerald-800 to-emerald-700 dark:from-emerald-400 dark:to-emerald-500 bg-clip-text text-transparent leading-tight border-l-4 border-teal-900 dark:border-teal-400 pl-4">
                 {project.description}
               </p>
               <div className="mt-4 flex gap-2">
-                <span className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-xs font-mono text-slate-500 dark:text-slate-400 rounded-full">
+                <span className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-xs font-mono text-emerald-800 dark:text-emerald-300 rounded-full">
                   {project.tech}
                 </span>
               </div>

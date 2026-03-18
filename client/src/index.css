@@ -21,6 +21,7 @@
     color: var(--color-primary-30);
     font-family: var(--font-sans);
     transition: background-color 0.3s ease, color 0.3s ease;
+    scrollbar-gutter: stable;
   }
 
   .dark {

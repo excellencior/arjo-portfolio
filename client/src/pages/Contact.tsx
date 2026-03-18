@@ -28,10 +28,10 @@ const Contact = () => {
   return (
     <div className="max-w-4xl mx-auto pt-10 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
-        <h1 className="text-6xl font-aladin bg-gradient-to-r from-gray-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent uppercase">
+        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-cyan-950 via-sky-950 to-blue-900 dark:from-white dark:via-cyan-100 dark:to-sky-200 bg-clip-text text-transparent uppercase">
           Contact
         </h1>
-        <p className="text-xl font-aladin bg-gradient-to-r from-gray-600 to-gray-400 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent leading-tight">
+        <p className="block text-xl font-aladin bg-gradient-to-r from-cyan-900 via-sky-900 to-blue-800 dark:from-cyan-300 dark:to-blue-500 bg-clip-text text-transparent leading-tight">
           Let's build something together.
         </p>
       </div>
@@ -39,40 +39,40 @@ const Contact = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-lg font-aladin bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">Name</label>
+            <label htmlFor="name" className="text-lg font-aladin bg-gradient-to-r from-cyan-950 to-sky-900 dark:from-cyan-100 dark:to-sky-300 bg-clip-text text-transparent">Name</label>
             <input
               type="text"
               id="name"
               required
-              className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-blue-500/50 outline-none transition-all duration-300 focus:shadow-lg"
+              className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-cyan-700/50 outline-none transition-all duration-300 focus:shadow-lg"
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="email" className="text-lg font-aladin bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">Email</label>
+            <label htmlFor="email" className="text-lg font-aladin bg-gradient-to-r from-cyan-950 to-sky-900 dark:from-cyan-100 dark:to-sky-300 bg-clip-text text-transparent">Email</label>
             <input
               type="email"
               id="email"
               required
-              className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-blue-500/50 outline-none transition-all duration-300 focus:shadow-lg"
+              className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-cyan-700/50 outline-none transition-all duration-300 focus:shadow-lg"
             />
           </div>
         </div>
         <div className="space-y-2">
-          <label htmlFor="message" className="text-lg font-aladin bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">Message</label>
+          <label htmlFor="message" className="text-lg font-aladin bg-gradient-to-r from-cyan-950 to-sky-900 dark:from-cyan-100 dark:to-sky-300 bg-clip-text text-transparent">Message</label>
           <textarea
             id="message"
             rows={5}
             required
-            className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-blue-500/50 outline-none transition-all duration-300 focus:shadow-lg"
+            className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-cyan-700/50 outline-none transition-all duration-300 focus:shadow-lg"
           ></textarea>
         </div>
         <button
           type="submit"
-          className="group relative inline-flex items-center gap-2 px-10 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-aladin text-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+          className="group relative inline-flex items-center gap-2 px-10 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-aladin text-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
         >
           <Send size={20} className="relative z-10" />
           <span className="relative z-10">Send Message</span>
-          <motion.div className="absolute inset-0 bg-blue-600 -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
+          <motion.div className="absolute inset-0 bg-cyan-900 dark:bg-cyan-500 -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
         </button>
       </form>
 
