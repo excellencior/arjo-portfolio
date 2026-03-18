@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Save, Trash2 } from 'lucide-react';
+import CustomModal from './CustomModal';
 
 interface HomeEditorProps {
   content: any;
@@ -8,6 +9,21 @@ interface HomeEditorProps {
 }
 
 const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
+
+  const confirmRemove = (index: number) => {
+    setIndexToRemove(index);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleRemove = () => {
+    if (indexToRemove === null) return;
+    const newLinks = content.links.filter((_: any, i: number) => i !== indexToRemove);
+    setContent({...content, links: newLinks});
+    setIsDeleteModalOpen(false);
+    setIndexToRemove(null);
+  };
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-aladin text-blue-600 border-b border-blue-100 dark:border-blue-900 pb-2 uppercase tracking-wide">Edit Home Page</h2>
@@ -62,10 +78,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
                   className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-mono text-sm border border-transparent focus:border-blue-500"
                 />
                 <button 
-                  onClick={() => {
-                    const newLinks = content.links.filter((_: any, i: number) => i !== idx);
-                    setContent({...content, links: newLinks});
-                  }}
+                  onClick={() => confirmRemove(idx)}
                   className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
                 >
                   <Trash2 size={16} />
@@ -81,6 +94,32 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
           <Save size={20} /> Save Changes
         </button>
       </div>
+      <CustomModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Confirm Removal"
+        size="sm"
+        footer={
+          <>
+            <button 
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg font-aladin text-lg hover:bg-slate-200"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleRemove}
+              className="px-4 py-1.5 bg-red-600 text-white rounded-lg font-aladin text-lg hover:bg-red-700 shadow-md"
+            >
+              Remove
+            </button>
+          </>
+        }
+      >
+        <p className="font-aladin text-xl text-slate-600 dark:text-slate-400">
+          Are you sure you want to remove this quick link? You will need to save changes to persist this removal.
+        </p>
+      </CustomModal>
     </div>
   );
 };

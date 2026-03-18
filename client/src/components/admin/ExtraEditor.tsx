@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, Trash2, Save } from 'lucide-react';
+import CustomModal from './CustomModal';
 
 interface ExtraEditorProps {
   content: any[];
@@ -8,12 +9,23 @@ interface ExtraEditorProps {
 }
 
 const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }) => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
+
   const handleAdd = () => {
     setContent([...content, { title: '', role: '', description: '' }]);
   };
 
-  const handleRemove = (index: number) => {
-    setContent(content.filter((_, i) => i !== index));
+  const handleRemove = () => {
+    if (indexToRemove === null) return;
+    setContent(content.filter((_, i) => i !== indexToRemove));
+    setIsDeleteModalOpen(false);
+    setIndexToRemove(null);
+  };
+
+  const confirmRemove = (index: number) => {
+    setIndexToRemove(index);
+    setIsDeleteModalOpen(true);
   };
 
   const handleChange = (index: number, field: string, value: string) => {
@@ -38,7 +50,7 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
         {content && Array.isArray(content) && content.map((item, idx) => (
           <div key={idx} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700 relative group">
             <button 
-              onClick={() => handleRemove(idx)}
+              onClick={() => confirmRemove(idx)}
               className="absolute top-2 right-2 p-1.5 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-all opacity-0 group-hover:opacity-100"
             >
               <Trash2 size={16} />
@@ -81,6 +93,32 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
       >
         <Save size={20} /> Save Extracurriculars
       </button>
+      <CustomModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Confirm Removal"
+        size="sm"
+        footer={
+          <>
+            <button 
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg font-aladin text-lg hover:bg-slate-200"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleRemove}
+              className="px-4 py-1.5 bg-red-600 text-white rounded-lg font-aladin text-lg hover:bg-red-700 shadow-md"
+            >
+              Remove
+            </button>
+          </>
+        }
+      >
+        <p className="font-aladin text-xl text-slate-600 dark:text-slate-400">
+          Are you sure you want to remove this entry? You will need to save changes to persist this removal.
+        </p>
+      </CustomModal>
     </div>
   );
 };
