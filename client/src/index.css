@@ -11,6 +11,8 @@
   --color-dark-30: #94A3B8;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-aladin: "Aladin", system-ui;
+  --font-skranji: "Skranji", system-ui;
 }
 
 @layer base {

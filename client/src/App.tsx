@@ -10,27 +10,27 @@ import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 
 const Home = () => (
-  <div className="text-center mt-20 space-y-8 animate-in transition-all duration-700">
+  <div className="text-center mt-10 space-y-6 animate-in transition-all duration-700">
     <div className="space-y-4">
-      <h1 className="text-6xl font-black text-gray-900 dark:text-white leading-tight tracking-tighter">
-        ARJO <span className="text-blue-500 italic font-serif">PORTFOLIO</span>
+      <h1 className="text-7xl font-aladin bg-gradient-to-r from-gray-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent uppercase tracking-wider">
+        ARJO PORTFOLIO
       </h1>
-      <p className="max-w-xl mx-auto text-xl text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+      <p className="max-w-none mx-auto text-2xl font-aladin bg-gradient-to-r from-gray-600 to-gray-400 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent leading-tight">
         A minimalistic sanctuary showcasing photography, academics, and personal stories.
       </p>
     </div>
     
-    <div className="mt-12 flex flex-col md:flex-row justify-center items-center gap-6">
+    <div className="mt-10 flex flex-col md:flex-row justify-center items-center gap-6">
       <Link 
         to="/photography" 
-        className="group relative px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 sharp font-bold overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+        className="group relative px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-aladin text-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
       >
         <span className="relative z-10">Explore Photography</span>
         <motion.div className="absolute inset-0 bg-blue-600 -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
       </Link>
       <Link 
         to="/contact" 
-        className="px-8 py-3 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white sharp font-bold hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all duration-300"
+        className="px-8 py-3 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white rounded-xl font-aladin text-xl hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all duration-300"
       >
         Start a Conversation
       </Link>

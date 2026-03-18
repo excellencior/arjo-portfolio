@@ -1,4 +1,5 @@
 import { Send } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,57 +26,64 @@ const Contact = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-12 animate-in transition-all duration-500">
+    <div className="max-w-4xl mx-auto pt-10 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Contact</h1>
-        <p className="text-gray-600 dark:text-gray-400">Let's build something together.</p>
+        <h1 className="text-6xl font-aladin bg-gradient-to-r from-gray-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent uppercase">
+          Contact
+        </h1>
+        <p className="text-xl font-aladin bg-gradient-to-r from-gray-600 to-gray-400 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent leading-tight">
+          Let's build something together.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+            <label htmlFor="name" className="text-lg font-aladin bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">Name</label>
             <input
               type="text"
               id="name"
               required
-              className="w-full px-4 py-2 bg-white dark:bg-gray-800 sharp border border-gray-100 dark:border-gray-800 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors"
+              className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-blue-500/50 outline-none transition-all duration-300 focus:shadow-lg"
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+            <label htmlFor="email" className="text-lg font-aladin bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">Email</label>
             <input
               type="email"
               id="email"
               required
-              className="w-full px-4 py-2 bg-white dark:bg-gray-800 sharp border border-gray-100 dark:border-gray-800 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors"
+              className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-blue-500/50 outline-none transition-all duration-300 focus:shadow-lg"
             />
           </div>
         </div>
         <div className="space-y-2">
-          <label htmlFor="message" className="text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
+          <label htmlFor="message" className="text-lg font-aladin bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">Message</label>
           <textarea
             id="message"
-            rows={6}
+            rows={5}
             required
-            className="w-full px-4 py-2 bg-white dark:bg-gray-800 sharp border border-gray-100 dark:border-gray-800 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 focus:border-blue-500/50 outline-none transition-all duration-300 focus:shadow-lg"
           ></textarea>
         </div>
         <button
           type="submit"
-          className="inline-flex items-center gap-2 px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 sharp font-bold hover:opacity-90 transition-opacity"
+          className="group relative inline-flex items-center gap-2 px-10 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-aladin text-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
         >
-          <Send size={18} />
-          <span>Send Message</span>
+          <Send size={20} className="relative z-10" />
+          <span className="relative z-10">Send Message</span>
+          <motion.div className="absolute inset-0 bg-blue-600 -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
         </button>
       </form>
 
-      <div className="pt-12 border-t border-gray-100 dark:border-gray-800">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Connect Elsewhere</h3>
-        <div className="mt-4 flex gap-4">
-          <a href="#" className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors underline underline-offset-4">LinkedIn</a>
-          <a href="#" className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors underline underline-offset-4">GitHub</a>
-          <a href="#" className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors underline underline-offset-4">Instagram</a>
+      <div className="pt-10 border-t border-gray-100 dark:border-gray-800">
+        <h3 className="text-3xl font-aladin bg-gradient-to-r from-slate-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent">Connect Elsewhere</h3>
+        <div className="mt-4 flex gap-6">
+          {['LinkedIn', 'GitHub', 'Instagram'].map((item) => (
+            <a key={item} href="#" className="font-aladin text-xl bg-gradient-to-r from-slate-500 to-slate-400 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent hover:from-blue-600 hover:to-blue-400 transition-all duration-300 underline-offset-4 decoration-blue-600/30 hover:underline">
+              {item}
+            </a>
+          ))}
         </div>
       </div>
     </div>
