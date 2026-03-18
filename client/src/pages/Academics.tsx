@@ -12,7 +12,7 @@ const Academics = () => {
   ];
 
   return (
-    <div className="pt-10 space-y-10 animate-in transition-all duration-700">
+    <div className="pt-2 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-emerald-950 to-emerald-900 dark:from-white dark:via-emerald-100 dark:to-emerald-200 bg-clip-text text-transparent uppercase">
           Academics

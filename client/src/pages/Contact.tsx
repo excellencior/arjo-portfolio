@@ -26,13 +26,13 @@ const Contact = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto pt-10 space-y-10 animate-in transition-all duration-700">
+    <div className="max-w-4xl mx-auto pt-2 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-cyan-950 to-cyan-900 dark:from-white dark:via-cyan-100 dark:to-cyan-200 bg-clip-text text-transparent uppercase">
           Contact
         </h1>
         <p className="block text-xl font-aladin text-cyan-900 dark:text-cyan-100 opacity-90 leading-tight">
-          Let's build something together.
+          Care to get in touch with me?
         </p>
       </div>
 

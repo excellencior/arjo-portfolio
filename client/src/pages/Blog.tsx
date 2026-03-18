@@ -7,7 +7,7 @@ const posts = [
 
 const Blog = () => {
   return (
-    <div className="pt-10 space-y-10 animate-in transition-all duration-700">
+    <div className="pt-2 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase">
           Blog
