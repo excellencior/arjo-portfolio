@@ -1,5 +1,5 @@
 import React from 'react';
-import { Save } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 
 interface HomeEditorProps {
   content: any;
@@ -27,6 +27,52 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
             onChange={(e) => setContent({...content, subtitle: e.target.value})}
             className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent focus:border-blue-500 outline-none font-aladin text-xl h-24"
           />
+        </div>
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-sm font-mono text-slate-500 uppercase">Quick Links</label>
+            <button 
+              onClick={() => setContent({...content, links: [...(content.links || []), { text: '', to: '' }]})}
+              className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all font-mono"
+            >
+              + Add Link
+            </button>
+          </div>
+          <div className="space-y-3">
+            {content.links?.map((link: any, idx: number) => (
+              <div key={idx} className="flex gap-2 items-center group">
+                <input 
+                  value={link.text}
+                  placeholder="Label (e.g. Blog)"
+                  onChange={(e) => {
+                    const newLinks = [...content.links];
+                    newLinks[idx].text = e.target.value;
+                    setContent({...content, links: newLinks});
+                  }}
+                  className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-aladin text-lg border border-transparent focus:border-blue-500"
+                />
+                <input 
+                  value={link.to}
+                  placeholder="Path (e.g. /blog)"
+                  onChange={(e) => {
+                    const newLinks = [...content.links];
+                    newLinks[idx].to = e.target.value;
+                    setContent({...content, links: newLinks});
+                  }}
+                  className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-mono text-sm border border-transparent focus:border-blue-500"
+                />
+                <button 
+                  onClick={() => {
+                    const newLinks = content.links.filter((_: any, i: number) => i !== idx);
+                    setContent({...content, links: newLinks});
+                  }}
+                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
         <button 
           onClick={onSave}

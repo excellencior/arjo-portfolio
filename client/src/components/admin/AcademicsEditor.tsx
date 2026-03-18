@@ -9,7 +9,7 @@ interface AcademicsEditorProps {
 
 const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, onSave }) => {
   const handleAdd = () => {
-    setContent([...content, { title: '', institution: '', duration: '', description: '' }]);
+    setContent([...content, { title: '', institution: '', duration: '', description: '', category: '' }]);
   };
 
   const handleRemove = (index: number) => {
@@ -39,7 +39,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
           <div key={idx} className="p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-gray-700 relative group">
             <button 
               onClick={() => handleRemove(idx)}
-              className="absolute top-4 right-4 p-2 text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+              className="absolute top-4 right-4 p-2 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-all"
             >
               <Trash2 size={20} />
             </button>
@@ -66,6 +66,14 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
                   value={item.duration}
                   onChange={(e) => handleChange(idx, 'duration', e.target.value)}
                   className="w-full px-4 py-2 bg-white dark:bg-slate-900 rounded-xl outline-none font-mono text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Stage / Category (e.g. University, School)</label>
+                <input 
+                  value={item.category || ''}
+                  onChange={(e) => handleChange(idx, 'category', e.target.value)}
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-900 rounded-xl outline-none font-mono text-sm border-2 border-emerald-500/20 focus:border-emerald-500"
                 />
               </div>
               <div className="md:col-span-2">

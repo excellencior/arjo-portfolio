@@ -18,7 +18,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
   };
 
   const handleCreate = () => {
-    setEditingPost({ title: '', date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }), excerpt: '', readTime: '', content: '' });
+    setEditingPost({ title: '', date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }), excerpt: '', readTime: '', content: '', category: '' });
     setIsModalOpen(true);
   };
 
@@ -76,7 +76,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
           <div key={post.id} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex justify-between items-center group">
             <div>
               <h3 className="font-aladin text-xl text-slate-900 dark:text-white uppercase">{post.title}</h3>
-              <p className="text-sm font-mono text-slate-400">{post.date}</p>
+              <p className="text-xs font-mono text-slate-400 uppercase">{post.date} • {post.readTime} {post.category && `• ${post.category}`}</p>
             </div>
             <div className="flex gap-2">
               <button 
@@ -130,6 +130,14 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
                   <input 
                     value={editingPost.readTime}
                     onChange={(e) => setEditingPost({...editingPost, readTime: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-mono text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Category</label>
+                  <input 
+                    value={editingPost.category || ''}
+                    onChange={(e) => setEditingPost({...editingPost, category: e.target.value})}
                     className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-mono text-sm"
                   />
                 </div>
