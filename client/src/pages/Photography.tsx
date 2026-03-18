@@ -88,7 +88,6 @@ const Photography = () => {
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-4">
           Photography
         </h1>
-        <div className="h-1 w-20 bg-blue-900 dark:bg-blue-400 mx-auto mb-4" />
         <p className="block text-xl font-aladin text-blue-950 dark:text-blue-100 opacity-90 leading-tight">
           A collection of visual narratives, moments frozen in time, and the intentions behind them.
         </p>

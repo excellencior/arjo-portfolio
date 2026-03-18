@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState, useRef } from 'react';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Camera, GraduationCap, Trophy, FileText, Mail } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
@@ -20,9 +21,40 @@ const navItems = [
 
 const Navbar = () => {
   const location = useLocation();
+  const [visible, setVisible] = useState(true);
+  const { scrollY } = useScroll();
+  const lastScrollY = useRef(0);
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = lastScrollY.current;
+    
+    // Clear stop timeout
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+
+    if (latest > previous && latest > 100) {
+      // Scrolling down
+      setVisible(false);
+    } else {
+      // Scrolling up
+      setVisible(true);
+    }
+
+    // Set stop timeout to show navbar
+    scrollTimeout.current = setTimeout(() => {
+      setVisible(true);
+    }, 1000);
+
+    lastScrollY.current = latest;
+  });
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-3 py-1 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm transition-all duration-300">
+    <motion.div 
+      initial={{ x: "-50%", y: 0 }}
+      animate={{ x: "-50%", y: visible ? 0 : -100 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="fixed top-4 left-1/2 z-50 px-3 py-1 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm"
+    >
       <nav className="flex items-center gap-1 md:gap-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -38,7 +70,7 @@ const Navbar = () => {
               {isActive && (
                 <motion.div
                   layoutId="nav-pill"
-                  className={cn("absolute inset-0 rounded-xl -z-10 transition-colors duration-300", item.bg)}
+                  className={cn("absolute inset-0 rounded-xl -z-10", item.bg)}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -56,7 +88,7 @@ const Navbar = () => {
           <ThemeToggle />
         </div>
       </nav>
-    </div>
+    </motion.div>
   );
 };
 
