@@ -6,10 +6,16 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
 dotenv.config();
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || 'https://placeholder.supabase.co',
+  process.env.SUPABASE_ANON_KEY || 'placeholder'
+);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -109,58 +115,73 @@ app.post('/api/auth/verify-code', (req, res) => {
 });
 
 // Content Management Endpoints
-app.get('/api/content/home', (req, res) => {
-  res.json(readData('home.json'));
+app.get('/api/content/home', async (req, res) => {
+  const { data, error } = await supabase.from('home_content').select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.put('/api/content/home', authenticate, (req, res) => {
-  writeData('home.json', req.body);
+app.put('/api/content/home', authenticate, async (req, res) => {
+  const { error } = await supabase.from('home_content').update(req.body).eq('id', 1);
+  if (error) return res.status(500).json({ error: error.message });
   res.json({ success: true });
 });
 
-app.get('/api/content/blog', (req, res) => {
-  res.json(readData('posts.json'));
+app.get('/api/content/blog', async (req, res) => {
+  const { data, error } = await supabase.from('blog_posts').select('*').order('date', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.post('/api/content/blog', authenticate, (req, res) => {
-  const posts = readData('posts.json');
-  const newPost = { ...req.body, id: Date.now().toString() };
-  posts.push(newPost);
-  writeData('posts.json', posts);
-  res.json(newPost);
+app.post('/api/content/blog', authenticate, async (req, res) => {
+  const { data, error } = await supabase.from('blog_posts').insert([req.body]).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.put('/api/content/blog/:id', authenticate, (req, res) => {
-  const posts = readData('posts.json');
-  const index = posts.findIndex(p => p.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'Post not found' });
-  posts[index] = { ...posts[index], ...req.body };
-  writeData('posts.json', posts);
-  res.json(posts[index]);
+app.put('/api/content/blog/:id', authenticate, async (req, res) => {
+  const { data, error } = await supabase.from('blog_posts').update(req.body).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.delete('/api/content/blog/:id', authenticate, (req, res) => {
-  let posts = readData('posts.json');
-  posts = posts.filter(p => p.id !== req.params.id);
-  writeData('posts.json', posts);
+app.delete('/api/content/blog/:id', authenticate, async (req, res) => {
+  const { error } = await supabase.from('blog_posts').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
   res.json({ success: true });
 });
 
-app.get('/api/content/academics', (req, res) => {
-  res.json(readData('academics.json'));
+app.get('/api/content/academics', async (req, res) => {
+  const { data, error } = await supabase.from('academics').select('*');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.put('/api/content/academics', authenticate, (req, res) => {
-  writeData('academics.json', req.body);
+app.put('/api/content/academics', authenticate, async (req, res) => {
+  // Replace all academics with the new list
+  const { error: deleteError } = await supabase.from('academics').delete().neq('id', 0);
+  if (deleteError) return res.status(500).json({ error: deleteError.message });
+  
+  const { error: insertError } = await supabase.from('academics').insert(req.body);
+  if (insertError) return res.status(500).json({ error: insertError.message });
+  
   res.json({ success: true });
 });
 
-app.get('/api/content/extra', (req, res) => {
-  res.json(readData('extra.json'));
+app.get('/api/content/extra', async (req, res) => {
+  const { data, error } = await supabase.from('extra_activities').select('*');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.put('/api/content/extra', authenticate, (req, res) => {
-  writeData('extra.json', req.body);
+app.put('/api/content/extra', authenticate, async (req, res) => {
+  // Replace all activities with the new list
+  const { error: deleteError } = await supabase.from('extra_activities').delete().neq('id', 0);
+  if (deleteError) return res.status(500).json({ error: deleteError.message });
+  
+  const { error: insertError } = await supabase.from('extra_activities').insert(req.body);
+  if (insertError) return res.status(500).json({ error: insertError.message });
+  
   res.json({ success: true });
 });
 
