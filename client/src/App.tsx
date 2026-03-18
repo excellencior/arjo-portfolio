@@ -12,10 +12,10 @@ import Contact from './pages/Contact';
 const Home = () => (
   <div className="text-center mt-10 space-y-6 animate-in transition-all duration-700">
     <div className="space-y-4">
-      <h1 className="inline-block text-7xl font-aladin bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 dark:from-white dark:via-slate-200 dark:to-blue-300 bg-clip-text text-transparent uppercase tracking-wider">
+      <h1 className="inline-block text-7xl font-aladin bg-gradient-to-r from-black via-black to-blue-950 dark:from-white dark:via-white dark:to-blue-300 bg-clip-text text-transparent uppercase tracking-wider">
         ARJO PORTFOLIO
       </h1>
-      <p className="block max-w-none mx-auto text-2xl font-aladin bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 dark:from-slate-300 dark:via-slate-400 dark:to-blue-500 bg-clip-text text-transparent leading-tight">
+      <p className="block max-w-none mx-auto text-2xl font-aladin bg-gradient-to-r from-black via-black to-blue-900 dark:from-white dark:via-white dark:to-blue-400 bg-clip-text text-transparent leading-tight">
         A minimalistic sanctuary showcasing photography, academics, and personal stories.
       </p>
     </div>

@@ -10,12 +10,12 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const navItems = [
-  { name: 'Home', path: '/', icon: Home, color: 'from-black via-slate-900 to-slate-950', darkColor: 'from-white via-slate-100 to-slate-200', accent: 'text-slate-950', darkAccent: 'text-slate-100', bg: 'bg-gray-100 dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700 shadow-sm' },
-  { name: 'Photography', path: '/photography', icon: Camera, color: 'from-black via-blue-900 to-blue-950', darkColor: 'from-blue-200 via-blue-900 to-indigo-200', accent: 'text-blue-950', darkAccent: 'text-blue-200', bg: 'bg-blue-50 dark:bg-blue-900/40 border border-blue-100 dark:border-blue-800 shadow-sm' },
-  { name: 'Academics', path: '/academics', icon: GraduationCap, color: 'from-black via-emerald-900 to-emerald-950', darkColor: 'from-emerald-200 via-emerald-900 to-teal-200', accent: 'text-emerald-950', darkAccent: 'text-emerald-200', bg: 'bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-800 shadow-sm' },
-  { name: 'Extra', path: '/extra', icon: Trophy, color: 'from-black via-rose-900 to-rose-950', darkColor: 'from-rose-200 via-rose-900 to-orange-200', accent: 'text-rose-950', darkAccent: 'text-rose-200', bg: 'bg-rose-50 dark:bg-rose-900/40 border border-rose-100 dark:border-rose-800 shadow-sm' },
-  { name: 'Blog', path: '/blog', icon: FileText, color: 'from-black via-pink-900 to-pink-950', darkColor: 'from-pink-200 via-pink-900 to-purple-200', accent: 'text-pink-950', darkAccent: 'text-pink-200', bg: 'bg-pink-50 dark:bg-pink-900/40 border border-pink-100 dark:border-pink-800 shadow-sm' },
-  { name: 'Contact', path: '/contact', icon: Mail, color: 'from-black via-cyan-900 to-cyan-950', darkColor: 'from-cyan-200 via-cyan-900 to-blue-200', accent: 'text-cyan-950', darkAccent: 'text-cyan-200', bg: 'bg-cyan-50 dark:bg-cyan-900/40 border border-cyan-100 dark:border-cyan-800 shadow-sm' },
+  { name: 'Home', path: '/', icon: Home, accent: 'text-slate-950', darkAccent: 'text-white', bg: 'bg-gray-100/80 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm' },
+  { name: 'Photography', path: '/photography', icon: Camera, accent: 'text-blue-950', darkAccent: 'text-white', bg: 'bg-blue-50/80 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900 shadow-sm' },
+  { name: 'Academics', path: '/academics', icon: GraduationCap, accent: 'text-emerald-950', darkAccent: 'text-white', bg: 'bg-emerald-50/80 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-900 shadow-sm' },
+  { name: 'Extra', path: '/extra', icon: Trophy, accent: 'text-rose-950', darkAccent: 'text-white', bg: 'bg-rose-50/80 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900 shadow-sm' },
+  { name: 'Blog', path: '/blog', icon: FileText, accent: 'text-pink-950', darkAccent: 'text-white', bg: 'bg-pink-50/80 dark:bg-pink-950/60 border border-pink-100 dark:border-pink-900 shadow-sm' },
+  { name: 'Contact', path: '/contact', icon: Mail, accent: 'text-cyan-950', darkAccent: 'text-white', bg: 'bg-cyan-50/80 dark:bg-cyan-950/60 border border-cyan-100 dark:border-cyan-900 shadow-sm' },
 ];
 
 const Navbar = () => {
@@ -32,9 +32,7 @@ const Navbar = () => {
               to={item.path}
               className={cn(
                 "relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-aladin transition-all duration-300",
-                isActive 
-                  ? "text-transparent" 
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                !isActive && "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               )}
             >
               {isActive && (
@@ -46,8 +44,8 @@ const Navbar = () => {
               )}
               <item.icon size={16} className={isActive ? cn(item.accent, `dark:${item.darkAccent}`) : ""} />
               <span className={cn(
-                "hidden md:inline text-lg",
-                isActive && `bg-gradient-to-r ${item.color} dark:${item.darkColor} bg-clip-text text-transparent`
+                "hidden md:inline text-lg font-bold",
+                isActive ? cn(item.accent, `dark:${item.darkAccent}`) : ""
               )}>
                 {item.name}
               </span>

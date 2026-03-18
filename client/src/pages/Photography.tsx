@@ -85,11 +85,11 @@ const Photography = () => {
   return (
     <div className="pt-10 space-y-6 animate-in transition-all duration-700">
       <div className="space-y-2 text-center mx-auto w-full">
-        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-slate-950 via-blue-950 to-blue-900 dark:from-blue-100 dark:via-blue-50 dark:to-indigo-200 bg-clip-text text-transparent uppercase mb-4">
+        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-4">
           Photography
         </h1>
         <div className="h-1 w-20 bg-blue-900 dark:bg-blue-400 mx-auto mb-4" />
-        <p className="block text-xl font-aladin bg-gradient-to-r from-slate-900 via-blue-900 to-blue-800 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent leading-tight">
+        <p className="block text-xl font-aladin text-blue-950 dark:text-blue-100 opacity-90 leading-tight">
           A collection of visual narratives, moments frozen in time, and the intentions behind them.
         </p>
       </div>
@@ -125,12 +125,12 @@ const Photography = () => {
 
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between items-center">
-                    <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-slate-950 via-blue-950 to-blue-900 dark:from-blue-200 dark:via-blue-50 dark:to-indigo-300 bg-clip-text text-transparent tracking-wide">
+                    <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent tracking-wide">
                       {photo.title || "Untitled Photo"}
                     </h2>
                     <span className="text-sm font-mono text-slate-400">0{idx + 1}</span>
                   </div>
-                  <p className="text-lg font-aladin bg-gradient-to-r from-slate-900 via-blue-900 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent leading-tight border-l-4 border-blue-900 dark:border-blue-500 pl-4 py-1">
+                  <p className="text-lg font-aladin text-blue-900 dark:text-blue-100 leading-tight border-l-4 border-blue-900 dark:border-blue-500 pl-4 py-1">
                     {photo.intent || "No description provided."}
                   </p>
                 </div>
