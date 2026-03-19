@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface BrandingData {
   site_title: string;
   updated_at?: string;
+  active_logo_id?: number | null;
 }
 
 interface BrandingContextType {
@@ -17,7 +18,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [branding, setBranding] = useState<BrandingData>({
     site_title: 'Arjo Portfolio',
-    updated_at: undefined
+    updated_at: undefined,
+    active_logo_id: null
   });
   const [isLoading, setIsLoading] = useState(true);
 

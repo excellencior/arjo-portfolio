@@ -6,13 +6,15 @@ const Layout = () => {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
 
+  const animationKey = isAdmin ? '/admin' : location.pathname;
+
   return (
     <div className="min-h-screen bg-primary-60 dark:bg-dark-60 transition-colors duration-500">
       {!isAdmin && <Navbar />}
-      <main className={`${isAdmin ? 'pt-0' : 'pt-20'} pb-12 px-6 max-w-6xl mx-auto text-primary-30 dark:text-dark-30`}>
+      <main className={`${isAdmin ? 'pt-0' : 'pt-16'} pb-12 px-6 max-w-6xl mx-auto text-primary-30 dark:text-dark-30`}>
         <AnimatePresence mode="wait">
           <motion.div
-            key={location.pathname}
+            key={animationKey}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}

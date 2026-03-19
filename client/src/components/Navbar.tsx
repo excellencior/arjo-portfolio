@@ -132,12 +132,18 @@ const Navbar = () => {
           to="/"
           className="relative flex items-center justify-center shrink-0 px-2 md:px-3 py-2 rounded-xl transition-colors duration-200 w-[2.75rem] md:w-[3.25rem]"
         >
-          <img
-            src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`}
-            alt="Logo"
-            className="h-7 w-full object-contain transition-transform hover:scale-105 dark:invert"
-            onLoad={() => setLogoLoaded(true)}
-          />
+          {branding.active_logo_id ? (
+            <img
+              src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`}
+              alt="Logo"
+              className="h-7 w-full object-contain transition-transform hover:scale-105 dark:invert"
+              onLoad={() => setLogoLoaded(true)}
+            />
+          ) : (
+            <span className="text-2xl font-aladin font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse whitespace-nowrap">
+              P
+            </span>
+          )}
         </Link>
 
         {/* Nav Items */}

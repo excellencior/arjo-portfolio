@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useBranding } from '../../context/BrandingContext';
-import { Upload, Trash2, X, Check } from 'lucide-react';
 import { useAlert } from '../../context/AlertContext';
+import { useBranding } from '../../context/BrandingContext';
+import { Loader2, Trash2, Upload, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface BrandingEditorProps {
   token: string | null;
@@ -22,6 +22,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
   const { branding, refreshBranding } = useBranding();
   const [logos, setLogos] = useState<LogoItem[]>([]);
   const [saving, setSaving] = useState(false);
+  const [activeSavingId, setActiveSavingId] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const [previewId, setPreviewId] = useState<number | null>(null);
 
@@ -33,7 +34,6 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
     try {
       const res = await fetch(`${API_URL}/api/branding/logos`);
       if (res.status === 401 && onLogout) {
-        showAlert('Session Expired', 'Please log in again.', 'error');
         onLogout();
         return;
       }
@@ -44,8 +44,13 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
+    
+    if (file.size > 5 * 1024 * 1024) {
+      showAlert('Error', 'Logo must be smaller than 5MB.', 'error');
+      return;
+    }
 
+    setUploading(true);
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64Full = reader.result as string;
@@ -63,17 +68,20 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
             name: file.name.replace(/\.[^.]+$/, '')
           })
         });
+        
         if (res.status === 401 && onLogout) {
-          showAlert('Session Expired', 'Please log in again.', 'error');
           onLogout();
           return;
         }
+
         if (res.ok) {
-          showAlert('Success', 'Logo uploaded successfully!', 'success');
+          showAlert('Success', 'Logo added to your collection.', 'success');
           await fetchLogos();
+        } else {
+          showAlert('Error', 'Failed to upload logo.', 'error');
         }
       } catch {
-        showAlert('Error', 'Failed to upload logo.', 'error');
+        showAlert('Error', 'Communication error.', 'error');
       }
       setUploading(false);
     };
@@ -81,31 +89,35 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
   };
 
   const handleDelete = (id: number) => {
-    showConfirm('Confirm Deletion', 'Are you sure you want to delete this logo?', async () => {
+    const isActive = branding.active_logo_id === id;
+    showConfirm('Delete Logo', 'Are you sure you want to remove this logo?', async () => {
       try {
         const res = await fetch(`${API_URL}/api/branding/logos/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
+        
         if (res.status === 401 && onLogout) {
-          showAlert('Session Expired', 'Please log in again.', 'error');
           onLogout();
           return;
         }
+
         if (res.ok) {
-          showAlert('Deleted', 'Logo removed from gallery.', 'success');
+          showAlert('Success', 'Logo removed.', 'success');
           await fetchLogos();
-        } else {
-          showAlert('Error', 'Failed to delete logo.', 'error');
+          if (isActive) await refreshBranding();
         }
       } catch {
-        showAlert('Error', 'Failed to connect to server.', 'error');
+        showAlert('Error', 'Failed to delete logo.', 'error');
       }
     });
   };
 
   const handleSetActive = async (logoId: number) => {
+    if (logoId !== -1 && branding.active_logo_id === logoId) return;
+    
     setSaving(true);
+    setActiveSavingId(logoId);
     try {
       const res = await fetch(`${API_URL}/api/branding`, {
         method: 'PUT',
@@ -115,159 +127,166 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
         },
         body: JSON.stringify({ active_logo_id: logoId })
       });
+      
       if (res.status === 401 && onLogout) {
-        showAlert('Session Expired', 'Please log in again.', 'error');
         onLogout();
         return;
       }
+
       if (res.ok) {
         await refreshBranding();
-        if (logoId === -1) {
-          showAlert('Success', 'Active logo removed!', 'success');
-        } else {
-          showAlert('Success', 'Logo activated!', 'success');
-        }
-      } else {
-        showAlert('Error', 'Failed to activate logo.', 'error');
+        showAlert('Updated', 'Active branding updated.', 'success');
       }
     } catch {
-      showAlert('Error', 'Error connecting to server.', 'error');
+      showAlert('Error', 'Error updating branding.', 'error');
     } finally {
       setSaving(false);
+      setActiveSavingId(null);
     }
   };
 
   return (
     <div className="space-y-8 animate-in transition-all duration-500">
-      {/* Header */}
-      <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
-        <h2 className="text-4xl font-aladin text-slate-900 dark:text-white uppercase tracking-tight">
+      {/* Simple Header */}
+      <div className="border-b border-gray-100 dark:border-gray-800 pb-4">
+        <h2 className="text-3xl font-aladin text-slate-800 dark:text-slate-100 uppercase tracking-tight">
           Site <span className="text-blue-600">Branding</span>
         </h2>
+        <p className="text-slate-500 font-aladin text-sm mt-1">Manage your website's logo and identity settings. Maximum size allowed is 5MB.</p>
       </div>
 
-      {/* Current Active Logo */}
-      <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm font-aladin text-slate-500 uppercase tracking-widest">
-          Active Logo
-        </label>
-        <div className="flex items-center gap-4">
-          <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden border-2 border-blue-500 p-2">
-            <img
-              src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`}
-              alt="Active Logo"
-              className="max-w-full max-h-full object-contain dark:invert"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = '<span class="text-xs text-slate-400 font-aladin text-center">No Logo Set</span>';
-              }}
-            />
-          </div>
-          <button
-            onClick={() => handleSetActive(-1)}
-            disabled={saving}
-            className="px-4 py-2 bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 rounded-xl font-aladin text-sm hover:bg-rose-200 dark:hover:bg-rose-800/50 transition-all flex items-center gap-2"
-          >
-            <X size={16} /> Remove Logo
-          </button>
-        </div>
-      </div>
-
-      {/* Logo Gallery */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm font-aladin text-slate-500 uppercase tracking-widest">
-            <Upload size={16} /> Logo Gallery
-          </label>
-          <label className="cursor-pointer">
-            <div className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-aladin text-sm hover:opacity-80 transition-all flex items-center gap-2">
-              <Upload size={14} /> {uploading ? 'Uploading...' : 'Add Logo'}
-            </div>
-            <input type="file" className="hidden" onChange={handleUpload} accept="image/*" disabled={uploading} />
-          </label>
-        </div>
-
-        {logos.length === 0 ? (
-          <div className="text-center py-12 text-slate-400 font-aladin text-lg border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl">
-            No logos uploaded yet. Add your first logo above.
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-            {logos.map((logo) => (
-              <div
-                key={logo.id}
-                className="group relative bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 hover:border-blue-500 transition-all cursor-pointer flex flex-col"
-              >
-                {/* Logo Image — click to preview */}
-                <div
-                  className="aspect-square flex items-center justify-center overflow-hidden flex-1"
-                  onClick={() => setPreviewId(logo.id)}
-                >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Active Logo Section */}
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xs font-aladin uppercase text-slate-400 tracking-[0.2em] mb-4">Active Logo</h3>
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 flex items-center gap-6 shadow-sm">
+              <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+                {branding.active_logo_id ? (
                   <img
-                    src={`${API_URL}/api/branding/logos/${logo.id}`}
-                    alt={logo.name}
+                    src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`}
+                    alt="Active Logo"
                     className="max-w-full max-h-full object-contain dark:invert"
                   />
-                </div>
-                
-                {/* Actions — always visible */}
-                <div className="mt-4 flex gap-2 justify-center">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleSetActive(logo.id); }}
-                    disabled={saving}
-                    className="flex-1 py-1.5 flex items-center justify-center bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/40 dark:hover:bg-emerald-800/60 dark:text-emerald-400 rounded-lg transition-all text-xs font-aladin font-bold"
-                    title="Set as active"
-                  >
-                    <Check size={14} className="mr-1" /> Use
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(logo.id); }}
-                    className="px-2.5 py-1.5 flex items-center justify-center bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-900/40 dark:hover:bg-rose-800/60 dark:text-rose-400 rounded-lg transition-all"
-                    title="Delete"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
+                ) : (
+                  <span className="text-2xl font-aladin font-bold text-slate-400 opacity-40">P</span>
+                )}
               </div>
-            ))}
+              <div className="flex-1 space-y-3">
+                <p className="text-sm font-aladin text-slate-500">{branding.active_logo_id ? 'Current signature logo is active.' : 'Default placeholder is being used.'}</p>
+                {branding.active_logo_id && (
+                  <button
+                    onClick={() => handleSetActive(-1)}
+                    disabled={saving}
+                    className="flex items-center gap-2 text-rose-500 font-aladin text-sm hover:underline"
+                  >
+                    <X size={14} /> Remove current logo
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-        )}
+
+          <div className="pt-2">
+            <label className="cursor-pointer block">
+              <div className={`px-6 py-3 ${uploading ? 'bg-slate-200 text-slate-400' : 'bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900'} rounded-xl font-aladin text-lg text-center transition-all hover:opacity-90 shadow-sm flex items-center justify-center gap-2`}>
+                <Upload size={18} /> {uploading ? 'Uploading...' : 'Upload New Logo'}
+              </div>
+              <input type="file" className="hidden" onChange={handleUpload} accept="image/*" disabled={uploading} />
+            </label>
+          </div>
+        </div>
+
+        {/* Gallery Section */}
+        <div className="space-y-6">
+          <h3 className="text-xs font-aladin uppercase text-slate-400 tracking-[0.2em]">Logo Gallery</h3>
+          
+          {logos.length === 0 ? (
+            <div className="py-20 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl">
+              <p className="font-aladin text-slate-400">No logos in your collection yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-4">
+              {logos.map((logo) => {
+                const isActive = branding.active_logo_id === logo.id;
+                return (
+                  <div
+                    key={logo.id}
+                    className={`group relative aspect-square bg-slate-50 dark:bg-slate-800/50 rounded-xl border p-2 transition-all ${isActive ? 'border-blue-500 bg-white dark:bg-slate-800' : 'border-slate-100 dark:border-slate-800'}`}
+                  >
+                    <div className="w-full h-full flex items-center justify-center p-2 cursor-pointer" onClick={() => setPreviewId(logo.id)}>
+                      <img
+                        src={`${API_URL}/api/branding/logos/${logo.id}`}
+                        alt={logo.name}
+                        className="max-w-full max-h-full object-contain dark:invert"
+                      />
+                    </div>
+                    
+                    {/* Hover Actions */}
+                    <div className="absolute inset-x-0 bottom-0 p-1.5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all flex gap-1 z-10">
+                      <button
+                        onClick={() => handleSetActive(logo.id)}
+                        disabled={saving || isActive}
+                        className={`flex-1 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'}`}
+                      >
+                        {activeSavingId === logo.id ? <Loader2 size={12} className="animate-spin mx-auto" /> : (isActive ? 'Active' : 'Use')}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(logo.id)}
+                        className="p-1 bg-white dark:bg-slate-700 text-rose-500 border border-slate-100 dark:border-slate-600 rounded-md hover:bg-rose-50 transition-all"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Preview Modal */}
+      {/* Simple Image Modal */}
       {previewId && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-8"
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-6"
           onClick={() => setPreviewId(null)}
         >
           <div
-            className="relative bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-lg max-h-[80vh] shadow-2xl"
+            className="relative bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-10 max-w-xl w-full shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setPreviewId(null)}
-              className="absolute top-3 right-3 p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
-            <img
-              src={`${API_URL}/api/branding/logos/${previewId}`}
-              alt="Logo Preview"
-              className="max-w-full max-h-[60vh] object-contain mx-auto dark:invert"
-            />
-            <div className="mt-4 flex justify-center gap-3">
-              <button
-                onClick={() => { handleSetActive(previewId); setPreviewId(null); }}
-                className="px-5 py-2 bg-blue-600 text-white rounded-xl font-aladin text-lg hover:bg-blue-700 transition-all flex items-center gap-2"
-              >
-                <Check size={16} /> Use This Logo
-              </button>
-              <button
-                onClick={() => { handleDelete(previewId); setPreviewId(null); }}
-                className="px-5 py-2 bg-red-600 text-white rounded-xl font-aladin text-lg hover:bg-red-700 transition-all flex items-center gap-2"
-              >
-                <Trash2 size={16} /> Delete
-              </button>
+            
+            <div className="space-y-8">
+              <div className="flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-800 rounded-xl min-h-[250px] border border-slate-100 dark:border-slate-700">
+                <img
+                  src={`${API_URL}/api/branding/logos/${previewId}`}
+                  alt="Preview"
+                  className="max-w-full max-h-[35vh] object-contain dark:invert"
+                />
+              </div>
+              
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={async () => { await handleSetActive(previewId!); setPreviewId(null); }}
+                  disabled={saving}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-xl font-aladin text-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 min-w-[160px]"
+                >
+                  {activeSavingId === previewId ? <Loader2 size={20} className="animate-spin" /> : 'Set as Active Logo'}
+                </button>
+                <button
+                  onClick={() => { handleDelete(previewId!); setPreviewId(null); }}
+                  className="px-6 py-2 text-rose-500 font-aladin text-lg hover:underline transition-all"
+                >
+                  Remove from collection
+                </button>
+              </div>
             </div>
           </div>
         </div>

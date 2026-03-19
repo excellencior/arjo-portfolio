@@ -27,7 +27,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
 
 // In-memory store for verification codes
@@ -318,7 +318,7 @@ app.put('/api/content/extra', authenticate, async (req, res) => {
 // Branding Endpoints
 app.get('/api/branding', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('branding').select('id, updated_at').eq('id', 1).single();
+    const { data, error } = await supabase.from('branding').select('id, updated_at, active_logo_id').eq('id', 1).single();
     if (error) {
       console.error('Supabase Error (Branding Get):', error.message);
       return res.status(500).json({ error: 'Failed to fetch branding info' });
@@ -382,8 +382,10 @@ app.put('/api/branding', authenticate, async (req, res) => {
       if (logoErr || !logo) return res.status(404).json({ error: 'Logo not found' });
       updateData.logo_blob = logo.logo_blob;
       updateData.logo_mime_type = logo.logo_mime_type;
+      updateData.active_logo_id = active_logo_id;
     } else if (active_logo_id === -1) {
       updateData.logo_blob = null;
+      updateData.active_logo_id = null;
     }
 
     const { data, error } = await supabase

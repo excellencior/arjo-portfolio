@@ -24,9 +24,12 @@ const Admin = () => {
     if (token) {
       setStep('dashboard');
       const targetTab = tab || 'home';
+      
       if (['home', 'blog', 'academics', 'extra', 'branding'].includes(targetTab)) {
-        setActiveTab(targetTab);
-        fetchContent(targetTab);
+        // Only fetch if different from current active tab OR if we have no content
+        if (targetTab !== activeTab || content === null) {
+          fetchContent(targetTab);
+        }
       }
     }
   }, [token, tab]);
@@ -156,6 +159,7 @@ const Admin = () => {
   };
 
   const handleTabChange = (targetTab: string) => {
+    setContent(null);
     navigate(`/admin/${targetTab}`);
   };
 
