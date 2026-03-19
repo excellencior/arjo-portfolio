@@ -77,6 +77,7 @@ function App() {
             <Route path="blog/:id" element={<BlogPost />} />
             <Route path="contact" element={<Contact />} />
             <Route path="admin" element={<Admin />} />
+            <Route path="admin/:tab" element={<Admin />} />
           </Route>
         </Routes>
       </Router>

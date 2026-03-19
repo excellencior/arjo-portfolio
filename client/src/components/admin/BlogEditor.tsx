@@ -161,31 +161,37 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
       </div>
 
       <div className="space-y-4">
-        {posts && Array.isArray(posts) && posts.map((post: any) => (
-          <div key={post.id} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center group border border-transparent hover:border-purple-500/20 transition-all">
-            <div>
-              <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
-              <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider">
-                {formatDateForDisplay(post.date)} 
-                {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
-              </p>
+        {posts && posts.length > 0 ? (
+          posts.map((post: any) => (
+            <div key={post.id} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center group border border-transparent hover:border-purple-500/20 transition-all">
+              <div>
+                <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
+                <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider">
+                  {formatDateForDisplay(post.date)} 
+                  {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => handleEdit(post)}
+                  className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all"
+                >
+                  <Edit3 size={18} />
+                </button>
+                <button 
+                  onClick={() => confirmDelete(post.id)}
+                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button 
-                onClick={() => handleEdit(post)}
-                className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all"
-              >
-                <Edit3 size={18} />
-              </button>
-              <button 
-                onClick={() => confirmDelete(post.id)}
-                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
+          ))
+        ) : (
+          <div className="text-center py-10 text-slate-400 font-aladin text-xl opacity-60">
+            No blog posts found. Build your first sanctuary story!
           </div>
-        ))}
+        )}
       </div>
 
       <CustomModal

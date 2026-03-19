@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import AdminLogin from '../components/admin/AdminLogin';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import { useAlert } from '../context/AlertContext';
@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { tab } = useParams();
   const { showAlert } = useAlert();
   const isDevModeAllowed = import.meta.env.VITE_DEV_MODE_ALLOWED === 'true';
   const devToken = import.meta.env.VITE_DEV_TOKEN;
@@ -16,15 +17,19 @@ const Admin = () => {
   const [code, setCode] = useState('');
   const [step, setStep] = useState('email'); // email, code, dashboard
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState(tab || 'home');
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
     if (token) {
       setStep('dashboard');
-      fetchContent('home');
+      const targetTab = tab || 'home';
+      if (['home', 'blog', 'academics', 'extra', 'branding'].includes(targetTab)) {
+        setActiveTab(targetTab);
+        fetchContent(targetTab);
+      }
     }
-  }, [token]);
+  }, [token, tab]);
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,11 +155,15 @@ const Admin = () => {
     navigate('/');
   };
 
+  const handleTabChange = (targetTab: string) => {
+    navigate(`/admin/${targetTab}`);
+  };
+
   if (step === 'dashboard' && token) {
     return (
       <AdminDashboard 
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        onTabChange={handleTabChange}
         content={content}
         token={token || 'dev-token'}
         setContent={setContent}

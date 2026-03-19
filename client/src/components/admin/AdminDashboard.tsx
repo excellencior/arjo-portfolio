@@ -12,7 +12,7 @@ import { useBranding } from '../../context/BrandingContext';
 
 interface AdminDashboardProps {
   activeTab: string;
-  setActiveTab: (tab: string) => void;
+  onTabChange: (tab: string) => void;
   content: any;
   token: string | null;
   setContent: (content: any) => void;
@@ -24,7 +24,7 @@ interface AdminDashboardProps {
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
-  activeTab, setActiveTab, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout 
+  activeTab, onTabChange, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout 
 }) => {
   const { branding } = useBranding();
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,31 +107,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <Globe size={18} /> Go to main site
           </Link>
           <button 
-            onClick={() => { onFetchContent('home'); setActiveTab('home'); setSearchQuery(''); }}
+            onClick={() => onTabChange('home')}
             className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'home' ? 'bg-blue-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
             <Home size={18} /> Home Page
           </button>
           <button 
-            onClick={() => { onFetchContent('blog'); setActiveTab('blog'); setSearchQuery(''); }}
+            onClick={() => onTabChange('blog')}
             className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'blog' ? 'bg-purple-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
             <FileText size={18} /> Blog Posts
           </button>
           <button 
-            onClick={() => { onFetchContent('academics'); setActiveTab('academics'); setSearchQuery(''); }}
+            onClick={() => onTabChange('academics')}
             className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'academics' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
             <GraduationCap size={18} /> Academics
           </button>
           <button 
-            onClick={() => { onFetchContent('extra'); setActiveTab('extra'); setSearchQuery(''); }}
+            onClick={() => onTabChange('extra')}
             className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'extra' ? 'bg-orange-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
             <Sparkles size={18} /> Extra
           </button>
           <button 
-            onClick={() => { setActiveTab('branding'); setSearchQuery(''); }}
+            onClick={() => onTabChange('branding')}
             className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'branding' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
             <Palette size={18} /> Branding
