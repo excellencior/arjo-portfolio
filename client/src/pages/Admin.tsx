@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import AdminLogin from '../components/admin/AdminLogin';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import { useAlert } from '../context/AlertContext';
+import { useDevMode } from '../context/DevModeContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Admin = () => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+  const { isDevMode } = useDevMode();
   const [token, setToken] = useState(localStorage.getItem('adminToken'));
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -18,11 +20,11 @@ const Admin = () => {
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
-    if (token) {
+    if (token || isDevMode) {
       setStep('dashboard');
       fetchContent('home');
     }
-  }, [token]);
+  }, [token, isDevMode]);
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,13 +150,13 @@ const Admin = () => {
     navigate('/');
   };
 
-  if (step === 'dashboard' && token) {
+  if (step === 'dashboard' && (token || isDevMode)) {
     return (
       <AdminDashboard 
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         content={content}
-        token={token}
+        token={token || 'dev-token'}
         setContent={setContent}
         onSaveHome={handleSaveHome}
         onSaveAcademics={handleSaveAcademics}

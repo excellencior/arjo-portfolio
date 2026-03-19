@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
+import DevModeBar from './DevModeBar';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = () => {
@@ -21,6 +22,7 @@ const Layout = () => {
           </motion.div>
         </AnimatePresence>
       </main>
+      <DevModeBar />
     </div>
   );
 };

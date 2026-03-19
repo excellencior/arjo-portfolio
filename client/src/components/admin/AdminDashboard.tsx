@@ -6,6 +6,7 @@ import ExtraEditor from './ExtraEditor';
 import BrandingEditor from './BrandingEditor';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDevMode } from '../../context/DevModeContext';
 
 interface AdminDashboardProps {
   activeTab: string;
@@ -24,10 +25,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   activeTab, setActiveTab, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout 
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { isDevMode } = useDevMode();
   
   // 10-minute Inactivity Logout
   useEffect(() => {
-    if (!token) return;
+    if (!token || isDevMode) return;
     
     let timer: any;
     const resetTimer = () => {
@@ -46,7 +48,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       events.forEach(event => window.removeEventListener(event, resetTimer));
       clearTimeout(timer);
     };
-  }, [token, onLogout]);
+  }, [token, onLogout, isDevMode]);
 
   const filteredContent = () => {
     if (!content || !searchQuery) return content;
