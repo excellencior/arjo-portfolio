@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 import { Home, FileText, Camera, GraduationCap, Sparkles, Search, LogOut, Globe, Palette } from 'lucide-react';
 import HomeEditor from './HomeEditor';
 import BlogEditor from './BlogEditor';
@@ -7,6 +9,7 @@ import BrandingEditor from './BrandingEditor';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDevMode } from '../../context/DevModeContext';
+import { useBranding } from '../../context/BrandingContext';
 
 interface AdminDashboardProps {
   activeTab: string;
@@ -24,6 +27,7 @@ interface AdminDashboardProps {
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
   activeTab, setActiveTab, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout 
 }) => {
+  const { branding } = useBranding();
   const [searchQuery, setSearchQuery] = useState('');
   const { isDevMode } = useDevMode();
   
@@ -71,7 +75,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* Search Header */}
       <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4 min-h-[60px]">
         <div className="flex items-center gap-4">
-          <img src="/logo.png" alt="Admin Logo" className="w-auto h-12" />
+          <img 
+            src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`} 
+            alt="Admin Logo" 
+            className="w-auto h-12 dark:invert" 
+          />
           <div className="flex flex-col">
             <p className="text-sm font-aladin text-slate-500 uppercase tracking-widest mt-1 opacity-80">Welcome back</p>
           </div>

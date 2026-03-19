@@ -2,7 +2,7 @@ import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAlert } from '../context/AlertContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Contact = () => {
   const { showAlert } = useAlert();

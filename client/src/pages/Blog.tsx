@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Blog = () => {
   const [posts, setPosts] = useState<any[]>([]);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
