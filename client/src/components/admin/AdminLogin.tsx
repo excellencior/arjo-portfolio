@@ -28,7 +28,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
           <div className="text-center mb-8">
             <LogIn className="mx-auto text-blue-600 mb-4" size={48} />
             <h1 className="text-3xl font-aladin text-slate-900 dark:text-white">Admin Access</h1>
-            <p className="text-slate-500 font-mono text-sm">Enter your Gmail to receive a code</p>
+            <p className="text-slate-500 font-aladin text-sm">Enter your Gmail to receive a code</p>
           </div>
           <form onSubmit={onSendCode} className="space-y-4">
             <input 
@@ -36,7 +36,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
               placeholder="Gmail Address" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-mono"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial placeholder:font-arial"
               required
             />
             <button 
@@ -61,7 +61,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
       >
         <div className="text-center mb-8">
           <h1 className="text-3xl font-aladin text-slate-900 dark:text-white">Verify Identity</h1>
-          <p className="text-slate-500 font-mono text-sm">Code sent to {email}</p>
+          <p className="text-slate-500 font-aladin text-sm">Code sent to {email}</p>
         </div>
         <form onSubmit={onVerifyCode} className="space-y-4">
           <input 
@@ -69,7 +69,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
             placeholder="6-digit Code" 
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 text-center text-2xl tracking-[1em] font-mono"
+            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 text-center text-2xl tracking-[1em] font-arial placeholder:font-arial"
             required
           />
           <button 
@@ -82,7 +82,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
           <button 
             type="button" 
             onClick={() => setStep('email')}
-            className="w-full text-slate-500 text-sm hover:underline"
+            className="w-full text-slate-500 text-sm font-aladin hover:underline"
           >
             Back to Email
           </button>

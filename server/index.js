@@ -174,7 +174,7 @@ app.get('/api/content/home', async (req, res) => {
     const { data, error } = await supabase.from('home_content').select('*').limit(1);
     if (error) {
       console.error('Supabase Error (Home Content):', error.message);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: 'Failed to fetch home content' });
     }
     
     // Return the first item or a default object if empty
@@ -185,13 +185,16 @@ app.get('/api/content/home', async (req, res) => {
     res.json(data[0]);
   } catch (err) {
     console.error('Server Internal Error (Home Content):', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
 app.put('/api/content/home', authenticate, async (req, res) => {
   const { error } = await supabase.from('home_content').update(req.body).eq('id', 1);
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Supabase Error (Home Update):', error.message);
+    return res.status(500).json({ error: 'Failed to update home content' });
+  }
   res.json({ success: true });
 });
 
@@ -200,30 +203,53 @@ app.get('/api/content/blog', async (req, res) => {
     const { data, error } = await supabase.from('blog_posts').select('*').order('date', { ascending: false });
     if (error) {
       console.error('Supabase Error (Blog Posts):', error.message);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: 'Failed to fetch blog posts' });
     }
     res.json(data);
   } catch (err) {
     console.error('Server Internal Error (Blog Posts):', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'An unexpected error occurred' });
+  }
+});
+
+app.get('/api/content/blog/:id', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('blog_posts').select('*').eq('id', req.params.id).single();
+    if (error) {
+      console.error('Supabase Error (Single Blog Post):', error.message);
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.json(data);
+  } catch (err) {
+    console.error('Server Internal Error (Single Blog Post):', err.message);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
 app.post('/api/content/blog', authenticate, async (req, res) => {
   const { data, error } = await supabase.from('blog_posts').insert([req.body]).select().single();
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Supabase Error (Blog Insert):', error.message);
+    return res.status(500).json({ error: 'Failed to create blog post' });
+  }
   res.json(data);
 });
 
 app.put('/api/content/blog/:id', authenticate, async (req, res) => {
   const { data, error } = await supabase.from('blog_posts').update(req.body).eq('id', req.params.id).select().single();
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Supabase Error (Blog Update):', error.message);
+    return res.status(500).json({ error: 'Failed to update blog post' });
+  }
   res.json(data);
 });
 
 app.delete('/api/content/blog/:id', authenticate, async (req, res) => {
   const { error } = await supabase.from('blog_posts').delete().eq('id', req.params.id);
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Supabase Error (Blog Delete):', error.message);
+    return res.status(500).json({ error: 'Failed to delete blog post' });
+  }
   res.json({ success: true });
 });
 
@@ -232,22 +258,28 @@ app.get('/api/content/academics', async (req, res) => {
     const { data, error } = await supabase.from('academics').select('*');
     if (error) {
       console.error('Supabase Error (Academics):', error.message);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: 'Failed to fetch academics' });
     }
     res.json(data);
   } catch (err) {
     console.error('Server Internal Error (Academics):', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
 app.put('/api/content/academics', authenticate, async (req, res) => {
   // Replace all academics with the new list
   const { error: deleteError } = await supabase.from('academics').delete().neq('id', 0);
-  if (deleteError) return res.status(500).json({ error: deleteError.message });
+  if (deleteError) {
+    console.error('Supabase Error (Academics Delete):', deleteError.message);
+    return res.status(500).json({ error: 'Failed to update academics' });
+  }
   
   const { error: insertError } = await supabase.from('academics').insert(req.body);
-  if (insertError) return res.status(500).json({ error: insertError.message });
+  if (insertError) {
+    console.error('Supabase Error (Academics Insert):', insertError.message);
+    return res.status(500).json({ error: 'Failed to update academics' });
+  }
   
   res.json({ success: true });
 });
@@ -257,22 +289,28 @@ app.get('/api/content/extra', async (req, res) => {
     const { data, error } = await supabase.from('extra_activities').select('*');
     if (error) {
       console.error('Supabase Error (Extra):', error.message);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: 'Failed to fetch background content' });
     }
     res.json(data);
   } catch (err) {
     console.error('Server Internal Error (Extra):', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
 app.put('/api/content/extra', authenticate, async (req, res) => {
   // Replace all activities with the new list
   const { error: deleteError } = await supabase.from('extra_activities').delete().neq('id', 0);
-  if (deleteError) return res.status(500).json({ error: deleteError.message });
+  if (deleteError) {
+    console.error('Supabase Error (Extra Delete):', deleteError.message);
+    return res.status(500).json({ error: 'Failed to update background content' });
+  }
   
   const { error: insertError } = await supabase.from('extra_activities').insert(req.body);
-  if (insertError) return res.status(500).json({ error: insertError.message });
+  if (insertError) {
+    console.error('Supabase Error (Extra Insert):', insertError.message);
+    return res.status(500).json({ error: 'Failed to update background content' });
+  }
   
   res.json({ success: true });
 });
@@ -281,10 +319,14 @@ app.put('/api/content/extra', authenticate, async (req, res) => {
 app.get('/api/branding', async (req, res) => {
   try {
     const { data, error } = await supabase.from('branding').select('id, updated_at').eq('id', 1).single();
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) {
+      console.error('Supabase Error (Branding Get):', error.message);
+      return res.status(500).json({ error: 'Failed to fetch branding info' });
+    }
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Server Internal Error (Branding Get):', err.message);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -351,10 +393,14 @@ app.put('/api/branding', authenticate, async (req, res) => {
       .select('id, updated_at')
       .single();
 
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) {
+      console.error('Supabase Error (Branding Update):', error.message);
+      return res.status(500).json({ error: 'Failed to update branding' });
+    }
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Server Internal Error (Branding Update):', err.message);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -365,10 +411,14 @@ app.get('/api/branding/logos', async (req, res) => {
       .from('branding_logos')
       .select('id, name, logo_mime_type, created_at')
       .order('created_at', { ascending: false });
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) {
+      console.error('Supabase Error (Logos Get):', error.message);
+      return res.status(500).json({ error: 'Failed to fetch logos' });
+    }
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Server Internal Error (Logos Get):', err.message);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -413,10 +463,14 @@ app.post('/api/branding/logos', authenticate, async (req, res) => {
       .insert([{ logo_blob: logo_data, logo_mime_type, name: name || 'Untitled' }])
       .select('id, name, logo_mime_type, created_at')
       .single();
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) {
+      console.error('Supabase Error (Logo Upload):', error.message);
+      return res.status(500).json({ error: 'Failed to upload logo' });
+    }
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Server Internal Error (Logo Upload):', err.message);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -426,10 +480,14 @@ app.delete('/api/branding/logos/:id', authenticate, async (req, res) => {
       .from('branding_logos')
       .delete()
       .eq('id', req.params.id);
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) {
+      console.error('Supabase Error (Logo Delete):', error.message);
+      return res.status(500).json({ error: 'Failed to delete logo' });
+    }
     res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Server Internal Error (Logo Delete):', err.message);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -462,10 +520,11 @@ app.get('/api/images', async (req, res) => {
   }
 });
 
-// Old Contact Endpoint (keeping for now, but should use nodemailer in real scenario)
+// Contact Endpoint
 app.post('/api/contact', (req, res) => {
   const { name, email, message } = req.body;
   console.log(`Received message from ${name} (${email}): ${message}`);
+  // In a real app, you'd send an email here.
   res.json({ success: true, message: 'Message received!' });
 });
 

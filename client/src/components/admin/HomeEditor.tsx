@@ -29,24 +29,24 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
       <h2 className="text-2xl font-aladin text-blue-600 border-b border-blue-100 dark:border-blue-900 pb-2 uppercase tracking-wide">Edit Home Page</h2>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-mono text-slate-500 mb-1 uppercase">Main Title</label>
+          <label className="block text-sm font-aladin text-slate-500 mb-1 uppercase tracking-wider">Main Title</label>
           <input 
             value={content.title}
             onChange={(e) => setContent({...content, title: e.target.value})}
-            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent focus:border-blue-500 outline-none font-aladin text-lg"
+            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent focus:border-blue-500 outline-none font-arial text-lg placeholder:font-arial"
           />
         </div>
         <div>
-          <label className="block text-sm font-mono text-slate-500 mb-1 uppercase">Subtitle</label>
+          <label className="block text-sm font-aladin text-slate-500 mb-1 uppercase tracking-wider">Subtitle</label>
           <textarea 
             value={content.subtitle}
             onChange={(e) => setContent({...content, subtitle: e.target.value})}
-            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent focus:border-blue-500 outline-none font-aladin text-lg h-24"
+            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent focus:border-blue-500 outline-none font-arial text-lg h-24 placeholder:font-arial"
           />
         </div>
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-mono text-slate-500 uppercase">Quick Links</label>
+          <label className="text-sm font-aladin text-slate-500 uppercase tracking-wider">Quick Links</label>
             <button 
               onClick={() => setContent({...content, links: [...(content.links || []), { text: '', to: '' }]})}
               className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all font-aladin uppercase tracking-wider"
@@ -65,7 +65,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
                     newLinks[idx].text = e.target.value;
                     setContent({...content, links: newLinks});
                   }}
-                  className="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-aladin text-base border border-transparent focus:border-blue-500 placeholder:font-aladin"
+                  className="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-arial text-base border border-transparent focus:border-blue-500 placeholder:font-arial"
                 />
                 <input 
                   value={link.to}
@@ -75,7 +75,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
                     newLinks[idx].to = e.target.value;
                     setContent({...content, links: newLinks});
                   }}
-                  className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-mono text-sm border border-transparent focus:border-blue-500"
+                  className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-arial text-sm border border-transparent focus:border-blue-500 placeholder:font-arial"
                 />
                 <button 
                   onClick={() => confirmRemove(idx)}

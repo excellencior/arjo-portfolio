@@ -215,7 +215,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
                   <button
                     onClick={(e) => { e.stopPropagation(); handleSetActive(logo.id); }}
                     disabled={saving}
-                    className="flex-1 py-1.5 flex items-center justify-center bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/40 dark:hover:bg-emerald-800/60 dark:text-emerald-400 rounded-lg transition-all text-xs font-bold"
+                    className="flex-1 py-1.5 flex items-center justify-center bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/40 dark:hover:bg-emerald-800/60 dark:text-emerald-400 rounded-lg transition-all text-xs font-aladin font-bold"
                     title="Set as active"
                   >
                     <Check size={14} className="mr-1" /> Use

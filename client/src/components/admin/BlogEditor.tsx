@@ -19,13 +19,59 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
+  const formatDateForDisplay = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
+  const applyFormatting = (prefix: string, suffix: string) => {
+    const textarea = document.getElementById('blog-content-area') as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = editingPost.content || '';
+    const selected = text.substring(start, end);
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+
+    const newContent = before + prefix + selected + suffix + after;
+    setEditingPost({ ...editingPost, content: newContent });
+
+    // Set focus back to textarea
+    setTimeout(() => {
+      textarea.focus();
+      // Adjust cursor position to be inside the formatting
+      if (start === end) {
+        textarea.setSelectionRange(start + prefix.length, start + prefix.length);
+      } else {
+        textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+      }
+    }, 0);
+  };
+
   const handleEdit = (post: any) => {
-    setEditingPost(post);
+    const dateValue = post.date;
+    const date = new Date(dateValue);
+    const isoDate = !isNaN(date.getTime()) ? date.toISOString().split('T')[0] : '';
+    
+    setEditingPost({ 
+      ...post, 
+      date: isoDate,
+      tags_string: post.tags ? post.tags.join(', ') : ''
+    });
     setIsModalOpen(true);
   };
 
   const handleCreate = () => {
-    setEditingPost({ title: '', date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }), excerpt: '', readTime: '', content: '', category: '' });
+    setEditingPost({ 
+      title: '', 
+      date: new Date().toISOString().split('T')[0], 
+      content: '',
+      tags_string: ''
+    });
     setIsModalOpen(true);
   };
 
@@ -35,6 +81,18 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
       ? `${API_URL}/api/content/blog/${editingPost.id}`
       : `${API_URL}/api/content/blog`;
 
+    // Strictly follow schema: title, content, date, tags
+    const payload: any = {
+      title: editingPost.title,
+      content: editingPost.content,
+      // Convert to full ISO for TIMESTAMPTZ
+      date: new Date(editingPost.date).toISOString(),
+      // Convert comma-separated string to text[] array
+      tags: editingPost.tags_string 
+        ? editingPost.tags_string.split(',').map((t: string) => t.trim()).filter((t: string) => t !== '')
+        : []
+    };
+
     try {
       const res = await fetch(url, {
         method,
@@ -42,19 +100,25 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(editingPost),
+        body: JSON.stringify(payload),
       });
+      
       if (res.status === 401 && onLogout) {
         showAlert('Session Expired', 'Please log in again.', 'error');
         onLogout();
         return;
       }
+
       if (res.ok) {
+        showAlert('Success', editingPost.id ? 'Post updated!' : 'Post created!', 'success');
         setIsModalOpen(false);
         onRefresh();
+      } else {
+        const errData = await res.json();
+        showAlert('Error', errData.error || 'Save failed.', 'error');
       }
     } catch (err) {
-      showAlert('Error', 'Save failed.', 'error');
+      showAlert('Error', 'An unexpected error occurred.', 'error');
     }
   };
 
@@ -101,7 +165,10 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
           <div key={post.id} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center group border border-transparent hover:border-purple-500/20 transition-all">
             <div>
               <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
-              <p className="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">{post.date} • {post.readTime} {post.category && `• ${post.category}`}</p>
+              <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider">
+                {formatDateForDisplay(post.date)} 
+                {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
+              </p>
             </div>
             <div className="flex gap-2">
               <button 
@@ -128,65 +195,79 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Title</label>
+            <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Title</label>
             <input 
               value={editingPost?.title || ''}
               onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-aladin text-lg border border-transparent focus:border-purple-500 placeholder:font-aladin"
+              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-lg border border-transparent focus:border-purple-500 placeholder:font-arial"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Date</label>
+              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Date</label>
               <input 
+                type="date"
                 value={editingPost?.date || ''}
                 onChange={(e) => setEditingPost({...editingPost, date: e.target.value})}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-mono text-sm"
+                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Read Time</label>
+              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Tags (comma separated)</label>
               <input 
-                value={editingPost?.readTime || ''}
-                onChange={(e) => setEditingPost({...editingPost, readTime: e.target.value})}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-mono text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Category</label>
-              <input 
-                value={editingPost?.category || ''}
-                onChange={(e) => setEditingPost({...editingPost, category: e.target.value})}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-mono text-sm"
+                value={editingPost?.tags_string || ''}
+                onChange={(e) => setEditingPost({...editingPost, tags_string: e.target.value})}
+                placeholder="tech, life, design"
+                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm placeholder:font-arial"
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Excerpt</label>
+            <div className="flex justify-between items-end mb-1">
+              <label className="block text-xs font-aladin uppercase text-slate-500 tracking-wider">Content</label>
+              <div className="flex gap-1 mb-1">
+                <button 
+                  type="button"
+                  onClick={() => applyFormatting('**', '**')}
+                  className="p-1 px-2 bg-slate-200 dark:bg-slate-700 rounded hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-all font-bold text-xs"
+                  title="Bold"
+                >
+                  B
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => applyFormatting('*', '*')}
+                  className="p-1 px-2 bg-slate-200 dark:bg-slate-700 rounded hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-all italic text-xs"
+                  title="Italic"
+                >
+                  I
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => applyFormatting('<u>', '</u>')}
+                  className="p-1 px-2 bg-slate-200 dark:bg-slate-700 rounded hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-all underline text-xs"
+                  title="Underline"
+                >
+                  U
+                </button>
+              </div>
+            </div>
             <textarea 
-              value={editingPost?.excerpt || ''}
-              onChange={(e) => setEditingPost({...editingPost, excerpt: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-aladin text-lg h-20"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Content</label>
-            <textarea 
+              id="blog-content-area"
               value={editingPost?.content || ''}
               onChange={(e) => setEditingPost({...editingPost, content: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-mono text-sm h-40"
+              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm h-64 placeholder:font-arial ring-0"
             />
           </div>
           <button 
             onClick={handleSave}
-            className="w-full py-1.5 bg-purple-600 text-white rounded-lg flex items-center justify-center gap-2 font-aladin text-base hover:bg-purple-700 transition-all shadow-md mt-2"
+            className="w-full py-2 bg-purple-600 text-white rounded-lg flex items-center justify-center gap-2 font-aladin text-lg hover:bg-purple-700 transition-all shadow-lg mt-2 disabled:opacity-50"
           >
             <Save size={18} /> Save Post
           </button>
         </div>
       </CustomModal>
 
-      {/* Delete Confirmation Modal */}
       <CustomModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

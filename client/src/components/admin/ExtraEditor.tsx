@@ -58,28 +58,28 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
             <div className="grid grid-cols-1 gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Title</label>
+                  <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Title</label>
                   <input 
                     value={item.title}
                     onChange={(e) => handleChange(idx, 'title', e.target.value)}
-                    className="w-full px-4 py-1.5 bg-white dark:bg-slate-900 rounded-lg outline-none font-aladin text-lg placeholder:font-aladin"
+                    className="w-full px-4 py-1.5 bg-white dark:bg-slate-900 rounded-lg outline-none font-arial text-lg placeholder:font-arial"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Role</label>
+                  <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Role</label>
                   <input 
                     value={item.role}
                     onChange={(e) => handleChange(idx, 'role', e.target.value)}
-                    className="w-full px-4 py-1.5 bg-white dark:bg-slate-900 rounded-lg outline-none font-aladin text-lg placeholder:font-aladin"
+                    className="w-full px-4 py-1.5 bg-white dark:bg-slate-900 rounded-lg outline-none font-arial text-lg placeholder:font-arial"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-mono uppercase text-slate-500 mb-1">Description</label>
+                <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Description</label>
                 <textarea 
                   value={item.description}
                   onChange={(e) => handleChange(idx, 'description', e.target.value)}
-                  className="w-full px-4 py-1.5 bg-white dark:bg-slate-900 rounded-lg outline-none font-aladin text-base h-20 placeholder:font-aladin"
+                  className="w-full px-4 py-1.5 bg-white dark:bg-slate-900 rounded-lg outline-none font-arial text-base h-20 placeholder:font-arial"
                 />
               </div>
             </div>

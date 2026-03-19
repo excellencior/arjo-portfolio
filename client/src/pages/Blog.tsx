@@ -8,6 +8,13 @@ const Blog = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const formatDateForDisplay = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
   useEffect(() => {
     fetch(`${API_URL}/api/content/blog`)
       .then(res => res.json())
@@ -40,7 +47,7 @@ const Blog = () => {
             placeholder="Search stories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-purple-100 dark:border-purple-900 rounded-xl outline-none focus:border-purple-500 font-aladin text-lg transition-all"
+            className="w-full px-4 py-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-purple-100 dark:border-purple-900 rounded-xl outline-none focus:border-purple-500 font-arial text-lg transition-all placeholder:font-arial font-normal"
           />
         </div>
       </div>
@@ -51,18 +58,21 @@ const Blog = () => {
             const searchStr = searchQuery.toLowerCase();
             return (
               post.title?.toLowerCase().includes(searchStr) ||
-              post.excerpt?.toLowerCase().includes(searchStr) ||
-              post.category?.toLowerCase().includes(searchStr)
+              post.content?.toLowerCase().includes(searchStr) ||
+              (post.tags && post.tags.some((t: string) => t.toLowerCase().includes(searchStr)))
             );
           })
           .map((post) => (
           <Link key={post.id} to={`/blog/${post.id}`} className="group block space-y-2 p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-purple-700/30">
-            <p className="text-sm font-mono text-purple-600 dark:text-purple-400 uppercase tracking-widest">{post.date} • {post.readTime} {post.category && `• ${post.category}`}</p>
+            <p className="text-sm font-mono text-purple-600 dark:text-purple-400 uppercase tracking-widest">
+              {formatDateForDisplay(post.date)} 
+              {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
+            </p>
             <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase group-hover:from-pink-800 group-hover:to-purple-800 dark:group-hover:from-pink-300 dark:group-hover:to-purple-300 transition-all duration-300">
               {post.title}
             </h2>
-            <p className="font-aladin text-xl text-fuchsia-950 dark:text-purple-100 opacity-90 leading-tight border-l-4 border-fuchsia-900 dark:border-fuchsia-500 pl-4">
-              {post.excerpt}
+            <p className="font-aladin text-xl text-fuchsia-950 dark:text-purple-100 opacity-90 leading-tight border-l-4 border-fuchsia-900 dark:border-fuchsia-500 pl-4 line-clamp-3">
+              {post.content?.replace(/[#*`]|<u>|<\/u>/g, '').slice(0, 200)}...
             </p>
             <div className="pt-2">
               <span className="text-sm font-aladin text-pink-700 dark:text-pink-400 group-hover:underline">Read more →</span>
