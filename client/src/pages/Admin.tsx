@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import AdminLogin from '../components/admin/AdminLogin';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import { useAlert } from '../context/AlertContext';
-import { useDevMode } from '../context/DevModeContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Admin = () => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const { isDevMode } = useDevMode();
-  const [token, setToken] = useState(localStorage.getItem('adminToken'));
+  const isDevModeAllowed = import.meta.env.VITE_DEV_MODE_ALLOWED === 'true';
+  const devToken = import.meta.env.VITE_DEV_TOKEN;
+  const [token, setToken] = useState(isDevModeAllowed ? devToken : localStorage.getItem('adminToken'));
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [step, setStep] = useState('email'); // email, code, dashboard
@@ -20,11 +20,11 @@ const Admin = () => {
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
-    if (token || isDevMode) {
+    if (token) {
       setStep('dashboard');
       fetchContent('home');
     }
-  }, [token, isDevMode]);
+  }, [token]);
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +150,7 @@ const Admin = () => {
     navigate('/');
   };
 
-  if (step === 'dashboard' && (token || isDevMode)) {
+  if (step === 'dashboard' && token) {
     return (
       <AdminDashboard 
         activeTab={activeTab}

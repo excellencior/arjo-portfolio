@@ -60,6 +60,12 @@ const authenticate = async (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   
+  // Dev Mode Bypass
+  if (process.env.DEV_MODE_ALLOWED === 'true' && token === process.env.DEV_TOKEN) {
+    req.user = { email: process.env.ADMIN_EMAIL, dev: true };
+    return next();
+  }
+  
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     

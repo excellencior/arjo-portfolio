@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Layout from './components/Layout';
 import { ThemeProvider } from './context/ThemeContext';
-import { DevModeProvider } from './context/DevModeContext';
 import Photography from './pages/Photography';
 import Academics from './pages/Academics';
 import Extra from './pages/Extra';
@@ -66,24 +65,22 @@ const Home = () => {
 
 function App() {
   return (
-    <DevModeProvider>
-      <ThemeProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="photography" element={<Photography />} />
-              <Route path="academics" element={<Academics />} />
-              <Route path="extra" element={<Extra />} />
-              <Route path="blog" element={<Blog />} />
-              <Route path="blog/:id" element={<BlogPost />} />
-              <Route path="contact" element={<Contact />} />
-              <Route path="admin" element={<Admin />} />
-            </Route>
-          </Routes>
-        </Router>
-      </ThemeProvider>
-    </DevModeProvider>
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="photography" element={<Photography />} />
+            <Route path="academics" element={<Academics />} />
+            <Route path="extra" element={<Extra />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:id" element={<BlogPost />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="admin" element={<Admin />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 

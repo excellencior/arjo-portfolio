@@ -8,7 +8,6 @@ import ExtraEditor from './ExtraEditor';
 import BrandingEditor from './BrandingEditor';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useDevMode } from '../../context/DevModeContext';
 import { useBranding } from '../../context/BrandingContext';
 
 interface AdminDashboardProps {
@@ -29,11 +28,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const { branding } = useBranding();
   const [searchQuery, setSearchQuery] = useState('');
-  const { isDevMode } = useDevMode();
+  const isDevModeAllowed = import.meta.env.VITE_DEV_MODE_ALLOWED === 'true';
   
   // 10-minute Inactivity Logout
   useEffect(() => {
-    if (!token || isDevMode) return;
+    if (!token || isDevModeAllowed) return;
     
     let timer: any;
     const resetTimer = () => {
@@ -52,7 +51,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       events.forEach(event => window.removeEventListener(event, resetTimer));
       clearTimeout(timer);
     };
-  }, [token, onLogout, isDevMode]);
+  }, [token, onLogout, isDevModeAllowed]);
 
   const filteredContent = () => {
     if (!content || !searchQuery) return content;
