@@ -1,7 +1,12 @@
 import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAlert } from '../context/AlertContext';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Contact = () => {
+  const { showAlert } = useAlert();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = {
@@ -11,17 +16,19 @@ const Contact = () => {
     };
     
     try {
-      const response = await fetch('http://localhost:5000/api/contact', {
+      const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        alert('Message sent successfully!');
+        showAlert('Success', 'Message sent successfully!', 'success');
         (e.target as HTMLFormElement).reset();
+      } else {
+        showAlert('Error', 'Failed to send message.', 'error');
       }
     } catch (error) {
-      alert('Failed to send message.');
+      showAlert('Error', 'Error connecting to server.', 'error');
     }
   };
 

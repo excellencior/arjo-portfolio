@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { Plus, Edit3, Trash2, Save } from 'lucide-react';
 import CustomModal from './CustomModal';
+import { useAlert } from '../../context/AlertContext';
 
 interface BlogEditorProps {
   posts: any[];
   token: string | null;
   onRefresh: () => void;
+  onLogout?: () => void;
 }
 
-const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
+const API_URL = import.meta.env.VITE_API_URL;
+
+const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogout }) => {
+  const { showAlert } = useAlert();
   const [editingPost, setEditingPost] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -27,8 +32,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
   const handleSave = async () => {
     const method = editingPost.id ? 'PUT' : 'POST';
     const url = editingPost.id 
-      ? `http://localhost:5000/api/content/blog/${editingPost.id}`
-      : 'http://localhost:5000/api/content/blog';
+      ? `${API_URL}/api/content/blog/${editingPost.id}`
+      : `${API_URL}/api/content/blog`;
 
     try {
       const res = await fetch(url, {
@@ -39,28 +44,38 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh }) => {
         },
         body: JSON.stringify(editingPost),
       });
+      if (res.status === 401 && onLogout) {
+        showAlert('Session Expired', 'Please log in again.', 'error');
+        onLogout();
+        return;
+      }
       if (res.ok) {
         setIsModalOpen(false);
         onRefresh();
       }
     } catch (err) {
-      alert('Save failed');
+      showAlert('Error', 'Save failed.', 'error');
     }
   };
 
   const handleDelete = async () => {
     if (!postToDelete) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/content/blog/${postToDelete}`, {
+      const res = await fetch(`${API_URL}/api/content/blog/${postToDelete}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
+      if (res.status === 401 && onLogout) {
+        showAlert('Session Expired', 'Please log in again.', 'error');
+        onLogout();
+        return;
+      }
       if (res.ok) {
         onRefresh();
         setIsDeleteModalOpen(false);
       }
     } catch (err) {
-      alert('Delete failed');
+      showAlert('Error', 'Delete failed.', 'error');
     }
   };
 

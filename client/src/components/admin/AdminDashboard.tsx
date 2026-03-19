@@ -1,8 +1,9 @@
-import { Home, FileText, Camera, GraduationCap, Sparkles, Search, LogOut, Globe } from 'lucide-react';
+import { Home, FileText, Camera, GraduationCap, Sparkles, Search, LogOut, Globe, Palette } from 'lucide-react';
 import HomeEditor from './HomeEditor';
 import BlogEditor from './BlogEditor';
 import AcademicsEditor from './AcademicsEditor';
 import ExtraEditor from './ExtraEditor';
+import BrandingEditor from './BrandingEditor';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -66,8 +67,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="max-w-6xl mx-auto pt-10 px-4">
       {/* Search Header */}
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4 min-h-[44px]">
-        <h1 className="text-3xl font-aladin text-slate-900 dark:text-white uppercase tracking-tight">Admin <span className="text-blue-600">Sanctuary</span></h1>
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4 min-h-[60px]">
+        <div className="flex items-center gap-4">
+          <img src="/logo.png" alt="Admin Logo" className="w-auto h-12" />
+          <div className="flex flex-col">
+            <p className="text-sm font-aladin text-slate-500 uppercase tracking-widest mt-1 opacity-80">Welcome back</p>
+          </div>
+        </div>
         {activeTab === 'blog' && (
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
@@ -116,6 +122,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <Sparkles size={18} /> Extra
           </button>
           <button 
+            onClick={() => { setActiveTab('branding'); setSearchQuery(''); }}
+            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'branding' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
+          >
+            <Palette size={18} /> Branding
+          </button>
+          <button 
             onClick={() => {/* Photography logic */}}
             className="w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg bg-white dark:bg-slate-900 text-slate-400 border border-gray-100 dark:border-gray-800 opacity-50 cursor-not-allowed"
           >
@@ -138,7 +150,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           )}
 
           {activeTab === 'blog' && content && (
-            <BlogEditor posts={filteredContent()} token={token} onRefresh={() => onFetchContent('blog')} />
+            <BlogEditor posts={filteredContent()} token={token} onRefresh={() => onFetchContent('blog')} onLogout={onLogout} />
           )}
 
           {activeTab === 'academics' && content && (
@@ -147,6 +159,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
           {activeTab === 'extra' && content && (
             <ExtraEditor content={filteredContent()} setContent={setContent} onSave={onSaveExtra} />
+          )}
+          {activeTab === 'branding' && (
+            <BrandingEditor token={token} onLogout={onLogout} />
           )}
 
           {searchQuery && filteredContent()?.length === 0 && (

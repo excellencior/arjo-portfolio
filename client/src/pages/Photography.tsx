@@ -23,63 +23,73 @@ const Skeleton = () => (
   </div>
 );
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Photography = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(-1);
 
   useEffect(() => {
-    // Simulate loading for the premium feel
-    const timer = setTimeout(() => {
-      const mockPhotos: Photo[] = [
-        { 
-          src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b", 
-          width: 1080, height: 720, 
-          title: "Ethereal Peaks", 
-          intent: "Capturing the silent majesty of the Himalayas at first light, where the mist meets the morning sun.",
-          category: "Landscape"
-        },
-        { 
-          src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470", 
-          width: 1080, height: 1620, 
-          title: "Urban Geometry", 
-          intent: "A study on the interplay of light and shadow against the brutalist architecture of the city.",
-          category: "Architecture"
-        },
-        { 
-          src: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e", 
-          width: 1080, height: 720, 
-          title: "Nature's Palette", 
-          intent: "Exploring the vibrant colors of a hidden valley during the golden hour.",
-          category: "Nature"
-        },
-        { 
-          src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", 
-          width: 1080, height: 1620, 
-          title: "Solitude", 
-          intent: "Finding peace in the deep woods, where the only sound is the rustling of leaves.",
-          category: "Nature"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1532270660266-d47260c30de2",
-          width: 1080, height: 720,
-          title: "Forgotten Path",
-          intent: "A journey through time along a trail reclaimed by the wild forest.",
-          category: "Adventure"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
-          width: 1080, height: 1620,
-          title: "Morning Mist",
-          intent: "The world waking up in a blanket of soft, silver fog.",
-          category: "Atmospheric"
+    fetch(`${API_URL}/api/images`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && !data.error) {
+          setPhotos(data);
+          setLoading(false);
+        } else {
+          // Fallback to mock if API fails
+          const mockPhotos: Photo[] = [
+            { 
+              src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b", 
+              width: 1080, height: 720, 
+              title: "Ethereal Peaks", 
+              intent: "Capturing the silent majesty of the Himalayas at first light, where the mist meets the morning sun.",
+              category: "Landscape"
+            },
+            { 
+              src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470", 
+              width: 1080, height: 1620, 
+              title: "Urban Geometry", 
+              intent: "A study on the interplay of light and shadow against the brutalist architecture of the city.",
+              category: "Architecture"
+            },
+            { 
+              src: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e", 
+              width: 1080, height: 720, 
+              title: "Nature's Palette", 
+              intent: "Exploring the vibrant colors of a hidden valley during the golden hour.",
+              category: "Nature"
+            },
+            { 
+              src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", 
+              width: 1080, height: 1620, 
+              title: "Solitude", 
+              intent: "Finding peace in the deep woods, where the only sound is the rustling of leaves.",
+              category: "Nature"
+            },
+            {
+              src: "https://images.unsplash.com/photo-1532270660266-d47260c30de2",
+              width: 1080, height: 720,
+              title: "Forgotten Path",
+              intent: "A journey through time along a trail reclaimed by the wild forest.",
+              category: "Adventure"
+            },
+            {
+              src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
+              width: 1080, height: 1620,
+              title: "Morning Mist",
+              intent: "The world waking up in a blanket of soft, silver fog.",
+              category: "Atmospheric"
+            }
+          ];
+          setPhotos(mockPhotos);
+          setLoading(false);
         }
-      ];
-      setPhotos(mockPhotos);
-      setLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   }, []);
 
   return (

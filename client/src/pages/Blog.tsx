@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 
 const Blog = () => {
   const [posts, setPosts] = useState<any[]>([]);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/content/blog')
+    fetch(`${API_URL}/api/content/blog`)
       .then(res => res.json())
       .then(data => {
         setPosts(data);

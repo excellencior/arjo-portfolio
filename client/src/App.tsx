@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useBranding } from './context/BrandingContext';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Layout from './components/Layout';
@@ -11,14 +12,26 @@ import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Home = () => {
+  const { branding: _ } = useBranding();
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/content/home')
+    fetch(`${API_URL}/api/content/home`)
       .then(res => res.json())
-      .then(data => setContent(data))
-      .catch(err => console.error('Failed to fetch home content', err));
+      .then(data => {
+        if (data && !data.error) {
+          setContent(data);
+        } else {
+          // Fallback removed as per instruction
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch home content', err);
+        // Fallback removed as per instruction
+      });
   }, []);
 
   if (!content) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Loading Sanctuary...</div>;

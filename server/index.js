@@ -1,6 +1,7 @@
 const express = require('express');
 const cloudinary = require('cloudinary').v2;
 const cors = require('cors');
+const morgan = require('morgan');
 const dotenv = require('dotenv');
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -27,6 +28,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(morgan('dev'));
 
 // In-memory store for verification codes
 let verificationCodes = {};
@@ -162,9 +164,23 @@ cron.schedule('* * * * *', async () => {
 
 // Content Management Endpoints
 app.get('/api/content/home', async (req, res) => {
-  const { data, error } = await supabase.from('home_content').select('*').single();
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  try {
+    const { data, error } = await supabase.from('home_content').select('*').limit(1);
+    if (error) {
+      console.error('Supabase Error (Home Content):', error.message);
+      return res.status(500).json({ error: error.message });
+    }
+    
+    // Return the first item or a default object if empty
+    if (!data || data.length === 0) {
+      return res.json({ title: 'Welcome', subtitle: 'Bio coming soon...', links: [] });
+    }
+    
+    res.json(data[0]);
+  } catch (err) {
+    console.error('Server Internal Error (Home Content):', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.put('/api/content/home', authenticate, async (req, res) => {
@@ -174,9 +190,17 @@ app.put('/api/content/home', authenticate, async (req, res) => {
 });
 
 app.get('/api/content/blog', async (req, res) => {
-  const { data, error } = await supabase.from('blog_posts').select('*').order('date', { ascending: false });
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  try {
+    const { data, error } = await supabase.from('blog_posts').select('*').order('date', { ascending: false });
+    if (error) {
+      console.error('Supabase Error (Blog Posts):', error.message);
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    console.error('Server Internal Error (Blog Posts):', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post('/api/content/blog', authenticate, async (req, res) => {
@@ -198,9 +222,17 @@ app.delete('/api/content/blog/:id', authenticate, async (req, res) => {
 });
 
 app.get('/api/content/academics', async (req, res) => {
-  const { data, error } = await supabase.from('academics').select('*');
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  try {
+    const { data, error } = await supabase.from('academics').select('*');
+    if (error) {
+      console.error('Supabase Error (Academics):', error.message);
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    console.error('Server Internal Error (Academics):', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.put('/api/content/academics', authenticate, async (req, res) => {
@@ -215,9 +247,17 @@ app.put('/api/content/academics', authenticate, async (req, res) => {
 });
 
 app.get('/api/content/extra', async (req, res) => {
-  const { data, error } = await supabase.from('extra_activities').select('*');
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  try {
+    const { data, error } = await supabase.from('extra_activities').select('*');
+    if (error) {
+      console.error('Supabase Error (Extra):', error.message);
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    console.error('Server Internal Error (Extra):', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.put('/api/content/extra', authenticate, async (req, res) => {
@@ -229,6 +269,162 @@ app.put('/api/content/extra', authenticate, async (req, res) => {
   if (insertError) return res.status(500).json({ error: insertError.message });
   
   res.json({ success: true });
+});
+
+// Branding Endpoints
+app.get('/api/branding', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('branding').select('id, updated_at').eq('id', 1).single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/branding/logo', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('branding').select('logo_blob, logo_mime_type').eq('id', 1).single();
+    
+    if (error || !data || !data.logo_blob) {
+      return res.status(404).send('Logo not found');
+    }
+
+    let buffer;
+    const blob = data.logo_blob;
+    
+    if (typeof blob === 'string' && blob.startsWith('\\x')) {
+      // Supabase BYTEA hex format: \x followed by hex chars
+      // The base64 string was stored as bytes, so we get hex of the base64 bytes
+      const hexStr = blob.slice(2);
+      const rawBytes = Buffer.from(hexStr, 'hex');
+      // rawBytes is the original base64 string as bytes, decode it back
+      const base64Str = rawBytes.toString('utf8');
+      buffer = Buffer.from(base64Str, 'base64');
+    } else if (typeof blob === 'string') {
+      buffer = Buffer.from(blob, 'base64');
+    } else {
+      buffer = Buffer.from(blob);
+    }
+
+    res.set('Content-Type', data.logo_mime_type || 'image/png');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(buffer);
+  } catch (err) {
+    console.error('Logo serve error:', err);
+    res.status(500).send('Error serving logo');
+  }
+});
+
+app.put('/api/branding', authenticate, async (req, res) => {
+  try {
+    const { active_logo_id } = req.body;
+    
+    const updateData = { 
+      updated_at: new Date().toISOString() 
+    };
+
+    // If setting an active logo, copy its blob into branding
+    if (active_logo_id && active_logo_id !== -1) {
+      const { data: logo, error: logoErr } = await supabase
+        .from('branding_logos')
+        .select('logo_blob, logo_mime_type')
+        .eq('id', active_logo_id)
+        .single();
+      if (logoErr || !logo) return res.status(404).json({ error: 'Logo not found' });
+      updateData.logo_blob = logo.logo_blob;
+      updateData.logo_mime_type = logo.logo_mime_type;
+    } else if (active_logo_id === -1) {
+      updateData.logo_blob = null;
+    }
+
+    const { data, error } = await supabase
+      .from('branding')
+      .update(updateData)
+      .eq('id', 1)
+      .select('id, updated_at')
+      .single();
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Logo Gallery Endpoints
+app.get('/api/branding/logos', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('branding_logos')
+      .select('id, name, logo_mime_type, created_at')
+      .order('created_at', { ascending: false });
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/branding/logos/:id', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('branding_logos')
+      .select('logo_blob, logo_mime_type')
+      .eq('id', req.params.id)
+      .single();
+    if (error || !data) return res.status(404).send('Logo not found');
+    
+    let buffer;
+    const blob = data.logo_blob;
+    
+    if (typeof blob === 'string' && blob.startsWith('\\x')) {
+      const hexStr = blob.slice(2);
+      const rawBytes = Buffer.from(hexStr, 'hex');
+      const base64Str = rawBytes.toString('utf8');
+      buffer = Buffer.from(base64Str, 'base64');
+    } else if (typeof blob === 'string') {
+      buffer = Buffer.from(blob, 'base64');
+    } else {
+      buffer = Buffer.from(blob);
+    }
+    
+    res.set('Content-Type', data.logo_mime_type || 'image/png');
+    res.set('Cache-Control', 'public, max-age=31536000');
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).send('Error serving logo');
+  }
+});
+
+app.post('/api/branding/logos', authenticate, async (req, res) => {
+  try {
+    const { logo_data, logo_mime_type, name } = req.body;
+    if (!logo_data) return res.status(400).json({ error: 'No logo data' });
+
+    const { data, error } = await supabase
+      .from('branding_logos')
+      .insert([{ logo_blob: logo_data, logo_mime_type, name: name || 'Untitled' }])
+      .select('id, name, logo_mime_type, created_at')
+      .single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/branding/logos/:id', authenticate, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('branding_logos')
+      .delete()
+      .eq('id', req.params.id);
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Photography Endpoints

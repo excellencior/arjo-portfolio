@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLogin from '../components/admin/AdminLogin';
 import AdminDashboard from '../components/admin/AdminDashboard';
+import { useAlert } from '../context/AlertContext';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Admin = () => {
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const [token, setToken] = useState(localStorage.getItem('adminToken'));
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -22,7 +28,7 @@ const Admin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/send-code', {
+      const res = await fetch(`${API_URL}/api/auth/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -31,10 +37,10 @@ const Admin = () => {
       if (res.ok) {
         setStep('code');
       } else {
-        alert(data.error || 'Failed to send code.');
+        showAlert('Error', data.error || 'Failed to send code.', 'error');
       }
     } catch (err) {
-      alert('Error connecting to server.');
+      showAlert('Error', 'Error connecting to server.', 'error');
     }
     setLoading(false);
   };
@@ -43,7 +49,7 @@ const Admin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/verify-code', {
+      const res = await fetch(`${API_URL}/api/auth/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
@@ -54,17 +60,17 @@ const Admin = () => {
         setToken(data.token);
         setStep('dashboard');
       } else {
-        alert('Invalid code.');
+        showAlert('Error', 'Invalid code.', 'error');
       }
     } catch (err) {
-      alert('Error verifying code.');
+      showAlert('Error', 'Error verifying code.', 'error');
     }
     setLoading(false);
   };
 
   const fetchContent = async (type: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/content/${type}`);
+      const res = await fetch(`${API_URL}/api/content/${type}`);
       if (res.ok) {
         const data = await res.json();
         setContent(data);
@@ -79,7 +85,7 @@ const Admin = () => {
 
   const handleSaveHome = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/content/home', {
+      const res = await fetch(`${API_URL}/api/content/home`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -87,15 +93,19 @@ const Admin = () => {
         },
         body: JSON.stringify(content),
       });
-      if (res.ok) alert('Home content saved!');
+      if (res.status === 401) {
+        showAlert('Session Expired', 'Please log in again.', 'error');
+        return handleLogout();
+      }
+      if (res.ok) showAlert('Success', 'Home content saved!', 'success');
     } catch (err) {
-      alert('Failed to save.');
+      showAlert('Error', 'Failed to save.', 'error');
     }
   };
 
   const handleSaveAcademics = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/content/academics', {
+      const res = await fetch(`${API_URL}/api/content/academics`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -103,15 +113,19 @@ const Admin = () => {
         },
         body: JSON.stringify(content),
       });
-      if (res.ok) alert('Academics saved!');
+      if (res.status === 401) {
+        showAlert('Session Expired', 'Please log in again.', 'error');
+        return handleLogout();
+      }
+      if (res.ok) showAlert('Success', 'Academics saved!', 'success');
     } catch (err) {
-      alert('Failed to save.');
+      showAlert('Error', 'Failed to save.', 'error');
     }
   };
 
   const handleSaveExtra = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/content/extra', {
+      const res = await fetch(`${API_URL}/api/content/extra`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -119,15 +133,19 @@ const Admin = () => {
         },
         body: JSON.stringify(content),
       });
-      if (res.ok) alert('Extracurriculars saved!');
+      if (res.status === 401) {
+        showAlert('Session Expired', 'Please log in again.', 'error');
+        return handleLogout();
+      }
+      if (res.ok) showAlert('Success', 'Extracurriculars saved!', 'success');
     } catch (err) {
-      alert('Failed to save.');
+      showAlert('Error', 'Failed to save.', 'error');
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
-    window.location.reload();
+    navigate('/');
   };
 
   if (step === 'dashboard' && token) {
