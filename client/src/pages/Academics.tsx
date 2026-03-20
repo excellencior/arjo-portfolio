@@ -20,10 +20,6 @@ const Academics = () => {
       });
   }, []);
 
-  const projects = [
-    { title: "Portfolio Website", description: "A minimalistic personal portfolio built with React and Tailwind CSS.", tech: "React, Tailwind, Express" },
-    { title: "E-Commerce Platform", description: "A full-stack e-commerce solution with payment integration.", tech: "Next.js, Node.js, Stripe" }
-  ];
 
   if (loading) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Gathering wisdom...</div>;
 
@@ -46,8 +42,7 @@ const Academics = () => {
           {education.map((edu, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ x: 5 }}
-              className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-emerald-600/30"
+              className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-md hover:border-emerald-600/20"
             >
               <h3 className="inline-block text-2xl font-aladin bg-gradient-to-r from-black via-emerald-950 to-emerald-900 dark:from-white dark:via-emerald-100 dark:to-emerald-200 bg-clip-text text-transparent">
                 {edu.title}
@@ -61,28 +56,6 @@ const Academics = () => {
         </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-emerald-950 to-emerald-900 dark:from-white dark:via-emerald-100 dark:to-emerald-200 bg-clip-text text-transparent">
-          Projects
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((project, idx) => (
-            <div key={idx} className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-emerald-600/30">
-              <h3 className="inline-block text-2xl font-aladin bg-gradient-to-r from-black via-emerald-950 to-emerald-900 dark:from-white dark:via-emerald-100 dark:to-emerald-200 bg-clip-text text-transparent">
-                {project.title}
-              </h3>
-              <p className="mt-3 font-aladin text-lg text-emerald-900 dark:text-emerald-100 leading-tight border-l-4 border-teal-900 dark:border-teal-400 pl-4">
-                {project.description}
-              </p>
-              <div className="mt-4 flex gap-2">
-                <span className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-xs font-mono text-emerald-800 dark:text-emerald-300 rounded-full">
-                  {project.tech}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 };

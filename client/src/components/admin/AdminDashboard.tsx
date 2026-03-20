@@ -18,8 +18,8 @@ interface AdminDashboardProps {
   token: string | null;
   setContent: (content: any) => void;
   onSaveHome: () => void;
-  onSaveAcademics: () => void;
-  onSaveExtra: () => void;
+  onSaveAcademics: (data?: any[]) => void;
+  onSaveExtra: (data?: any[]) => void;
   onFetchContent: (type: string) => void;
   onLogout: () => void;
 }
@@ -56,6 +56,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const filteredContent = () => {
     if (!Array.isArray(content)) return [];
+    if (!searchQuery.trim()) return content;
     
     return content.filter((item: any) => {
       const searchStr = searchQuery.toLowerCase();

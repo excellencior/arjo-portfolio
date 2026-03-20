@@ -78,20 +78,6 @@ const Admin = () => {
     setLoading(false);
   };
 
-  const fetchContent = async (type: string) => {
-    try {
-      const res = await fetch(`${API_URL}/api/content/${type}`);
-      if (res.ok) {
-        const data = await res.json();
-        setContent(data);
-      } else {
-        console.error('Failed to fetch content:', res.statusText);
-      }
-    } catch (err) {
-      console.error('Failed to fetch content');
-    }
-  };
-
   const handleSaveHome = async () => {
     try {
       const res = await fetch(`${API_URL}/api/content/home`, {
@@ -106,49 +92,80 @@ const Admin = () => {
         showAlert('Session Expired', 'Please log in again.', 'error');
         return handleLogout();
       }
-      if (res.ok) showAlert('Success', 'Home content saved!', 'success');
+      if (res.ok) {
+        showAlert('Success', 'Home content saved!', 'success');
+      } else {
+        const data = await res.json();
+        showAlert('Error', data.error || 'Failed to update content', 'error');
+      }
     } catch (err) {
       showAlert('Error', 'Failed to save.', 'error');
     }
   };
 
-  const handleSaveAcademics = async () => {
+  const handleSaveAcademics = async (dataOverride?: any[]) => {
     try {
+      const dataToSave = dataOverride || content;
       const res = await fetch(`${API_URL}/api/content/academics`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(content),
+        body: JSON.stringify(dataToSave),
       });
       if (res.status === 401) {
         showAlert('Session Expired', 'Please log in again.', 'error');
         return handleLogout();
       }
-      if (res.ok) showAlert('Success', 'Academics saved!', 'success');
+      if (res.ok) {
+        showAlert('Success', 'Academics saved!', 'success');
+      } else {
+        const data = await res.json();
+        showAlert('Error', data.error || 'Failed to update academics', 'error');
+      }
     } catch (err) {
       showAlert('Error', 'Failed to save.', 'error');
     }
   };
 
-  const handleSaveExtra = async () => {
+  const handleSaveExtra = async (dataOverride?: any[]) => {
     try {
+      const dataToSave = dataOverride || content;
       const res = await fetch(`${API_URL}/api/content/extra`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(content),
+        body: JSON.stringify(dataToSave),
       });
       if (res.status === 401) {
         showAlert('Session Expired', 'Please log in again.', 'error');
         return handleLogout();
       }
-      if (res.ok) showAlert('Success', 'Extracurriculars saved!', 'success');
+      if (res.ok) {
+        showAlert('Success', 'Extracurriculars saved!', 'success');
+      } else {
+        const data = await res.json();
+        showAlert('Error', data.error || 'Failed to update content', 'error');
+      }
     } catch (err) {
       showAlert('Error', 'Failed to save.', 'error');
+    }
+  };
+
+  const fetchContent = async (type: string) => {
+    try {
+      const res = await fetch(`${API_URL}/api/content/${type}`);
+      if (res.ok) {
+        const data = await res.json();
+        setContent(data);
+      } else {
+        console.error('Failed to fetch content:', res.statusText);
+      }
+    } catch (err) {
+      console.error('Failed to fetch content');
     }
   };
 
@@ -171,8 +188,8 @@ const Admin = () => {
         token={token || 'dev-token'}
         setContent={setContent}
         onSaveHome={handleSaveHome}
-        onSaveAcademics={handleSaveAcademics}
-        onSaveExtra={handleSaveExtra}
+        onSaveAcademics={(data?: any[]) => { handleSaveAcademics(data); }}
+        onSaveExtra={(data?: any[]) => { handleSaveExtra(data); }}
         onFetchContent={fetchContent}
         onLogout={handleLogout}
       />

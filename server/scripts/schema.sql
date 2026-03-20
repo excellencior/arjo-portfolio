@@ -75,9 +75,10 @@ CREATE POLICY "Admin delete blog_posts"
 CREATE TABLE IF NOT EXISTS public.academics (
     id BIGSERIAL PRIMARY KEY,
     institution TEXT DEFAULT '',
-    degree TEXT DEFAULT '',
-    year TEXT DEFAULT '',
-    description TEXT DEFAULT ''
+    title TEXT DEFAULT '',
+    duration TEXT DEFAULT '',
+    description TEXT DEFAULT '',
+    category TEXT DEFAULT ''
 );
 
 ALTER TABLE public.academics ENABLE ROW LEVEL SECURITY;
