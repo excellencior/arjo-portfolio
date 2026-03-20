@@ -8,38 +8,21 @@ interface BrandingEditorProps {
   onLogout?: () => void;
 }
 
-interface LogoItem {
-  id: number;
-  name: string;
-  logo_mime_type: string;
-  created_at: string;
-}
-
 const API_URL = import.meta.env.VITE_API_URL;
 
 const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
   const { showAlert, showConfirm } = useAlert();
-  const { branding, refreshBranding } = useBranding();
-  const [logos, setLogos] = useState<LogoItem[]>([]);
+  const { branding, refreshBranding, logos, refreshLogos } = useBranding();
   const [saving, setSaving] = useState(false);
   const [activeSavingId, setActiveSavingId] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const [previewId, setPreviewId] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchLogos();
-  }, []);
-
-  const fetchLogos = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/branding/logos`);
-      if (res.status === 401 && onLogout) {
-        onLogout();
-        return;
-      }
-      if (res.ok) setLogos(await res.json());
-    } catch {}
-  };
+    if (logos.length === 0 && token) {
+      refreshLogos(token);
+    }
+  }, [token, logos.length, refreshLogos]);
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,7 +59,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
 
         if (res.ok) {
           showAlert('Success', 'Logo added to your collection.', 'success');
-          await fetchLogos();
+          await refreshLogos(token);
         } else {
           showAlert('Error', 'Failed to upload logo.', 'error');
         }
@@ -104,7 +87,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
 
         if (res.ok) {
           showAlert('Success', 'Logo removed.', 'success');
-          await fetchLogos();
+          await refreshLogos(token);
           if (isActive) await refreshBranding();
         }
       } catch {
