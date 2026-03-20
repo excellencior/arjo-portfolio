@@ -23,11 +23,11 @@ const Admin = () => {
   useEffect(() => {
     if (token) {
       setStep('dashboard');
-      const targetTab = tab || 'home';
+      const targetTab = (tab || 'home') as string;
       
       if (['home', 'blog', 'academics', 'extra', 'branding'].includes(targetTab)) {
-        // Only fetch if different from current active tab OR if we have no content
-        if (targetTab !== activeTab || content === null) {
+        setActiveTab(targetTab);
+        if (targetTab !== 'branding' && (targetTab !== activeTab || content === null)) {
           fetchContent(targetTab);
         }
       }
@@ -84,7 +84,6 @@ const Admin = () => {
       if (res.ok) {
         const data = await res.json();
         setContent(data);
-        setActiveTab(type);
       } else {
         console.error('Failed to fetch content:', res.statusText);
       }
