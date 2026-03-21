@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit3, Trash2, Save } from 'lucide-react';
+import { Plus, Edit3, Trash2, Save, X } from 'lucide-react';
 import CustomModal from './CustomModal';
 import { useAlert } from '../../context/AlertContext';
 
@@ -18,6 +18,11 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
+  const [showNewTagInput, setShowNewTagInput] = useState(false);
+  const [newTagValue, setNewTagValue] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const existingTags = Array.from(new Set(posts.flatMap(p => (p.tags || []).map((t: string) => t.toUpperCase())))).sort();
 
   const formatDateForDisplay = (dateStr: string) => {
     if (!dateStr) return '';
@@ -53,14 +58,9 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   };
 
   const handleEdit = (post: any) => {
-    const dateValue = post.date;
-    const date = new Date(dateValue);
-    const isoDate = !isNaN(date.getTime()) ? date.toISOString().split('T')[0] : '';
-    
     setEditingPost({ 
       ...post, 
-      date: isoDate,
-      tags_string: post.tags ? post.tags.join(', ') : ''
+      tags: (post.tags || []).map((t: string) => t.toUpperCase())
     });
     setIsModalOpen(true);
   };
@@ -68,10 +68,13 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   const handleCreate = () => {
     setEditingPost({ 
       title: '', 
-      date: new Date().toISOString().split('T')[0], 
+      date: new Date().toISOString(), 
       content: '',
-      tags_string: ''
+      tags: []
     });
+    setShowNewTagInput(false);
+    setIsDropdownOpen(false);
+    setNewTagValue('');
     setIsModalOpen(true);
   };
 
@@ -81,16 +84,16 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
       ? `${API_URL}/api/content/blog/${editingPost.id}`
       : `${API_URL}/api/content/blog`;
 
-    // Strictly follow schema: title, content, date, tags
+    // Strictly follow schema: title, content, date, tags, updated_at
     const payload: any = {
       title: editingPost.title,
       content: editingPost.content,
-      // Generate new ISO date on POST, preserve existing on PUT
-      date: editingPost.id ? new Date(editingPost.date).toISOString() : new Date().toISOString(),
-      // Convert comma-separated string to text[] array
-      tags: editingPost.tags_string 
-        ? editingPost.tags_string.split(',').map((t: string) => t.trim()).filter((t: string) => t !== '')
-        : []
+      // Generate new ISO date on POST, preserve exact original on PUT
+      date: editingPost.id ? editingPost.date : new Date().toISOString(),
+      // Unconditionally set updated_at (creation is an update too)
+      updated_at: new Date().toISOString(),
+      // Use the proper tags array
+      tags: Array.isArray(editingPost.tags) ? editingPost.tags : []
     };
 
     try {
@@ -171,9 +174,16 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             >
               <div>
                 <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
-                <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider">
-                  {formatDateForDisplay(post.date)} 
-                  {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
+                <p className="w-full text-[10px] font-aladin text-slate-400 uppercase tracking-wider flex flex-wrap items-center gap-1.5 mt-0.5">
+                  <span>{formatDateForDisplay(post.date)}</span>
+                  {post.tags && post.tags.length > 0 && (
+                    <span>• {post.tags.map((t: string) => t.toUpperCase()).join(' • ')}</span>
+                  )}
+                  {post.updated_at && (
+                    <span className="ml-auto bg-slate-200 dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded font-bold font-arial tracking-wider">
+                      UPDATED: {formatDateForDisplay(post.updated_at)}
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -216,13 +226,114 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
           </div>
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Tags (comma separated)</label>
-              <input 
-                value={editingPost?.tags_string || ''}
-                onChange={(e) => setEditingPost({...editingPost, tags_string: e.target.value})}
-                placeholder="tech, life, design"
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
-              />
+              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Tags</label>
+              
+              <div className="flex flex-wrap gap-2 mb-2">
+                {(editingPost?.tags || []).map((tag: string) => (
+                  <span key={tag} className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-md text-sm font-arial border border-purple-200 dark:border-purple-800/50">
+                    #{tag}
+                    <button 
+                      type="button"
+                      onClick={() => setEditingPost({ ...editingPost, tags: editingPost.tags.filter((t: string) => t !== tag) })}
+                      className="text-purple-400 hover:text-purple-600 dark:hover:text-purple-200 ml-1"
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+
+              {!showNewTagInput ? (
+                <div className="relative">
+                  <button 
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all font-arial text-base text-slate-400 text-left flex justify-between items-center"
+                  >
+                    <span>Select a tag to add...</span>
+                    <span className="text-slate-400 text-xs">▼</span>
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-purple-100 dark:border-purple-900 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto overflow-x-hidden">
+                      {existingTags.filter((t: any) => !(editingPost?.tags || []).includes(t)).map((tag: any) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          className="w-full px-4 py-2.5 text-left hover:bg-purple-50 dark:hover:bg-purple-900/30 font-arial text-slate-700 dark:text-slate-300 transition-colors border-b border-purple-50 dark:border-purple-900/30 last:border-0"
+                          onClick={() => {
+                            const currentTags = editingPost?.tags || [];
+                            if (!currentTags.includes(tag)) {
+                              setEditingPost({ ...editingPost, tags: [...currentTags, tag] });
+                            }
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          #{tag}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="w-full px-4 py-3 text-left font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors border-t border-purple-100 dark:border-purple-900/50"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setShowNewTagInput(true);
+                        }}
+                      >
+                        + Create new tag
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex gap-2 items-center">
+                  <input 
+                    type="text"
+                    value={newTagValue}
+                    onChange={(e) => setNewTagValue(e.target.value)}
+                    placeholder="Type tag name..."
+                    className="flex-1 px-4 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-purple-200 dark:border-purple-700 focus:border-purple-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (newTagValue.trim()) {
+                          const cleanTag = newTagValue.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+                          if (cleanTag && !(editingPost?.tags || []).includes(cleanTag)) {
+                            setEditingPost({ ...editingPost, tags: [...(editingPost?.tags || []), cleanTag] });
+                          }
+                          setNewTagValue('');
+                          setShowNewTagInput(false);
+                        }
+                      }
+                    }}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      if (newTagValue.trim()) {
+                        const cleanTag = newTagValue.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+                        if (cleanTag && !(editingPost?.tags || []).includes(cleanTag)) {
+                          setEditingPost({ ...editingPost, tags: [...(editingPost?.tags || []), cleanTag] });
+                        }
+                      }
+                      setNewTagValue('');
+                      setShowNewTagInput(false);
+                    }}
+                    className="px-4 py-1.5 bg-purple-600 text-white rounded-lg font-aladin text-base hover:bg-purple-700 transition-all shadow-sm"
+                  >
+                    Add
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setNewTagValue('');
+                      setShowNewTagInput(false);
+                    }}
+                    className="px-3 py-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all font-aladin text-base"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           <div>

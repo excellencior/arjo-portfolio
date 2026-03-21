@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
     title TEXT NOT NULL DEFAULT '',
     content TEXT DEFAULT '',
     date TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
     tags TEXT[] DEFAULT '{}'
 );
 

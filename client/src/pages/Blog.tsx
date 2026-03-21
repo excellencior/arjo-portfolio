@@ -33,7 +33,7 @@ const Blog = () => {
 
   const allTags = useMemo(() => {
     if (!posts) return [];
-    return Array.from(new Set(posts.flatMap(p => p.tags || []))).sort();
+    return Array.from(new Set(posts.flatMap(p => (p.tags || []).map((t: string) => t.toUpperCase())))).sort();
   }, [posts]);
 
   const filteredPosts = useMemo(() => {
@@ -136,14 +136,21 @@ const Blog = () => {
           <div className="grid gap-8">
             {filteredPosts.map((post) => (
               <Link key={post.id} to={`/blog/${post.id}`} className="group block space-y-3 p-6 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-purple-300 dark:hover:border-purple-700/50">
-                <p className="text-sm font-mono text-purple-600 dark:text-purple-400 uppercase tracking-widest">
-                  {formatDateForDisplay(post.date)} 
-                  {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
+                <p className="w-full text-sm font-aladin text-purple-600 dark:text-purple-400 uppercase tracking-widest flex flex-wrap items-center gap-2">
+                  <span>{formatDateForDisplay(post.date)}</span>
+                  {post.tags && post.tags.length > 0 && (
+                    <span>• {post.tags.map((t: string) => t.toUpperCase()).join(' • ')}</span>
+                  )}
+                  {post.updated_at && (
+                    <span className="bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded text-xs font-bold font-arial tracking-wider ml-auto">
+                      UPDATED: {formatDateForDisplay(post.updated_at)}
+                    </span>
+                  )}
                 </p>
                 <h2 className="inline-block text-3xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase group-hover:from-pink-800 group-hover:to-purple-800 dark:group-hover:from-pink-300 dark:group-hover:to-purple-300 transition-all duration-300">
                   {post.title}
                 </h2>
-                <p className="font-aladin text-xl text-fuchsia-950 dark:text-purple-100 opacity-80 leading-relaxed border-l-4 border-fuchsia-900/30 dark:border-fuchsia-500/30 pl-4 line-clamp-3">
+                <p className="font-arial text-base text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3 mt-1">
                   {post.content?.replace(/[#*`]|<u>|<\/u>/g, '').slice(0, 200)}...
                 </p>
                 <div className="pt-2">

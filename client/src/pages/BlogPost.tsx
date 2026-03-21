@@ -71,10 +71,15 @@ const BlogPost = () => {
             <Calendar size={18} className="text-purple-500" />
             <span>{formatDateForDisplay(post.date)}</span>
           </div>
+          {post.updated_at && (
+            <div className="flex items-center gap-2 opacity-80">
+              <span className="text-sm">Last updated: {formatDateForDisplay(post.updated_at)}</span>
+            </div>
+          )}
           {post.tags && post.tags.length > 0 && (
             <div className="flex items-center gap-2">
               <Tag size={18} className="text-purple-500" />
-              <span>{post.tags.join(', ')}</span>
+              <span>{post.tags.map((t: string) => t.toUpperCase()).join(' • ')}</span>
             </div>
           )}
         </div>
