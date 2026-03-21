@@ -106,7 +106,7 @@ const Photography = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 px-2">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} />)
-        ) : (
+        ) : photos.length > 0 ? (
           photos.map((photo, idx) => (
             <motion.div
               key={idx}
@@ -146,6 +146,12 @@ const Photography = () => {
               </div>
             </motion.div>
           ))
+        ) : (
+          <div className="text-center py-20 border border-dashed border-blue-200 dark:border-blue-900/50 rounded-xl col-span-full">
+            <p className="font-aladin text-3xl text-slate-400 dark:text-slate-500 italic opacity-60">
+              "The best camera is the one that's with you, capturing the unseen."
+            </p>
+          </div>
         )}
       </div>
 

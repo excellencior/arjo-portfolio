@@ -132,7 +132,13 @@ const Blog = () => {
           </div>
         )}
 
-        {filteredPosts.length > 0 ? (
+        {posts.length === 0 ? (
+          <div className="text-center py-20 border border-dashed border-purple-200 dark:border-purple-900/50 rounded-xl">
+            <p className="font-aladin text-3xl text-slate-400 dark:text-slate-500 italic opacity-60">
+              "The ink is dry, but the stories are yet to be written."
+            </p>
+          </div>
+        ) : filteredPosts.length > 0 ? (
           <div className="grid gap-4">
             {filteredPosts.map((post) => (
               <Link key={post.id} to={`/blog/${post.id}`} className="group block space-y-2 p-4 bg-white dark:bg-slate-900 rounded-lg border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-purple-300 dark:hover:border-purple-700/50">
