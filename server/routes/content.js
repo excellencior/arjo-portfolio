@@ -35,6 +35,50 @@ router.put('/home', authenticate, async (req, res) => {
   res.json({ success: true });
 });
 
+// Profile Image Upload
+router.post('/home/image', authenticate, async (req, res) => {
+  try {
+    const { image, mimeType } = req.body;
+    if (!image) return res.status(400).json({ error: 'No image provided' });
+
+    const buffer = Buffer.from(image, 'base64');
+    const { error } = await supabase
+      .from('home_content')
+      .update({ 
+        profile_image_blob: buffer,
+        profile_image_mime_type: mimeType,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', 1);
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Serve Profile Image
+router.get('/home/image', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('home_content')
+      .select('profile_image_blob, profile_image_mime_type')
+      .eq('id', 1)
+      .single();
+
+    if (error || !data || !data.profile_image_blob) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+
+    const buffer = Buffer.from(data.profile_image_blob, 'base64');
+    res.setHeader('Content-Type', data.profile_image_mime_type || 'image/png');
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- Academics ---
 router.get('/academics', async (req, res) => {
   try {

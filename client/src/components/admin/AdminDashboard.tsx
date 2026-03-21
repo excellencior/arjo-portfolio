@@ -71,15 +71,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto h-screen flex flex-col p-4 overflow-hidden">
+    <div className="max-w-7xl mx-auto w-full h-full flex flex-col p-6 overflow-hidden">
       {/* Search Header */}
-      <div className="mb-2 flex flex-col md:flex-row justify-between items-center gap-3 min-h-[50px]">
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-3 shrink-0">
         <div className="flex items-center gap-3">
           {branding.active_logo_id ? (
             <img 
               src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`} 
               alt="Admin Logo" 
-              className="w-auto h-10 dark:invert" 
+              className="w-auto h-12 dark:invert" 
             />
           ) : (
             <span className="text-3xl font-aladin font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
@@ -104,9 +104,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 flex-1">
-        {/* Sidebar */}
-        <div className="w-full md:w-60 space-y-1.5">
+      <div className="flex flex-col md:flex-row gap-8 flex-1 min-h-0">
+        {/* Sidebar - Fixed Height within the flex-1 row */}
+        <div className="w-full md:w-64 space-y-1.5 shrink-0 overflow-hidden">
           <Link 
             to="/" 
             className="w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-gray-200 dark:border-gray-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all mb-2"
@@ -170,7 +170,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               transition={{ duration: 0.2 }}
             >
               {activeTab === 'home' && content && (
-                <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} />
+                <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} token={token} />
               )}
 
               {activeTab === 'blog' && content && (

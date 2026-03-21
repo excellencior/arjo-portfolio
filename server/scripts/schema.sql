@@ -30,7 +30,10 @@ CREATE TABLE IF NOT EXISTS public.home_content (
     id SERIAL PRIMARY KEY,
     title TEXT DEFAULT 'Welcome',
     subtitle TEXT DEFAULT 'Bio coming soon...',
-    links JSONB DEFAULT '[]'::JSONB
+    links JSONB DEFAULT '[]'::JSONB,
+    profile_image_blob BYTEA,
+    profile_image_mime_type TEXT,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 ALTER TABLE public.home_content ENABLE ROW LEVEL SECURITY;
