@@ -16,7 +16,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
   const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
 
   const handleAdd = () => {
-    setEditingItem({ title: '', institution: '', duration: '', description: '', category: '' });
+    setEditingItem({ title: '', institution: '', start_year: new Date().getFullYear(), end_year: null, description: '' });
     setEditingIndex(null);
     setIsModalOpen(true);
   };
@@ -60,7 +60,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
         <h2 className="text-2xl font-aladin text-emerald-600">Academics</h2>
         <button 
           onClick={handleAdd}
-          className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-aladin text-lg hover:bg-emerald-700 transition-all shadow-md"
+          className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-md font-aladin text-lg hover:bg-emerald-700 transition-all shadow-md"
         >
           <Plus size={18} /> Add Entry
         </button>
@@ -72,12 +72,12 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
             <div 
               key={idx} 
               onClick={() => handleEdit(item, idx)}
-              className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center group border border-transparent hover:border-emerald-500/20 hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer shadow-sm"
+              className="p-3 bg-slate-50 dark:bg-slate-800 rounded-md flex justify-between items-center group border border-transparent hover:border-emerald-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
             >
               <div>
                 <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{item.title || 'Untitled Entry'}</h3>
                 <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider">
-                  {item.institution} {item.duration && ` • ${item.duration}`}
+                  {item.institution} {item.start_year && ` • ${item.start_year} - ${item.end_year || 'Present'}`}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -117,7 +117,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
             <input 
               value={editingItem?.title || ''}
               onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-lg border border-transparent focus:border-emerald-500 placeholder:font-arial"
+              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-lg border border-transparent focus:border-emerald-500 placeholder:font-arial"
               placeholder="e.g. Bachelor of Science"
             />
           </div>
@@ -127,38 +127,41 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
               <input 
                 value={editingItem?.institution || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, institution: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm"
+                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Duration</label>
+              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Start Year</label>
               <input 
-                value={editingItem?.duration || ''}
-                onChange={(e) => setEditingItem({ ...editingItem, duration: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm"
+                type="number"
+                value={editingItem?.start_year || ''}
+                onChange={(e) => setEditingItem({ ...editingItem, start_year: e.target.value ? parseInt(e.target.value) : null })}
+                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
+                placeholder="2019"
               />
             </div>
-          </div>
-          <div>
-            <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Category</label>
-            <input 
-              value={editingItem?.category || ''}
-              onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm"
-              placeholder="e.g. University, High School"
-            />
+            <div>
+              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">End Year (or blank for Present)</label>
+              <input 
+                type="number"
+                value={editingItem?.end_year || ''}
+                onChange={(e) => setEditingItem({ ...editingItem, end_year: e.target.value ? parseInt(e.target.value) : null })}
+                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
+                placeholder="2023"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Description</label>
             <textarea 
               value={editingItem?.description || ''}
               onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm h-32"
+              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm h-32"
             />
           </div>
           <button 
             onClick={handleModalSave}
-            className="w-full py-2 bg-emerald-600 text-white rounded-lg flex items-center justify-center gap-2 font-aladin text-lg hover:bg-emerald-700 transition-all shadow-lg mt-2"
+            className="w-full py-2 bg-emerald-600 text-white rounded-md flex items-center justify-center gap-2 font-aladin text-lg hover:bg-emerald-700 transition-all shadow-md mt-2"
           >
             <Save size={18} /> Confirm Entry
           </button>
@@ -175,13 +178,13 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
           <>
             <button 
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg font-aladin text-lg hover:bg-slate-200"
+              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-lg hover:bg-slate-200"
             >
               Cancel
             </button>
             <button 
               onClick={handleRemove}
-              className="px-4 py-1.5 bg-red-600 text-white rounded-lg font-aladin text-lg hover:bg-red-700 shadow-md"
+              className="px-4 py-1.5 bg-red-600 text-white rounded-md font-aladin text-lg hover:bg-red-700"
             >
               Remove
             </button>

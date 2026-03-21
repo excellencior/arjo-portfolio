@@ -155,7 +155,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         <h2 className="text-2xl font-aladin text-purple-600">Blog Posts</h2>
         <button 
           onClick={handleCreate}
-          className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-lg font-aladin text-lg hover:bg-purple-700 transition-all shadow-md"
+          className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-md font-aladin text-lg hover:bg-purple-700 transition-all shadow-md"
         >
           <Plus size={18} /> New Post
         </button>
@@ -167,7 +167,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <div 
               key={post.id} 
               onClick={() => handleEdit(post)}
-              className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center group border border-transparent hover:border-purple-500/20 hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer shadow-sm"
+              className="p-3 bg-slate-50 dark:bg-slate-800 rounded-md flex justify-between items-center group border border-transparent hover:border-purple-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
             >
               <div>
                 <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
@@ -211,7 +211,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <input 
               value={editingPost?.title || ''}
               onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-lg border border-transparent focus:border-purple-500 placeholder:font-arial"
+              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-lg border border-transparent focus:border-purple-500 placeholder:font-arial"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -221,7 +221,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                 type="date"
                 value={editingPost?.date || ''}
                 onChange={(e) => setEditingPost({...editingPost, date: e.target.value})}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm"
+                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
               />
             </div>
             <div>
@@ -230,7 +230,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                 value={editingPost?.tags_string || ''}
                 onChange={(e) => setEditingPost({...editingPost, tags_string: e.target.value})}
                 placeholder="tech, life, design"
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm placeholder:font-arial"
+                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm placeholder:font-arial"
               />
             </div>
           </div>
@@ -241,7 +241,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                 <button 
                   type="button"
                   onClick={() => applyFormatting('**', '**')}
-                  className="p-1 px-2 bg-slate-200 dark:bg-slate-700 rounded hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-all font-bold text-xs"
+                  className="p-1 px-2 bg-slate-200 dark:bg-slate-700 rounded-sm hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-all font-bold text-xs"
                   title="Bold"
                 >
                   B
@@ -268,12 +268,12 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
               id="blog-content-area"
               value={editingPost?.content || ''}
               onChange={(e) => setEditingPost({...editingPost, content: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none font-arial text-sm h-64 placeholder:font-arial ring-0"
+              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm h-64 placeholder:font-arial ring-0"
             />
           </div>
           <button 
             onClick={handleSave}
-            className="w-full py-2 bg-purple-600 text-white rounded-lg flex items-center justify-center gap-2 font-aladin text-lg hover:bg-purple-700 transition-all shadow-lg mt-2 disabled:opacity-50"
+            className="w-full py-2 bg-purple-600 text-white rounded-md flex items-center justify-center gap-2 font-aladin text-lg hover:bg-purple-700 transition-all shadow-md mt-2 disabled:opacity-50"
           >
             <Save size={18} /> Save Post
           </button>
@@ -289,13 +289,13 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
           <>
             <button 
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg font-aladin text-lg hover:bg-slate-200"
+              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-lg hover:bg-slate-200"
             >
               Cancel
             </button>
             <button 
               onClick={handleDelete}
-              className="px-4 py-1.5 bg-red-600 text-white rounded-lg font-aladin text-lg hover:bg-red-700 shadow-md"
+              className="px-4 py-1.5 bg-red-600 text-white rounded-md font-aladin text-lg hover:bg-red-700"
             >
               Delete
             </button>

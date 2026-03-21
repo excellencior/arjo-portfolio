@@ -31,7 +31,7 @@ const Blog = () => {
   if (loading) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Unfolding stories...</div>;
 
   return (
-    <div className="pt-5 space-y-10 animate-in transition-all duration-700">
+    <div className="pt-8 space-y-10 animate-in transition-all duration-700">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-2">
           <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase">
@@ -47,7 +47,7 @@ const Blog = () => {
             placeholder="Search stories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-purple-100 dark:border-purple-900 rounded-xl outline-none focus:border-purple-500 font-arial text-lg transition-all placeholder:font-arial font-normal"
+            className="w-full px-4 py-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-purple-100 dark:border-purple-900 rounded-md outline-none focus:border-purple-500 font-arial text-lg transition-all placeholder:font-arial font-normal"
           />
         </div>
       </div>
@@ -63,7 +63,7 @@ const Blog = () => {
             );
           })
           .map((post) => (
-          <Link key={post.id} to={`/blog/${post.id}`} className="group block space-y-2 p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-purple-700/30">
+          <Link key={post.id} to={`/blog/${post.id}`} className="group block space-y-2 p-5 bg-white dark:bg-slate-900 rounded-lg border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-md hover:border-purple-700/30">
             <p className="text-sm font-mono text-purple-600 dark:text-purple-400 uppercase tracking-widest">
               {formatDateForDisplay(post.date)} 
               {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}

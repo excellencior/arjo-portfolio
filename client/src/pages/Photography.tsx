@@ -14,8 +14,8 @@ interface Photo {
 }
 
 const Skeleton = () => (
-  <div className="relative p-6 border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-900/50 rounded-2xl animate-pulse">
-    <div className="aspect-[4/3] bg-gray-200 dark:bg-slate-800 rounded-xl mb-8" />
+  <div className="relative p-6 border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-900/50 rounded-lg animate-pulse">
+    <div className="aspect-[4/3] bg-gray-200 dark:bg-slate-800 rounded-md mb-8" />
     <div className="space-y-4">
       <div className="h-10 bg-gray-200 dark:bg-slate-800 rounded-lg w-3/4" />
       <div className="h-20 bg-gray-200 dark:bg-slate-800 rounded-lg w-full" />
@@ -93,7 +93,7 @@ const Photography = () => {
   }, []);
 
   return (
-    <div className="pt-5 space-y-6 animate-in transition-all duration-700">
+    <div className="pt-8 space-y-6 animate-in transition-all duration-700">
       <div className="space-y-2 text-center mx-auto w-full">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-4">
           Photography
@@ -117,8 +117,8 @@ const Photography = () => {
               className="group relative"
               onClick={() => setIndex(idx)}
             >
-              <div className="relative p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 rounded-2xl transition-all duration-500 hover:border-blue-700/50 hover:shadow-xl">
-                <div className="aspect-[4/3] overflow-hidden relative rounded-xl">
+              <div className="relative p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-500 hover:border-blue-700/50 hover:shadow-md">
+                <div className="aspect-[4/3] overflow-hidden relative rounded-md">
                   <motion.img
                     src={photo.src}
                     alt={photo.title}

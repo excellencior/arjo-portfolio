@@ -76,9 +76,9 @@ CREATE TABLE IF NOT EXISTS public.academics (
     id BIGSERIAL PRIMARY KEY,
     institution TEXT DEFAULT '',
     title TEXT DEFAULT '',
-    duration TEXT DEFAULT '',
-    description TEXT DEFAULT '',
-    category TEXT DEFAULT ''
+    start_year INTEGER,
+    end_year INTEGER,
+    description TEXT DEFAULT ''
 );
 
 ALTER TABLE public.academics ENABLE ROW LEVEL SECURITY;

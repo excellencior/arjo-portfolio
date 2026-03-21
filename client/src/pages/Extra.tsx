@@ -23,7 +23,7 @@ const Extra = () => {
   if (loading) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Loading passions...</div>;
 
   return (
-    <div className="pt-5 space-y-10 animate-in transition-all duration-700">
+    <div className="pt-8 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
         <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-rose-950 to-rose-900 dark:from-white dark:via-rose-100 dark:to-rose-200 bg-clip-text text-transparent uppercase">
           Extracurriculars
@@ -38,7 +38,7 @@ const Extra = () => {
           <motion.div
             key={idx}
             whileHover={{ y: -5 }}
-            className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-orange-700/30"
+            className="p-5 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-md hover:border-orange-700/30"
           >
             <h2 className="inline-block text-3xl font-aladin bg-gradient-to-r from-black via-rose-950 to-rose-900 dark:from-white dark:via-rose-100 dark:to-rose-200 bg-clip-text text-transparent uppercase">
               {activity.title}

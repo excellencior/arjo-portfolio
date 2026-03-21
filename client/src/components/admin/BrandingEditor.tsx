@@ -143,8 +143,8 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
         <div className="space-y-6">
           <div>
             <h3 className="text-xs font-aladin uppercase text-slate-400 tracking-[0.2em] mb-4">Active Logo</h3>
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 flex items-center gap-6 shadow-sm">
-              <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-6 border border-slate-100 dark:border-slate-800 flex items-center gap-6">
+              <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-md flex items-center justify-center p-4 border border-slate-200 dark:border-slate-700">
                 {branding.active_logo_id ? (
                   <img
                     src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`}
@@ -172,7 +172,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
 
           <div className="pt-2">
             <label className="cursor-pointer block">
-              <div className={`px-6 py-3 ${uploading ? 'bg-slate-200 text-slate-400' : 'bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900'} rounded-xl font-aladin text-lg text-center transition-all hover:opacity-90 shadow-sm flex items-center justify-center gap-2`}>
+              <div className={`px-6 py-3 ${uploading ? 'bg-slate-200 text-slate-400' : 'bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900'} rounded-md font-aladin text-lg text-center transition-all hover:opacity-90 flex items-center justify-center gap-2`}>
                 <Upload size={18} /> {uploading ? 'Uploading...' : 'Upload New Logo'}
               </div>
               <input type="file" className="hidden" onChange={handleUpload} accept="image/*" disabled={uploading} />
@@ -185,7 +185,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
           <h3 className="text-xs font-aladin uppercase text-slate-400 tracking-[0.2em]">Logo Gallery</h3>
           
           {logos.length === 0 ? (
-            <div className="py-20 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl">
+            <div className="py-20 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-lg">
               <p className="font-aladin text-slate-400">No logos in your collection yet.</p>
             </div>
           ) : (
@@ -195,7 +195,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
                 return (
                   <div
                     key={logo.id}
-                    className={`group relative aspect-square bg-slate-50 dark:bg-slate-800/50 rounded-xl border p-2 transition-all ${isActive ? 'border-blue-500 bg-white dark:bg-slate-800' : 'border-slate-100 dark:border-slate-800'}`}
+                    className={`group relative aspect-square bg-slate-50 dark:bg-slate-800/50 rounded-md border p-2 transition-all ${isActive ? 'border-blue-500 bg-white dark:bg-slate-800' : 'border-slate-100 dark:border-slate-800'}`}
                   >
                     <div className="w-full h-full flex items-center justify-center p-2 cursor-pointer" onClick={() => setPreviewId(logo.id)}>
                       <img
@@ -236,7 +236,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
           onClick={() => setPreviewId(null)}
         >
           <div
-            className="relative bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-10 max-w-xl w-full shadow-2xl overflow-hidden"
+            className="relative bg-white dark:bg-slate-900 rounded-lg p-6 md:p-10 max-w-xl w-full shadow-lg overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -247,7 +247,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
             </button>
             
             <div className="space-y-8">
-              <div className="flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-800 rounded-xl min-h-[250px] border border-slate-100 dark:border-slate-700">
+              <div className="flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-800 rounded-md min-h-[250px] border border-slate-100 dark:border-slate-700">
                 <img
                   src={`${API_URL}/api/branding/logos/${previewId}`}
                   alt="Preview"
@@ -259,7 +259,7 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
                 <button
                   onClick={async () => { await handleSetActive(previewId!); setPreviewId(null); }}
                   disabled={saving}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-xl font-aladin text-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 min-w-[160px]"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md font-aladin text-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 min-w-[160px]"
                 >
                   {activeSavingId === previewId ? <Loader2 size={20} className="animate-spin" /> : 'Set as Active Logo'}
                 </button>

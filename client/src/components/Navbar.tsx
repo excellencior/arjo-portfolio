@@ -108,14 +108,14 @@ const Navbar = () => {
       animate={{ x: "-50%", y: visible ? 0 : -100 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       style={{ maxWidth: 'calc(100vw - 2rem)' }}
-      className="fixed top-4 left-1/2 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm"
+      className="fixed top-4 left-1/2 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-lg border border-gray-200 dark:border-gray-800"
     >
       <nav ref={navRef} className="relative flex items-center gap-0.5 md:gap-1 px-2 md:px-3 py-1 flex-nowrap min-w-0">
 
         {/* Sliding pill */}
         {pillStyle && activeItem && (
           <motion.div
-            className={cn("absolute rounded-xl -z-10 pointer-events-none", activeItem.bg)}
+            className={cn("absolute rounded-md -z-10 pointer-events-none", activeItem.bg)}
             animate={{
               left: pillStyle.left,
               top: pillStyle.top,
@@ -130,7 +130,7 @@ const Navbar = () => {
         <Link
           ref={el => { itemRefs.current['/'] = el; }}
           to="/"
-          className="relative flex items-center justify-center shrink-0 px-2 md:px-3 py-2 rounded-xl transition-colors duration-200 w-[2.75rem] md:w-[3.25rem]"
+          className="relative flex items-center justify-center shrink-0 px-2 md:px-3 py-2 rounded-md transition-colors duration-200 w-[2.75rem] md:w-[3.25rem]"
         >
           {branding.active_logo_id ? (
             <img
@@ -155,7 +155,7 @@ const Navbar = () => {
               ref={el => { itemRefs.current[item.path] = el; }}
               to={item.path}
               className={cn(
-                "relative flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-xl text-sm font-aladin transition-colors duration-200 shrink-0",
+                "relative flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-md text-sm font-aladin transition-colors duration-200 shrink-0",
                 isActive
                   ? item.activeClass
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"

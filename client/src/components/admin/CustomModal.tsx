@@ -46,7 +46,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`w-full ${sizeClasses[size]} bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden pointer-events-auto border border-white/20 dark:border-slate-800 flex flex-col max-h-[90vh]`}
+              className={`w-full ${sizeClasses[size]} bg-white dark:bg-slate-900 rounded-xl shadow-lg overflow-hidden pointer-events-auto border border-white/20 dark:border-slate-800 flex flex-col max-h-[90vh]`}
             >
               {/* Header */}
               <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">

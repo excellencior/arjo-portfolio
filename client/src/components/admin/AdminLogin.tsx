@@ -23,7 +23,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl"
+          className="p-8 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg"
         >
           <div className="text-center mb-8">
             <LogIn className="mx-auto text-blue-600 mb-4" size={48} />
@@ -36,13 +36,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
               placeholder="Gmail Address" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial placeholder:font-arial"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-blue-500 transition-all font-arial placeholder:font-arial"
               required
             />
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-3 bg-blue-600 text-white rounded-xl font-aladin text-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 bg-blue-600 text-white rounded-md font-aladin text-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
             >
               {loading ? 'Sending...' : <><Send size={20} /> Send Code</>}
             </button>
@@ -57,7 +57,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl"
+        className="p-8 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg"
       >
         <div className="text-center mb-8">
           <h1 className="text-3xl font-aladin text-slate-900 dark:text-white">Verify Identity</h1>
@@ -69,13 +69,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
             placeholder="6-digit Code" 
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 text-center text-2xl tracking-[1em] font-arial placeholder:font-arial"
+            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-blue-500 text-center text-2xl tracking-[1em] font-arial placeholder:font-arial"
             required
           />
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-3 bg-emerald-600 text-white rounded-xl font-aladin text-xl hover:bg-emerald-700 transition-all"
+            className="w-full py-3 bg-emerald-600 text-white rounded-md font-aladin text-xl hover:bg-emerald-700 transition-all"
           >
             {loading ? 'Verifying...' : 'Verify & Enter'}
           </button>
