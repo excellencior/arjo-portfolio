@@ -60,9 +60,9 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
         <h2 className="text-2xl font-aladin text-emerald-600">Academics</h2>
         <button 
           onClick={handleAdd}
-          className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-md font-aladin text-lg hover:bg-emerald-700 transition-all shadow-md"
+          className="flex items-center gap-1.5 px-3 py-1 bg-emerald-600 text-white rounded-md font-aladin text-base hover:bg-emerald-700 transition-all shadow-md"
         >
-          <Plus size={18} /> Add Entry
+          <Plus size={16} /> Add Entry
         </button>
       </div>
 
@@ -110,6 +110,14 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingIndex !== null ? 'Edit Academic Entry' : 'Add Academic Entry'}
+        footer={
+          <button 
+            onClick={handleModalSave}
+            className="px-4 py-1.5 bg-emerald-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-emerald-700 transition-all shadow-md disabled:opacity-50"
+          >
+            <Save size={16} /> Confirm Entry
+          </button>
+        }
       >
         <div className="space-y-4">
           <div>
@@ -159,12 +167,6 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-32 resize-y"
             />
           </div>
-          <button 
-            onClick={handleModalSave}
-            className="w-full py-2 bg-emerald-600 text-white rounded-md flex items-center justify-center gap-2 font-aladin text-lg hover:bg-emerald-700 transition-all shadow-md mt-2"
-          >
-            <Save size={18} /> Confirm Entry
-          </button>
         </div>
       </CustomModal>
 

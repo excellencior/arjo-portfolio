@@ -28,6 +28,18 @@ const CustomModal: React.FC<CustomModalProps> = ({
     xl: 'max-w-6xl'
   };
 
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (typeof document === 'undefined') return null;
 
   return createPortal(
@@ -44,7 +56,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
           />
           
           {/* Modal Container */}
-          <div className="fixed inset-0 z-[110] flex items-center justify-center pointer-events-none p-4 w-screen h-screen">
+          <div className="fixed inset-0 z-[110] flex items-center justify-center pointer-events-none p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

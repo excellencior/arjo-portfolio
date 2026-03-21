@@ -90,9 +90,9 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
         {(content.title || content.subtitle) && (
           <button 
             onClick={onSave}
-            className="flex items-center gap-2 px-5 py-1.5 bg-blue-600 text-white rounded-lg font-aladin text-base hover:bg-blue-700 transition-all shadow-md"
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 text-white rounded-md font-aladin text-base hover:bg-blue-700 transition-all shadow-md"
           >
-            <Save size={20} /> Save Changes
+            <Save size={16} /> Save Changes
           </button>
         )}
       </div>

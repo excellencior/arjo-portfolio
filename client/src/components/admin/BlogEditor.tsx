@@ -158,9 +158,9 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         <h2 className="text-2xl font-aladin text-purple-600">Blog Posts</h2>
         <button 
           onClick={handleCreate}
-          className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-md font-aladin text-lg hover:bg-purple-700 transition-all shadow-md"
+          className="flex items-center gap-1.5 px-3 py-1 bg-purple-600 text-white rounded-md font-aladin text-base hover:bg-purple-700 transition-all shadow-md"
         >
-          <Plus size={18} /> New Post
+          <Plus size={16} /> New Post
         </button>
       </div>
 
@@ -217,9 +217,9 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         footer={
           <button 
             onClick={handleSave}
-            className="px-6 py-2 bg-purple-600 text-white rounded-md flex items-center justify-center gap-2 font-aladin text-lg hover:bg-purple-700 transition-all shadow-md disabled:opacity-50"
+            className="px-4 py-1.5 bg-purple-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-purple-700 transition-all shadow-md disabled:opacity-50"
           >
-            <Save size={18} /> Save Post
+            <Save size={16} /> Save Post
           </button>
         }
       >
