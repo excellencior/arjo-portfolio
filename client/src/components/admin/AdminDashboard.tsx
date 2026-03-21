@@ -98,7 +98,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-arial placeholder:font-arial text-base"
+              className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
             />
           </div>
         )}

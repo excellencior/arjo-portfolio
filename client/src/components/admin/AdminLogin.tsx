@@ -36,7 +36,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
               placeholder="Gmail Address" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-blue-500 transition-all font-arial placeholder:font-arial"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               required
             />
             <button 
@@ -69,7 +69,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({
             placeholder="6-digit Code" 
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-blue-500 text-center text-2xl tracking-[1em] font-arial placeholder:font-arial"
+            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-blue-500 text-center text-2xl tracking-[1em] font-arial placeholder:font-arial placeholder:text-slate-400 transition-all"
             required
           />
           <button 

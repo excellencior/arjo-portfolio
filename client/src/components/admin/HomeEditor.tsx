@@ -33,7 +33,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
           <input 
             value={content.title}
             onChange={(e) => setContent({...content, title: e.target.value})}
-            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent focus:border-blue-500 outline-none font-arial text-lg placeholder:font-arial"
+            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
           />
         </div>
         <div>
@@ -41,7 +41,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
           <textarea 
             value={content.subtitle}
             onChange={(e) => setContent({...content, subtitle: e.target.value})}
-            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent focus:border-blue-500 outline-none font-arial text-lg h-24 placeholder:font-arial"
+            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-24 resize-y"
           />
         </div>
         <div>
@@ -65,7 +65,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
                     newLinks[idx].text = e.target.value;
                     setContent({...content, links: newLinks});
                   }}
-                  className="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-arial text-base border border-transparent focus:border-blue-500 placeholder:font-arial"
+                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
                 />
                 <input 
                   value={link.to}
@@ -75,7 +75,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
                     newLinks[idx].to = e.target.value;
                     setContent({...content, links: newLinks});
                   }}
-                  className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none font-arial text-sm border border-transparent focus:border-blue-500 placeholder:font-arial"
+                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
                 />
                 <button 
                   onClick={() => confirmRemove(idx)}

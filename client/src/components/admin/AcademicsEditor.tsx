@@ -117,7 +117,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
             <input 
               value={editingItem?.title || ''}
               onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-lg border border-transparent focus:border-emerald-500 placeholder:font-arial"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               placeholder="e.g. Bachelor of Science"
             />
           </div>
@@ -127,7 +127,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
               <input 
                 value={editingItem?.institution || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, institution: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               />
             </div>
             <div>
@@ -136,7 +136,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
                 type="number"
                 value={editingItem?.start_year || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, start_year: e.target.value ? parseInt(e.target.value) : null })}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
                 placeholder="2019"
               />
             </div>
@@ -146,7 +146,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
                 type="number"
                 value={editingItem?.end_year || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, end_year: e.target.value ? parseInt(e.target.value) : null })}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
                 placeholder="2023"
               />
             </div>
@@ -156,7 +156,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
             <textarea 
               value={editingItem?.description || ''}
               onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm h-32"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-32 resize-y"
             />
           </div>
           <button 

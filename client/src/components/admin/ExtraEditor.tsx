@@ -117,7 +117,7 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
             <input 
               value={editingItem?.title || ''}
               onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-lg border border-transparent focus:border-orange-500 placeholder:font-arial"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               placeholder="e.g. Photography Club"
             />
           </div>
@@ -126,7 +126,7 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
             <input 
               value={editingItem?.role || ''}
               onChange={(e) => setEditingItem({ ...editingItem, role: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm border border-transparent focus:border-orange-500"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               placeholder="e.g. Lead Photographer"
             />
           </div>
@@ -135,7 +135,7 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
             <textarea 
               value={editingItem?.description || ''}
               onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm h-32"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-32 resize-y"
             />
           </div>
           <button 

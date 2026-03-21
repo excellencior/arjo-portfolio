@@ -211,7 +211,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <input 
               value={editingPost?.title || ''}
               onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-lg border border-transparent focus:border-purple-500 placeholder:font-arial"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -221,7 +221,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                 type="date"
                 value={editingPost?.date || ''}
                 onChange={(e) => setEditingPost({...editingPost, date: e.target.value})}
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               />
             </div>
             <div>
@@ -230,7 +230,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                 value={editingPost?.tags_string || ''}
                 onChange={(e) => setEditingPost({...editingPost, tags_string: e.target.value})}
                 placeholder="tech, life, design"
-                className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm placeholder:font-arial"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -268,7 +268,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
               id="blog-content-area"
               value={editingPost?.content || ''}
               onChange={(e) => setEditingPost({...editingPost, content: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-md outline-none font-arial text-sm h-64 placeholder:font-arial ring-0"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-64 resize-y"
             />
           </div>
           <button 
