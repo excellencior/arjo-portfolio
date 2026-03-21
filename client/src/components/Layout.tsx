@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
+import { cn } from '../lib/utils';
 import Navbar from './Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,7 +12,10 @@ const Layout = () => {
   return (
     <div className="min-h-screen bg-primary-60 dark:bg-dark-60 transition-colors duration-500">
       {!isAdmin && <Navbar />}
-      <main className={`${isAdmin ? 'pt-0' : 'pt-16'} pb-12 px-6 max-w-6xl mx-auto text-primary-30 dark:text-dark-30`}>
+      <main className={cn(
+        "text-primary-30 dark:text-dark-30",
+        isAdmin ? "w-full h-screen overflow-hidden" : "pt-16 pb-12 px-6 max-w-6xl mx-auto"
+      )}>
         <AnimatePresence mode="wait">
           <motion.div
             key={animationKey}

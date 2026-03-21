@@ -38,10 +38,24 @@ router.put('/', authenticate, async (req, res) => {
       .from('branding')
       .update(updateData)
       .eq('id', 1)
-      .select('id, updated_at')
+      .select('id, updated_at, active_logo_id')
       .single();
 
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) {
+      // If active_logo_id column is missing, try updating without selecting it
+      if (error.message.includes('column "active_logo_id" does not exist')) {
+        delete updateData.active_logo_id;
+        const { data: retryData, error: retryErr } = await supabase
+          .from('branding')
+          .update(updateData)
+          .eq('id', 1)
+          .select('id, updated_at')
+          .single();
+        if (retryErr) return res.status(500).json({ error: retryErr.message });
+        return res.json(retryData);
+      }
+      return res.status(500).json({ error: error.message });
+    }
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });

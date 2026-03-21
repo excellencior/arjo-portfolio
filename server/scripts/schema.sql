@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS public.branding (
     id SERIAL PRIMARY KEY,
     logo_blob BYTEA,
     logo_mime_type TEXT DEFAULT 'image/png',
+    active_logo_id INTEGER NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
