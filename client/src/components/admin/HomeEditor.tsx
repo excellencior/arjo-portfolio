@@ -59,7 +59,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
               <div key={idx} className="flex gap-2 items-center group">
                 <input 
                   value={link.text}
-                  placeholder="Label (e.g. Blog)"
+                  placeholder="Platform (e.g. LinkedIn)"
                   onChange={(e) => {
                     const newLinks = [...content.links];
                     newLinks[idx].text = e.target.value;
@@ -69,7 +69,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave }) 
                 />
                 <input 
                   value={link.to}
-                  placeholder="Path (e.g. /blog)"
+                  placeholder="Profile URL (e.g. linkedin.com/in/pujan)"
                   onChange={(e) => {
                     const newLinks = [...content.links];
                     newLinks[idx].to = e.target.value;
