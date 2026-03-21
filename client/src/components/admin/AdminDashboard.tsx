@@ -71,7 +71,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto pt-4 px-4">
+    <div className="max-w-7xl mx-auto pt-4 px-4 min-h-screen flex flex-col pb-8">
       {/* Search Header */}
       <div className="mb-2 flex flex-col md:flex-row justify-between items-center gap-3 min-h-[50px]">
         <div className="flex items-center gap-3">
@@ -104,7 +104,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-6 flex-1">
         {/* Sidebar */}
         <div className="w-full md:w-60 space-y-1.5">
           <Link 
@@ -160,7 +160,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm relative overflow-hidden">
+        <div className="flex-1 min-h-[500px] lg:min-h-[600px] bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm relative overflow-hidden flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
