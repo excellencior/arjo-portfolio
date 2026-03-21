@@ -55,25 +55,25 @@ const BlogPost = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto pt-10 space-y-8 animate-in transition-all duration-700 pb-32">
-      <Link to="/blog" className="inline-flex items-center gap-2 font-aladin text-2xl bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent hover:underline transition-all duration-300">
-        <ArrowLeft size={24} className="text-pink-950 dark:text-pink-100" />
+    <div className="max-w-5xl mx-auto pt-8 space-y-6 animate-in transition-all duration-700 pb-20">
+      <Link to="/blog" className="inline-flex items-center gap-2 font-aladin text-xl bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent hover:underline transition-all duration-300">
+        <ArrowLeft size={20} className="text-pink-950 dark:text-pink-100" />
         <span>Back to Stories</span>
       </Link>
 
-      <header className="space-y-6">
-        <h1 className="text-7xl font-aladin font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight leading-tight">
+      <header className="space-y-4">
+        <h3 className="text-4xl font-aladin font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight leading-tight">
           {post.title}
-        </h1>
+        </h3>
         
-        <div className="flex flex-wrap gap-6 items-center font-aladin text-xl text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-6 uppercase tracking-widest">
+        <div className="flex flex-wrap gap-6 items-center font-aladin text-lg text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-4 uppercase tracking-widest">
           <div className="flex items-center gap-2">
-            <Calendar size={20} className="text-purple-500" />
+            <Calendar size={18} className="text-purple-500" />
             <span>{formatDateForDisplay(post.date)}</span>
           </div>
           {post.tags && post.tags.length > 0 && (
             <div className="flex items-center gap-2">
-              <Tag size={20} className="text-purple-500" />
+              <Tag size={18} className="text-purple-500" />
               <span>{post.tags.join(', ')}</span>
             </div>
           )}
@@ -85,37 +85,37 @@ const BlogPost = () => {
           rehypePlugins={[rehypeRaw]}
           components={{
             h1: ({ children }) => (
-              <h1 className="text-6xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight mb-8 mt-12">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight mb-6 mt-8">
                 {children}
               </h1>
             ),
             h2: ({ children }) => (
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent mt-12 mb-6">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent mt-8 mb-4">
                 {children}
               </h2>
             ),
             p: ({ children }) => (
-              <p className="text-2xl font-medium text-slate-800 dark:text-slate-200 leading-relaxed mb-6 italic opacity-90">
+              <p className="text-xl font-medium text-slate-800 dark:text-slate-200 leading-relaxed mb-4 italic opacity-90">
                 {children}
               </p>
             ),
             li: ({ children }) => (
-              <li className="text-2xl font-medium text-pink-950 dark:text-pink-100 mb-4 list-disc list-inside">
+              <li className="text-xl font-medium text-pink-950 dark:text-pink-100 mb-2 list-disc list-inside">
                 {children}
               </li>
             ),
             ul: ({ children }) => (
-              <ul className="space-y-2 mb-8 ml-4">
+              <ul className="space-y-1 mb-6 ml-4">
                 {children}
               </ul>
             ),
             code: ({ children }) => (
-              <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg text-pink-600 dark:text-pink-400 font-mono text-xl">
+              <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg text-pink-600 dark:text-pink-400 font-mono text-lg">
                 {children}
               </code>
             ),
             blockquote: ({ children }) => (
-              <blockquote className="border-l-8 border-purple-500/30 pl-6 py-4 my-8 bg-slate-50 dark:bg-slate-900/50 rounded-r-2xl italic text-3xl text-slate-900 dark:text-white leading-relaxed">
+              <blockquote className="border-l-4 border-purple-500/30 pl-4 py-3 my-6 bg-slate-50 dark:bg-slate-900/50 rounded-r-xl italic text-2xl text-slate-900 dark:text-white leading-relaxed">
                 {children}
               </blockquote>
             ),

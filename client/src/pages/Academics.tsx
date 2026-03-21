@@ -25,7 +25,7 @@ const Academics = () => {
   return (
     <div className="pt-8 space-y-12 animate-in transition-all duration-700 max-w-4xl mx-auto pb-20">
       <div className="space-y-2">
-        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-emerald-950 to-emerald-900 dark:from-white dark:via-emerald-100 dark:to-emerald-200 bg-clip-text text-transparent uppercase text-left">
+        <h1 className="inline-block text-5xl font-aladin bg-gradient-to-r from-black via-emerald-950 to-emerald-900 dark:from-white dark:via-emerald-100 dark:to-emerald-200 bg-clip-text text-transparent uppercase text-left">
           Academics
         </h1>
         <p className="block text-xl font-aladin text-emerald-950 dark:text-emerald-100 opacity-90 leading-tight">

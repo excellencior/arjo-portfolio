@@ -25,7 +25,7 @@ const Extra = () => {
   return (
     <div className="pt-8 space-y-10 animate-in transition-all duration-700">
       <div className="space-y-2">
-        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-rose-950 to-rose-900 dark:from-white dark:via-rose-100 dark:to-rose-200 bg-clip-text text-transparent uppercase">
+        <h1 className="inline-block text-5xl font-aladin bg-gradient-to-r from-black via-rose-950 to-rose-900 dark:from-white dark:via-rose-100 dark:to-rose-200 bg-clip-text text-transparent uppercase">
           Extracurriculars
         </h1>
         <p className="block text-xl font-aladin text-orange-900 dark:text-orange-100 opacity-90 leading-tight">

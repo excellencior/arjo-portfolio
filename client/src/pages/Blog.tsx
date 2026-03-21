@@ -34,7 +34,7 @@ const Blog = () => {
     <div className="pt-8 space-y-10 animate-in transition-all duration-700">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-2">
-          <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase">
+          <h1 className="inline-block text-5xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase">
             Blog
           </h1>
           <p className="block text-xl font-aladin text-purple-900 dark:text-purple-100 opacity-90 leading-tight">
@@ -68,7 +68,7 @@ const Blog = () => {
               {formatDateForDisplay(post.date)} 
               {post.tags && post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
             </p>
-            <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase group-hover:from-pink-800 group-hover:to-purple-800 dark:group-hover:from-pink-300 dark:group-hover:to-purple-300 transition-all duration-300">
+            <h2 className="inline-block text-3xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase group-hover:from-pink-800 group-hover:to-purple-800 dark:group-hover:from-pink-300 dark:group-hover:to-purple-300 transition-all duration-300">
               {post.title}
             </h2>
             <p className="font-aladin text-xl text-fuchsia-950 dark:text-purple-100 opacity-90 leading-tight border-l-4 border-fuchsia-900 dark:border-fuchsia-500 pl-4 line-clamp-3">

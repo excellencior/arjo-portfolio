@@ -39,7 +39,7 @@ const Home = () => {
   return (
     <div className="text-center mt-10 space-y-6 animate-in transition-all duration-700">
       <div className="space-y-4">
-        <h1 className="inline-block text-7xl font-aladin bg-gradient-to-r from-black via-black to-blue-950 dark:from-white dark:via-white dark:to-blue-300 bg-clip-text text-transparent uppercase tracking-wider">
+        <h1 className="inline-block text-5xl font-aladin bg-gradient-to-r from-black via-black to-blue-950 dark:from-white dark:via-white dark:to-blue-300 bg-clip-text text-transparent uppercase tracking-wider">
           {content.title}
         </h1>
         <p className="block max-w-none mx-auto text-2xl font-aladin bg-gradient-to-r from-black via-black to-blue-900 dark:from-white dark:via-white dark:to-blue-400 bg-clip-text text-transparent leading-tight">

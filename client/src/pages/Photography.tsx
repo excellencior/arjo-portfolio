@@ -95,7 +95,7 @@ const Photography = () => {
   return (
     <div className="pt-8 space-y-6 animate-in transition-all duration-700">
       <div className="space-y-2 text-center mx-auto w-full">
-        <h1 className="inline-block text-6xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-4">
+        <h1 className="inline-block text-5xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-4">
           Photography
         </h1>
         <p className="block text-xl font-aladin text-blue-950 dark:text-blue-100 opacity-90 leading-tight">
@@ -134,7 +134,7 @@ const Photography = () => {
 
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between items-center">
-                    <h2 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent tracking-wide">
+                    <h2 className="inline-block text-3xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent tracking-wide">
                       {photo.title || "Untitled Photo"}
                     </h2>
                     <span className="text-sm font-mono text-slate-400">0{idx + 1}</span>
