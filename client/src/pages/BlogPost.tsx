@@ -55,18 +55,18 @@ const BlogPost = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto pt-8 space-y-6 animate-in transition-all duration-700 pb-20">
-      <Link to="/blog" className="inline-flex items-center gap-2 font-aladin text-xl bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent hover:underline transition-all duration-300">
-        <ArrowLeft size={20} className="text-pink-950 dark:text-pink-100" />
+    <div className="max-w-5xl mx-auto pt-6 space-y-4 animate-in transition-all duration-700 pb-16">
+      <Link to="/blog" className="inline-flex items-center gap-2 font-aladin text-lg bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent hover:underline transition-all duration-300">
+        <ArrowLeft size={16} className="text-pink-950 dark:text-pink-100" />
         <span>Back to Stories</span>
       </Link>
 
-      <header className="space-y-4">
-        <h3 className="text-4xl font-aladin font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight leading-tight">
+      <header className="space-y-3">
+        <h3 className="text-3xl font-aladin font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight leading-tight">
           {post.title}
         </h3>
         
-        <div className="flex flex-wrap gap-6 items-center font-aladin text-lg text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-4 uppercase tracking-widest">
+        <div className="flex flex-wrap gap-4 items-center font-aladin text-base text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-3 uppercase tracking-widest">
           <div className="flex items-center gap-2">
             <Calendar size={18} className="text-purple-500" />
             <span>{formatDateForDisplay(post.date)}</span>
@@ -90,37 +90,37 @@ const BlogPost = () => {
           rehypePlugins={[rehypeRaw]}
           components={{
             h1: ({ children }) => (
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight mb-6 mt-8">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase tracking-tight mb-4 mt-6">
                 {children}
               </h1>
             ),
             h2: ({ children }) => (
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent mt-8 mb-4">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent mt-6 mb-3">
                 {children}
               </h2>
             ),
             p: ({ children }) => (
-              <p className="text-xl font-medium text-slate-800 dark:text-slate-200 leading-relaxed mb-4 italic opacity-90">
+              <p className="text-lg font-medium text-slate-800 dark:text-slate-200 leading-snug mb-3 italic opacity-90">
                 {children}
               </p>
             ),
             li: ({ children }) => (
-              <li className="text-xl font-medium text-pink-950 dark:text-pink-100 mb-2 list-disc list-inside">
+              <li className="text-lg font-medium text-pink-950 dark:text-pink-100 mb-1.5 list-disc list-inside">
                 {children}
               </li>
             ),
             ul: ({ children }) => (
-              <ul className="space-y-1 mb-6 ml-4">
+              <ul className="space-y-1 mb-4 ml-4">
                 {children}
               </ul>
             ),
             code: ({ children }) => (
-              <code className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg text-pink-600 dark:text-pink-400 font-mono text-lg">
+              <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-pink-600 dark:text-pink-400 font-mono text-base">
                 {children}
               </code>
             ),
             blockquote: ({ children }) => (
-              <blockquote className="border-l-4 border-purple-500/30 pl-4 py-3 my-6 bg-slate-50 dark:bg-slate-900/50 rounded-r-xl italic text-2xl text-slate-900 dark:text-white leading-relaxed">
+              <blockquote className="border-l-4 border-purple-500/30 pl-4 py-2 my-4 bg-slate-50 dark:bg-slate-900/50 rounded-r-lg italic text-xl text-slate-900 dark:text-white leading-snug">
                 {children}
               </blockquote>
             ),

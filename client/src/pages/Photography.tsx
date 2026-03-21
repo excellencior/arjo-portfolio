@@ -14,11 +14,11 @@ interface Photo {
 }
 
 const Skeleton = () => (
-  <div className="relative p-6 border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-900/50 rounded-lg animate-pulse">
-    <div className="aspect-[4/3] bg-gray-200 dark:bg-slate-800 rounded-md mb-8" />
-    <div className="space-y-4">
-      <div className="h-10 bg-gray-200 dark:bg-slate-800 rounded-lg w-3/4" />
-      <div className="h-20 bg-gray-200 dark:bg-slate-800 rounded-lg w-full" />
+  <div className="relative p-3 border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-900/50 rounded-lg animate-pulse">
+    <div className="aspect-[4/3] bg-gray-200 dark:bg-slate-800 rounded-md mb-4" />
+    <div className="space-y-3">
+      <div className="h-8 bg-gray-200 dark:bg-slate-800 rounded-lg w-3/4" />
+      <div className="h-14 bg-gray-200 dark:bg-slate-800 rounded-lg w-full" />
     </div>
   </div>
 );
@@ -93,17 +93,17 @@ const Photography = () => {
   }, []);
 
   return (
-    <div className="pt-8 space-y-6 animate-in transition-all duration-700">
-      <div className="space-y-2 text-center mx-auto w-full">
-        <h1 className="inline-block text-5xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-4">
+    <div className="pt-6 space-y-4 animate-in transition-all duration-700 pb-16">
+      <div className="space-y-1 text-center mx-auto w-full">
+        <h1 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-2">
           Photography
         </h1>
-        <p className="block text-xl font-aladin text-blue-950 dark:text-blue-100 opacity-90 leading-tight">
+        <p className="block text-lg font-aladin text-blue-950 dark:text-blue-100 opacity-90 leading-snug">
           A collection of visual narratives, moments frozen in time, and the intentions behind them.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 px-2">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} />)
         ) : (
@@ -117,7 +117,7 @@ const Photography = () => {
               className="group relative"
               onClick={() => setIndex(idx)}
             >
-              <div className="relative p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-500 hover:border-blue-700/50 hover:shadow-md">
+              <div className="relative p-3 border border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-500 hover:border-blue-700/50 hover:shadow-md">
                 <div className="aspect-[4/3] overflow-hidden relative rounded-md">
                   <motion.img
                     src={photo.src}
@@ -132,14 +132,14 @@ const Photography = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-2">
+                <div className="mt-3 space-y-1">
                   <div className="flex justify-between items-center">
-                    <h2 className="inline-block text-3xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent tracking-wide">
+                    <h2 className="inline-block text-2xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent tracking-wide">
                       {photo.title || "Untitled Photo"}
                     </h2>
-                    <span className="text-sm font-mono text-slate-400">0{idx + 1}</span>
+                    <span className="text-xs font-mono text-slate-400">0{idx + 1}</span>
                   </div>
-                  <p className="text-lg font-aladin text-blue-900 dark:text-blue-100 leading-tight border-l-4 border-blue-900 dark:border-blue-500 pl-4 py-1">
+                  <p className="text-base font-aladin text-blue-900 dark:text-blue-100 leading-snug border-l-4 border-blue-900 dark:border-blue-500 pl-3 py-0.5">
                     {photo.intent || "No description provided."}
                   </p>
                 </div>

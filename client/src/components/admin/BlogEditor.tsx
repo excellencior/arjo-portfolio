@@ -214,6 +214,14 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingPost?.id ? 'Edit Post' : 'New Post'}
+        footer={
+          <button 
+            onClick={handleSave}
+            className="px-6 py-2 bg-purple-600 text-white rounded-md flex items-center justify-center gap-2 font-aladin text-lg hover:bg-purple-700 transition-all shadow-md disabled:opacity-50"
+          >
+            <Save size={18} /> Save Post
+          </button>
+        }
       >
         <div className="space-y-4">
           <div>
@@ -228,16 +236,16 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <div>
               <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Tags</label>
               
-              <div className="flex flex-wrap gap-2 mb-2">
+              <div className="flex flex-wrap gap-1.5 mb-2">
                 {(editingPost?.tags || []).map((tag: string) => (
-                  <span key={tag} className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-md text-sm font-arial border border-purple-200 dark:border-purple-800/50">
+                  <span key={tag} className="flex items-center gap-1 px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-md text-[11px] font-arial border border-purple-200 dark:border-purple-800/50">
                     #{tag}
                     <button 
                       type="button"
                       onClick={() => setEditingPost({ ...editingPost, tags: editingPost.tags.filter((t: string) => t !== tag) })}
                       className="text-purple-400 hover:text-purple-600 dark:hover:text-purple-200 ml-1"
                     >
-                      <X size={14} />
+                      <X size={12} />
                     </button>
                   </span>
                 ))}
@@ -248,18 +256,18 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                   <button 
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all font-arial text-base text-slate-400 text-left flex justify-between items-center"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all font-arial text-sm text-slate-400 text-left flex justify-between items-center"
                   >
                     <span>Select a tag to add...</span>
-                    <span className="text-slate-400 text-xs">▼</span>
+                    <span className="text-slate-400 text-[10px]">▼</span>
                   </button>
                   {isDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-purple-100 dark:border-purple-900 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto overflow-x-hidden">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-purple-100 dark:border-purple-900 rounded-md shadow-xl z-50 max-h-48 overflow-y-auto overflow-x-hidden">
                       {existingTags.filter((t: any) => !(editingPost?.tags || []).includes(t)).map((tag: any) => (
                         <button
                           key={tag}
                           type="button"
-                          className="w-full px-4 py-2.5 text-left hover:bg-purple-50 dark:hover:bg-purple-900/30 font-arial text-slate-700 dark:text-slate-300 transition-colors border-b border-purple-50 dark:border-purple-900/30 last:border-0"
+                          className="w-full px-3 py-1.5 text-left hover:bg-purple-50 dark:hover:bg-purple-900/30 font-arial text-sm text-slate-700 dark:text-slate-300 transition-colors border-b border-purple-50 dark:border-purple-900/30 last:border-0"
                           onClick={() => {
                             const currentTags = editingPost?.tags || [];
                             if (!currentTags.includes(tag)) {
@@ -273,7 +281,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                       ))}
                       <button
                         type="button"
-                        className="w-full px-4 py-3 text-left font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors border-t border-purple-100 dark:border-purple-900/50"
+                        className="w-full px-3 py-2 text-left font-bold text-sm text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors border-t border-purple-100 dark:border-purple-900/50"
                         onClick={() => {
                           setIsDropdownOpen(false);
                           setShowNewTagInput(true);
@@ -291,7 +299,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                     value={newTagValue}
                     onChange={(e) => setNewTagValue(e.target.value)}
                     placeholder="Type tag name..."
-                    className="flex-1 px-4 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-purple-200 dark:border-purple-700 focus:border-purple-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400"
+                    className="flex-1 px-3 py-1 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-purple-200 dark:border-purple-700 focus:border-purple-500 transition-all font-arial text-xs placeholder:font-arial placeholder:text-slate-400"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -318,7 +326,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                       setNewTagValue('');
                       setShowNewTagInput(false);
                     }}
-                    className="px-4 py-1.5 bg-purple-600 text-white rounded-lg font-aladin text-base hover:bg-purple-700 transition-all shadow-sm"
+                    className="px-3 py-1 bg-purple-600 text-white rounded-md font-aladin text-sm hover:bg-purple-700 transition-all shadow-sm"
                   >
                     Add
                   </button>
@@ -328,7 +336,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                       setNewTagValue('');
                       setShowNewTagInput(false);
                     }}
-                    className="px-3 py-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all font-aladin text-base"
+                    className="px-2 py-1 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all font-aladin text-sm"
                   >
                     Cancel
                   </button>
@@ -370,15 +378,9 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
               id="blog-content-area"
               value={editingPost?.content || ''}
               onChange={(e) => setEditingPost({...editingPost, content: e.target.value})}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-64 resize-y"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400 h-48 resize-y"
             />
           </div>
-          <button 
-            onClick={handleSave}
-            className="w-full py-2 bg-purple-600 text-white rounded-md flex items-center justify-center gap-2 font-aladin text-lg hover:bg-purple-700 transition-all shadow-md mt-2 disabled:opacity-50"
-          >
-            <Save size={18} /> Save Post
-          </button>
         </div>
       </CustomModal>
 

@@ -73,40 +73,40 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="max-w-6xl mx-auto pt-4 px-4">
       {/* Search Header */}
-      <div className="mb-3 flex flex-col md:flex-row justify-between items-center gap-4 min-h-[60px]">
-        <div className="flex items-center gap-4">
+      <div className="mb-2 flex flex-col md:flex-row justify-between items-center gap-3 min-h-[50px]">
+        <div className="flex items-center gap-3">
           {branding.active_logo_id ? (
             <img 
               src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`} 
               alt="Admin Logo" 
-              className="w-auto h-12 dark:invert" 
+              className="w-auto h-10 dark:invert" 
             />
           ) : (
-            <span className="text-4xl font-aladin font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
+            <span className="text-3xl font-aladin font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
               P
             </span>
           )}
           <div className="flex flex-col">
-            <p className="text-sm font-aladin text-slate-500 uppercase tracking-widest mt-1 opacity-80">Welcome back</p>
+            <p className="text-xs font-aladin text-slate-500 uppercase tracking-widest mt-0.5 opacity-80">Welcome back</p>
           </div>
         </div>
         {activeTab === 'blog' && (
-          <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
               type="text"
               placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+              className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400"
             />
           </div>
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar */}
-        <div className="w-full md:w-64 space-y-2">
+        <div className="w-full md:w-60 space-y-1.5">
           <Link 
             to="/" 
             className="w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-gray-200 dark:border-gray-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all mb-2"
@@ -149,7 +149,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           >
             <Camera size={18} /> Photography
           </button>
-          <div className="pt-6">
+          <div className="pt-4">
             <button 
               onClick={onLogout}
               className="w-full flex items-center justify-center gap-2 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg font-aladin text-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-all border border-red-200 dark:border-red-900/50"
@@ -160,7 +160,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 shadow-md relative overflow-hidden">
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm relative overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

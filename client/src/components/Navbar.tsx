@@ -130,17 +130,17 @@ const Navbar = () => {
         <Link
           ref={el => { itemRefs.current['/'] = el; }}
           to="/"
-          className="relative flex items-center justify-center shrink-0 px-2 md:px-3 py-2 rounded-md transition-colors duration-200 w-[2.75rem] md:w-[3.25rem]"
+          className="relative flex items-center justify-center shrink-0 px-2 my-0.5 md:px-2 py-1.5 rounded-md transition-colors duration-200 w-[2.5rem] md:w-[3rem]"
         >
           {branding.active_logo_id ? (
             <img
               src={`${API_URL}/api/branding/logo?t=${branding.updated_at || Date.now()}`}
               alt="Logo"
-              className="h-7 w-full object-contain transition-transform hover:scale-105 dark:invert"
+              className="h-6 w-full object-contain transition-transform hover:scale-105 dark:invert"
               onLoad={() => setLogoLoaded(true)}
             />
           ) : (
-            <span className="text-2xl font-aladin font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse whitespace-nowrap">
+            <span className="text-xl font-aladin font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-pulse whitespace-nowrap">
               P
             </span>
           )}
@@ -155,14 +155,14 @@ const Navbar = () => {
               ref={el => { itemRefs.current[item.path] = el; }}
               to={item.path}
               className={cn(
-                "relative flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-md text-sm font-aladin transition-colors duration-200 shrink-0",
+                "relative flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1.5 my-0.5 rounded-md text-sm font-aladin transition-colors duration-200 shrink-0",
                 isActive
                   ? item.activeClass
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               )}
             >
-              <item.icon size={16} />
-              <span className="hidden md:inline text-lg font-bold">
+              <item.icon size={14} />
+              <span className="hidden md:inline text-base font-bold">
                 {item.name}
               </span>
             </Link>

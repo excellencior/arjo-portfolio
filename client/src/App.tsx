@@ -37,22 +37,22 @@ const Home = () => {
   if (!content) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Loading Sanctuary...</div>;
 
   return (
-    <div className="text-center mt-10 space-y-6 animate-in transition-all duration-700">
-      <div className="space-y-4">
-        <h1 className="inline-block text-5xl font-aladin bg-gradient-to-r from-black via-black to-blue-950 dark:from-white dark:via-white dark:to-blue-300 bg-clip-text text-transparent uppercase tracking-wider">
+    <div className="text-center mt-8 space-y-4 animate-in transition-all duration-700">
+      <div className="space-y-2">
+        <h1 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-black to-blue-950 dark:from-white dark:via-white dark:to-blue-300 bg-clip-text text-transparent uppercase tracking-wider">
           {content.title}
         </h1>
-        <p className="block max-w-none mx-auto text-2xl font-aladin bg-gradient-to-r from-black via-black to-blue-900 dark:from-white dark:via-white dark:to-blue-400 bg-clip-text text-transparent leading-tight">
+        <p className="block max-w-none mx-auto text-xl font-aladin bg-gradient-to-r from-black via-black to-blue-900 dark:from-white dark:via-white dark:to-blue-400 bg-clip-text text-transparent leading-tight">
           {content.subtitle}
         </p>
       </div>
       
-      <div className="mt-10 flex flex-col md:flex-row justify-center items-center gap-6">
+      <div className="mt-6 flex flex-col md:flex-row justify-center items-center gap-4">
         {content.links?.map((link: any, idx: number) => (
           <Link 
             key={idx}
             to={link.to} 
-            className={`group relative px-8 py-3 ${idx === 0 ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'border-2 border-slate-900 dark:border-white text-slate-900 dark:text-white'} rounded-xl font-aladin text-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1`}
+            className={`group relative px-6 py-2 ${idx === 0 ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'border-2 border-slate-900 dark:border-white text-slate-900 dark:text-white'} rounded-xl font-aladin text-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5`}
           >
             <span className="relative z-10">{link.text}</span>
             {idx === 0 && <motion.div className="absolute inset-0 bg-blue-600 -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />}

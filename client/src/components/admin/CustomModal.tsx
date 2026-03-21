@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -27,7 +28,9 @@ const CustomModal: React.FC<CustomModalProps> = ({
     xl: 'max-w-6xl'
   };
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -37,11 +40,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
           />
           
           {/* Modal Container */}
-          <div className="fixed inset-0 z-[70] flex items-center justify-center pointer-events-none p-4">
+          <div className="fixed inset-0 z-[110] flex items-center justify-center pointer-events-none p-4 w-screen h-screen">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -60,8 +63,10 @@ const CustomModal: React.FC<CustomModalProps> = ({
               </div>
 
               {/* Body */}
-              <div className="p-6 overflow-y-auto custom-scrollbar">
-                {children}
+              <div className="overflow-y-auto custom-scrollbar">
+                <div className="p-5 md:p-6">
+                  {children}
+                </div>
               </div>
 
               {/* Footer */}
@@ -74,7 +79,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
           </div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
