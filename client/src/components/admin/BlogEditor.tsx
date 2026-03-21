@@ -85,8 +85,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
     const payload: any = {
       title: editingPost.title,
       content: editingPost.content,
-      // Convert to full ISO for TIMESTAMPTZ
-      date: new Date(editingPost.date).toISOString(),
+      // Generate new ISO date on POST, preserve existing on PUT
+      date: editingPost.id ? new Date(editingPost.date).toISOString() : new Date().toISOString(),
       // Convert comma-separated string to text[] array
       tags: editingPost.tags_string 
         ? editingPost.tags_string.split(',').map((t: string) => t.trim()).filter((t: string) => t !== '')
@@ -214,16 +214,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Date</label>
-              <input 
-                type="date"
-                value={editingPost?.date || ''}
-                onChange={(e) => setEditingPost({...editingPost, date: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-xs font-aladin uppercase text-slate-500 mb-1 tracking-wider">Tags (comma separated)</label>
               <input 
