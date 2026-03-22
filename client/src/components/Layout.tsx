@@ -1,13 +1,38 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import Navbar from './Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const SITE_NAME = 'Arjo';
+
+const PAGE_TITLES: Record<string, string> = {
+  '/': SITE_NAME,
+  '/photography': `Photography — ${SITE_NAME}`,
+  '/academics': `Academics — ${SITE_NAME}`,
+  '/extra': `Extra — ${SITE_NAME}`,
+  '/blog': `Blog — ${SITE_NAME}`,
+  '/contact': `Contact — ${SITE_NAME}`,
+};
 
 const Layout = () => {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
 
   const animationKey = isAdmin ? '/admin' : location.pathname;
+
+  // Dynamic page titles
+  useEffect(() => {
+    if (isAdmin) {
+      const tab = location.pathname.split('/')[2] || 'home';
+      const tabName = tab.charAt(0).toUpperCase() + tab.slice(1);
+      document.title = `Admin — ${tabName} — ${SITE_NAME}`;
+    } else if (location.pathname.startsWith('/blog/')) {
+      document.title = `Blog Post — ${SITE_NAME}`;
+    } else {
+      document.title = PAGE_TITLES[location.pathname] || SITE_NAME;
+    }
+  }, [location.pathname, isAdmin]);
 
   return (
     <div className={cn(

@@ -160,7 +160,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm relative overflow-y-auto flex flex-col custom-scrollbar">
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] relative overflow-y-auto flex flex-col custom-scrollbar">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

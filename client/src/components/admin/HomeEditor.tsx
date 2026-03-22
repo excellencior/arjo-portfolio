@@ -132,7 +132,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
         <div className="w-full md:w-[280px] space-y-4 shrink-0">
           <label className="block text-sm font-aladin text-slate-500 uppercase tracking-wider">Profile Image</label>
           <div className="relative group">
-            <div className="aspect-square w-full bg-slate-100 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shadow-inner">
+            <div className="aspect-square w-full bg-slate-100 dark:bg-slate-800 rounded-full border-2 border-dashed border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shadow-inner">
               {uploading ? (
                 <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
               ) : content.updated_at ? (
@@ -148,7 +148,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
                 </div>
               )}
             </div>
-            <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all cursor-pointer rounded-3xl backdrop-blur-[2px]">
+            <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all cursor-pointer rounded-full backdrop-blur-[2px]">
               <div className="flex flex-col items-center gap-2 text-white">
                 <Upload size={32} />
                 <span className="font-aladin text-sm uppercase">Change Picture</span>
