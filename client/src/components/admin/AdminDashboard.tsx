@@ -161,8 +161,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] relative overflow-y-auto flex flex-col custom-scrollbar">
+        {/* Content Area - Fixed height, no global scroll */}
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -170,6 +170,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
+              className="flex-1 flex flex-col h-full overflow-hidden"
             >
               {activeTab === 'home' && content && (
                 <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} token={token} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} />

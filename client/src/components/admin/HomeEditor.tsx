@@ -226,9 +226,9 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center border-b border-blue-100 dark:border-blue-900 pb-2">
-        <h2 className="text-2xl font-aladin text-blue-600 uppercase tracking-wide">Edit Bio Section</h2>
+    <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex justify-between items-center border-b border-blue-100 dark:border-blue-900 pb-2 mb-6 uppercase tracking-wide shrink-0">
+        <h2 className="text-2xl font-aladin text-blue-600">Bio & Sanctuary Profile</h2>
         {hasDraft && (
           <div className="flex items-center gap-2 px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full border border-yellow-200 dark:border-yellow-800/50 animate-pulse">
             <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
@@ -244,9 +244,9 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
         )}
       </div>
       
-      <div className="flex flex-col md:flex-row gap-8 items-start">
-        {/* Profile Image Section */}
-        <div className="w-full md:w-[280px] space-y-4 shrink-0">
+      <div className="flex flex-col md:flex-row gap-10 flex-1 overflow-hidden">
+        {/* Left Side: Photo & Quick Info (Fixed) */}
+        <div className="w-full md:w-[280px] shrink-0 space-y-6">
           <label className="block text-sm font-aladin text-slate-500 uppercase tracking-wider">Profile Image</label>
           <div className="relative group">
             <div className="aspect-square w-full bg-slate-100 dark:bg-slate-800 rounded-full border-2 border-dashed border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shadow-inner">
@@ -291,8 +291,8 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
           </div>
         </div>
 
-        {/* Text Fields & Links */}
-        <div className="flex-1 space-y-6 w-full">
+        {/* Right Side: Detailed Bio & Links Editor (Scrollable) */}
+        <div className="flex-1 space-y-8 overflow-y-auto pr-4 custom-scrollbar pb-10">
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-aladin text-slate-500 mb-1 uppercase tracking-wider">Name / Headline</label>

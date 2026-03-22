@@ -108,8 +108,8 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center border-b border-orange-100 dark:border-orange-900 pb-2 uppercase tracking-wide">
+    <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex justify-between items-center border-b border-orange-100 dark:border-orange-900 pb-2 mb-4 uppercase tracking-wide shrink-0">
         <h2 className="text-2xl font-aladin text-orange-600">Extracurriculars</h2>
         <button 
           onClick={handleAdd}
@@ -119,7 +119,8 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
         </button>
       </div>
 
-      <div className="space-y-3">
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar pb-10">
+        <div className="space-y-3">
         {content && content.length > 0 ? (
           content.map((item, idx) => (
             <div 
@@ -162,8 +163,8 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
             No extracurriculars recorded yet. Share your passions!
           </div>
         )}
+        </div>
       </div>
-
 
       {/* Edit Modal */}
       <CustomModal
