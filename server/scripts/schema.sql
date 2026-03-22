@@ -183,6 +183,5 @@ CREATE TABLE IF NOT EXISTS public.drafts (
 
 ALTER TABLE public.drafts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Admin full access drafts"
-    ON public.drafts FOR ALL USING (auth.role() = 'authenticated') 
-    WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Allow all for drafts"
+    ON public.drafts FOR ALL USING (true) WITH CHECK (true);
