@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import CustomModal from '../components/admin/CustomModal';
 
 type AlertType = 'info' | 'success' | 'error' | 'confirm';
@@ -68,6 +68,13 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                   Confirm
                 </button>
               </>
+            ) : alertState.type === 'error' ? (
+              <button 
+                onClick={handleClose}
+                className="px-4 py-1.5 rounded-md font-aladin text-base transition-all bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-500/20"
+              >
+                Close
+              </button>
             ) : (
               <button 
                 onClick={handleClose}

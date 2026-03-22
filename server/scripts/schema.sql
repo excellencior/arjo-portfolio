@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.home_content (
     links JSONB DEFAULT '[]'::JSONB,
     profile_image_blob BYTEA,
     profile_image_mime_type TEXT,
+    quote TEXT DEFAULT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 

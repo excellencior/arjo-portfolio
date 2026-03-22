@@ -35,6 +35,37 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
   const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>('down');
   const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
 
+  const applyFormatting = (prefix: string, suffix: string, textareaId: string) => {
+    const textarea = document.getElementById(textareaId) as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = (textareaId === 'bio-textarea' ? content.subtitle : content.quote) || '';
+    const selected = text.substring(start, end);
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+
+    const newText = before + prefix + selected + suffix + after;
+    
+    if (textareaId === 'bio-textarea') {
+      setContent({ ...content, subtitle: newText });
+    } else {
+      setContent({ ...content, quote: newText });
+    }
+
+    // Set focus back to textarea
+    setTimeout(() => {
+      textarea.focus();
+      // Adjust cursor position to be inside the formatting
+      if (start === end) {
+        textarea.setSelectionRange(start + prefix.length, start + prefix.length);
+      } else {
+        textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+      }
+    }, 0);
+  };
+
   // Close dropdown on any click outside the dropdown area
   useEffect(() => {
     if (openDropdown === null) return;
@@ -177,12 +208,80 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
               />
             </div>
             <div>
-              <label className="block text-sm font-aladin text-slate-500 mb-1 uppercase tracking-wider">Detailed Bio</label>
+              <div className="flex justify-between items-end mb-1">
+                <label className="block text-sm font-aladin text-slate-500 uppercase tracking-wider">Detailed Bio</label>
+                <div className="flex gap-1 mb-1">
+                  <button 
+                    type="button"
+                    onClick={() => applyFormatting('**', '**', 'bio-textarea')}
+                    className="p-1 px-2 bg-slate-100 dark:bg-slate-700 rounded-sm hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all font-bold text-xs"
+                    title="Bold"
+                  >
+                    B
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => applyFormatting('*', '*', 'bio-textarea')}
+                    className="p-1 px-2 bg-slate-100 dark:bg-slate-700 rounded hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all italic text-xs"
+                    title="Italic"
+                  >
+                    I
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => applyFormatting('<u>', '</u>', 'bio-textarea')}
+                    className="p-1 px-2 bg-slate-100 dark:bg-slate-700 rounded hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all underline text-xs"
+                    title="Underline"
+                  >
+                    U
+                  </button>
+                </div>
+              </div>
               <textarea 
+                id="bio-textarea"
                 value={content.subtitle || ''}
                 onChange={(e) => setContent({...content, subtitle: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base h-40 resize-y"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base h-32 resize-y"
                 placeholder="Tell your story here..."
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between items-end mb-1">
+                <label className="block text-sm font-aladin text-slate-500 uppercase tracking-wider">Personal Quote (Optional)</label>
+                <div className="flex gap-1 mb-1">
+                  <button 
+                    type="button"
+                    onClick={() => applyFormatting('**', '**', 'quote-textarea')}
+                    className="p-1 px-2 bg-slate-100 dark:bg-slate-700 rounded-sm hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all font-bold text-xs"
+                    title="Bold"
+                  >
+                    B
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => applyFormatting('*', '*', 'quote-textarea')}
+                    className="p-1 px-2 bg-slate-100 dark:bg-slate-700 rounded hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all italic text-xs"
+                    title="Italic"
+                  >
+                    I
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => applyFormatting('<u>', '</u>', 'quote-textarea')}
+                    className="p-1 px-2 bg-slate-100 dark:bg-slate-700 rounded hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all underline text-xs"
+                    title="Underline"
+                  >
+                    U
+                  </button>
+                </div>
+              </div>
+              <textarea 
+                id="quote-textarea"
+                value={content.quote || ''}
+                onChange={(e) => setContent({...content, quote: e.target.value})}
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base h-24 resize-y"
+                placeholder="Add an inspiring quote or side note..."
               />
             </div>
           </div>
