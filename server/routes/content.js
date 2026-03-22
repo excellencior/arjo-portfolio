@@ -36,14 +36,24 @@ router.get('/home', async (req, res) => {
 });
 
 router.put('/home', authenticate, async (req, res) => {
+  const updateData = { 
+    ...cleanData(req.body),
+    updated_at: new Date().toISOString() 
+  };
+  
+  // Explicitly ensure we don't accidentally send null blobs if they somehow leaked in
+  delete updateData.profile_image_blob;
+  delete updateData.profile_image_mime_type;
+
   const { error } = await supabase
     .from('home_content')
-    .upsert({ 
-      id: 1, 
-      ...cleanData(req.body),
-      updated_at: new Date().toISOString() 
-    });
-  if (error) return res.status(500).json({ error: 'Failed to update bio content. Please verify database permissions.' });
+    .update(updateData)
+    .eq('id', 1);
+
+  if (error) {
+    console.error('Home update error:', error);
+    return res.status(500).json({ error: 'Failed to update bio content.' });
+  }
   res.json({ success: true });
 });
 

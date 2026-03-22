@@ -103,8 +103,16 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
         if (res.ok) {
           const draft = await res.json();
           if (draft && draft.content) {
-            // Merge draft content but ALWAYS keep live updated_at for image cache busting
-            setContent({ ...draft.content, updated_at: content.updated_at });
+            // Use functional update to avoid stale closure on 'content' prop
+            // and merge with whatever the latest live state is
+            setContent((prev: any) => {
+              if (!prev) return draft.content;
+              return {
+                ...prev,
+                ...draft.content,
+                updated_at: prev.updated_at // Always prioritize live timestamp for cache busting
+              };
+            });
             setHasDraft(true);
           }
         }
