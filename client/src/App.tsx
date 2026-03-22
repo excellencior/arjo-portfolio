@@ -19,19 +19,19 @@ const API_URL = import.meta.env.VITE_API_URL;
 import { Linkedin, Facebook, Twitter, Github, Instagram, Youtube, Mail, Link as LinkIcon, Camera, User } from 'lucide-react';
 
 const SOCIAL_ICONS: Record<string, any> = {
-  linkedin: <Linkedin size={22} />,
-  facebook: <Facebook size={22} />,
-  instagram: <Instagram size={22} />,
-  twitter: <Twitter size={22} />,
-  github: <Github size={22} />,
-  youtube: <Youtube size={22} />,
-  pinterest: <Camera size={22} />,
-  mail: <Mail size={22} />,
-  other: <LinkIcon size={22} />,
+  linkedin: <Linkedin size={18} strokeWidth={0.4} />,
+  facebook: <Facebook size={18} strokeWidth={0.4} />,
+  instagram: <Instagram size={18} strokeWidth={0.4} />,
+  twitter: <Twitter size={18} strokeWidth={0.4} />,
+  github: <Github size={18} strokeWidth={0.4} />,
+  youtube: <Youtube size={18} strokeWidth={0.4} />,
+  pinterest: <Camera size={18} strokeWidth={0.4} />,
+  mail: <Mail size={18} strokeWidth={0.4} />,
+  other: <LinkIcon size={18} strokeWidth={0.4} />,
 };
 
 const getSocialIcon = (platform: string) => {
-  return SOCIAL_ICONS[platform.toLowerCase()] || <LinkIcon size={22} />;
+  return SOCIAL_ICONS[platform.toLowerCase()] || <LinkIcon size={18} strokeWidth={0.4} />;
 };
 
 const Home = () => {
@@ -73,7 +73,7 @@ const Home = () => {
           <div className="relative group">
             {/* Outer ring accent */}
             <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-blue-500/15 via-indigo-500/10 to-purple-500/15 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            <div className="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden ring-[3px] ring-white/80 dark:ring-slate-700/80 shadow-sm relative z-10">
+            <div className="w-56 h-56 lg:w-80 lg:h-80 rounded-full overflow-hidden ring-[3px] ring-white/80 dark:ring-slate-700/80 shadow-sm relative z-10">
               {content.updated_at ? (
                 <img 
                   src={`${API_URL}/api/content/home/image?t=${content.updated_at}`} 
@@ -82,7 +82,7 @@ const Home = () => {
                 />
               ) : (
                 <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-300">
-                  <User size={100} />
+                  <User size={100} strokeWidth={0.4} />
                 </div>
               )}
             </div>
@@ -99,12 +99,12 @@ const Home = () => {
                   href={link.to.startsWith('http') ? link.to : `https://${link.to}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 px-5 py-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 group min-w-[120px] justify-center"
+                  className="flex items-center gap-2 px-3.5 py-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-200/60 dark:hover:border-blue-800/60 hover:-translate-y-0.5 transition-all duration-300 group justify-center"
                 >
                   <span className="text-slate-400 group-hover:text-blue-500 transition-colors duration-300">
                     {getSocialIcon(link.text)}
                   </span>
-                  <span className="font-aladin text-base text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-300 capitalize">
+                  <span className="font-aladin text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-300 capitalize">
                     {link.text === 'other' ? 'Link' : link.text}
                   </span>
                 </a>
@@ -119,7 +119,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="max-w-[320px] text-center lg:text-right"
             >
-              <div className="font-aladin text-base md:text-lg text-slate-400 dark:text-slate-500 italic leading-relaxed">
+              <div className="font-aladin text-base lg:text-lg text-slate-400 dark:text-slate-500 italic leading-relaxed">
                 <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                   {content.quote}
                 </ReactMarkdown>
@@ -133,16 +133,16 @@ const Home = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="flex-1 text-center lg:text-left space-y-6 lg:pt-16"
+          className="flex-1 w-full text-center lg:text-left space-y-6 lg:pt-16"
         >
           <div className="space-y-3">
-            <p className="text-sm md:text-base font-aladin text-blue-600/70 dark:text-blue-400/70 uppercase tracking-[0.3em]">
+            <p className="text-sm lg:text-base font-aladin text-blue-600/70 dark:text-blue-400/70 uppercase tracking-[0.3em]">
               The Sanctuary of
             </p>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-aladin leading-tight text-slate-900 dark:text-white uppercase">
+            <h1 className="text-5xl lg:text-7xl font-aladin leading-tight text-slate-900 dark:text-white uppercase">
               {content.title}
             </h1>
-            <div className="text-lg md:text-xl font-aladin text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl">
+            <div className="text-lg lg:text-xl font-aladin text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl mx-auto lg:mx-0">
               <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                 {content.subtitle}
               </ReactMarkdown>
