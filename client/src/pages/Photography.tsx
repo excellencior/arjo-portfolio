@@ -93,7 +93,7 @@ const Photography = () => {
   }, []);
 
   return (
-    <div className="pt-6 space-y-4 animate-in transition-all duration-700 pb-16">
+    <div className="space-y-4 animate-in transition-all duration-700 pb-16">
       <div className="space-y-1 text-center mx-auto w-full">
         <h1 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-2">
           Photography

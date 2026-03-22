@@ -102,8 +102,9 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
         });
         if (res.ok) {
           const draft = await res.json();
-          if (draft && JSON.stringify(draft.content) !== JSON.stringify(content)) {
-            setContent(draft.content);
+          if (draft && draft.content) {
+            // Merge draft content but ALWAYS keep live updated_at for image cache busting
+            setContent({ ...draft.content, updated_at: content.updated_at });
             setHasDraft(true);
           }
         }
@@ -120,6 +121,9 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
 
   const handleSaveDraft = async () => {
     if (content && Object.keys(content).length > 0) {
+      // Create a clean copy without binary blobs if any somehow existed
+      const { profile_image_blob, profile_image_mime_type, ...cleanContent } = content;
+      
       try {
         const res = await fetch(`${API_URL}/api/drafts`, {
           method: 'PUT',
@@ -127,7 +131,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ key: 'draft_home_1', content })
+          body: JSON.stringify({ key: 'draft_home_1', content: cleanContent })
         });
 
         if (res.ok) {

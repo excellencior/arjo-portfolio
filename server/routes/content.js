@@ -18,19 +18,31 @@ const cleanData = (data) => {
 // --- Home Content ---
 router.get('/home', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('home_content').select('*').limit(1);
-    if (error) return res.status(500).json({ error: error.message });
-    if (!data || data.length === 0) {
+    const { data, error } = await supabase
+      .from('home_content')
+      .select('id, title, subtitle, links, quote, updated_at')
+      .eq('id', 1)
+      .single();
+
+    if (error && error.code !== 'PGRST116') return res.status(500).json({ error: error.message });
+    if (!data) {
       return res.json({ title: 'Welcome', subtitle: 'Bio coming soon...', links: [] });
     }
-    res.json(data[0]);
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 router.put('/home', authenticate, async (req, res) => {
-  const { error } = await supabase.from('home_content').upsert({ id: 1, ...cleanData(req.body) });
+  const { error } = await supabase
+    .from('home_content')
+    .upsert({ 
+      id: 1, 
+      ...cleanData(req.body),
+      updated_at: new Date().toISOString() 
+    });
   if (error) return res.status(500).json({ error: 'Failed to update bio content. Please verify database permissions.' });
   res.json({ success: true });
 });

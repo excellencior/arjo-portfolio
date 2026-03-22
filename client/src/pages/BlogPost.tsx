@@ -55,7 +55,7 @@ const BlogPost = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto pt-6 space-y-4 animate-in transition-all duration-700 pb-16">
+    <div className="max-w-5xl mx-auto space-y-4 animate-in transition-all duration-700 pb-16">
       <Link to="/blog" className="inline-flex items-center gap-2 font-aladin text-lg bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent hover:underline transition-all duration-300">
         <ArrowLeft size={16} className="text-pink-950 dark:text-pink-100" />
         <span>Back to Stories</span>

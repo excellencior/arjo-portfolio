@@ -55,7 +55,7 @@ const Home = () => {
   );
 
   return (
-    <div className="flex-1 px-4 py-20 relative">
+    <div className="flex-1 px-4 pb-20 relative">
       {/* Subtle Background Accents */}
       <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
         <div className="absolute -top-[15%] -left-[10%] w-[45%] h-[45%] bg-blue-400/5 blur-[140px] rounded-full" />

@@ -59,7 +59,7 @@ const Blog = () => {
   if (loading) return <div className="text-center mt-20 font-aladin text-2xl animate-pulse">Unfolding stories...</div>;
 
   return (
-    <div className="pt-6 space-y-6 animate-in transition-all duration-700 pb-16">
+    <div className="space-y-6 animate-in transition-all duration-700 pb-16">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-20">
         <div className="space-y-1">
           <h1 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-pink-950 to-pink-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase">

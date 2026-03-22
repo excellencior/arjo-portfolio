@@ -42,7 +42,7 @@ const Layout = () => {
       {!isAdmin && <Navbar />}
       <main className={cn(
         "text-primary-30 dark:text-dark-30 flex-1 flex flex-col min-h-0",
-        isAdmin ? "w-full" : "max-w-6xl mx-auto w-full px-6"
+        isAdmin ? "w-full" : "max-w-6xl mx-auto w-full px-6 pt-24"
       )}>
         <AnimatePresence mode="wait">
           <motion.div
