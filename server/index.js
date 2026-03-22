@@ -28,9 +28,14 @@ app.use('/api/branding', brandingRoutes);
 app.use('/api/photography', photographyRoutes);
 app.use('/api/drafts', draftsRoutes);
 
+// Health Check Route
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Base Route
 app.get('/', (req, res) => {
-  res.send('Portfolio API is running (Modular)...');
+  res.send('Portfolio API is running...');
 });
 
 // Contact Endpoint (Simple)
