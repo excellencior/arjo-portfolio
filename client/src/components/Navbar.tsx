@@ -20,8 +20,8 @@ const navItems = [
   },
   {
     name: 'Extra', path: '/extra', icon: Trophy,
-    activeClass: 'text-rose-950 dark:text-white',
-    bg: 'bg-rose-50/80 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900 shadow-sm',
+    activeClass: 'text-violet-950 dark:text-white',
+    bg: 'bg-violet-50/80 dark:bg-violet-950/60 border border-violet-100 dark:border-violet-900 shadow-sm',
   },
   {
     name: 'Blog', path: '/blog', icon: FileText,
@@ -110,7 +110,7 @@ const Navbar = () => {
       style={{ maxWidth: 'calc(100vw - 2rem)' }}
       className="fixed top-4 left-1/2 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-lg border border-gray-200 dark:border-gray-800"
     >
-      <nav ref={navRef} className="relative flex items-center gap-0.5 md:gap-1 px-2 md:px-3 py-1 flex-nowrap min-w-0">
+      <nav ref={navRef} className="relative flex items-center justify-between md:justify-start w-full gap-0.5 md:gap-1 px-2 md:px-3 py-1 flex-nowrap min-w-0">
 
         {/* Sliding pill */}
         {pillStyle && activeItem && (
@@ -155,7 +155,7 @@ const Navbar = () => {
               ref={el => { itemRefs.current[item.path] = el; }}
               to={item.path}
               className={cn(
-                "relative flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1.5 my-0.5 rounded-md text-sm font-aladin transition-colors duration-200 shrink-0",
+                "relative flex items-center gap-1 md:gap-1.5 px-3 md:px-3 py-2 md:py-1.5 my-0.5 rounded-md text-sm font-aladin transition-colors duration-200 shrink-0",
                 isActive
                   ? item.activeClass
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"

@@ -25,10 +25,10 @@ const Extra = () => {
   return (
     <div className="space-y-6 animate-in transition-all duration-700">
       <div className="space-y-1">
-        <h1 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-rose-950 to-rose-900 dark:from-white dark:via-rose-100 dark:to-rose-200 bg-clip-text text-transparent uppercase">
+        <h1 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-violet-950 to-violet-900 dark:from-white dark:via-violet-100 dark:to-violet-200 bg-clip-text text-transparent uppercase">
           Extracurriculars
         </h1>
-        <p className="block text-lg font-aladin text-orange-900 dark:text-orange-100 opacity-90 leading-snug">
+        <p className="block text-lg font-aladin text-purple-900 dark:text-purple-100 opacity-90 leading-snug">
           Beyond academics: My passions and community involvement.
         </p>
       </div>
@@ -39,21 +39,21 @@ const Extra = () => {
             <motion.div
               key={idx}
               whileHover={{ y: -3 }}
-              className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-md hover:border-orange-700/30"
+              className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-md hover:border-violet-700/30"
             >
-              <h2 className="inline-block text-2xl font-aladin bg-gradient-to-r from-black via-rose-950 to-rose-900 dark:from-white dark:via-rose-100 dark:to-rose-200 bg-clip-text text-transparent uppercase">
+              <h2 className="inline-block text-2xl font-aladin bg-gradient-to-r from-black via-violet-950 to-violet-900 dark:from-white dark:via-violet-100 dark:to-violet-200 bg-clip-text text-transparent uppercase">
                 {activity.title}
               </h2>
-              <p className="text-xs font-mono text-orange-700 dark:text-orange-400 uppercase tracking-widest mt-0.5">
+              <p className="text-xs font-mono text-violet-700 dark:text-violet-400 uppercase tracking-widest mt-0.5">
                 {activity.role}
               </p>
-              <p className="mt-2 text-base font-aladin text-rose-950 dark:text-orange-100 opacity-90 leading-snug border-l-4 border-rose-900 dark:border-rose-500 pl-3">
+              <p className="mt-2 text-base font-aladin text-violet-950 dark:text-purple-100 opacity-90 leading-snug border-l-4 border-violet-900 dark:border-violet-500 pl-3">
                 {activity.description}
               </p>
             </motion.div>
           ))
         ) : (
-          <div className="text-center py-20 border border-dashed border-rose-200 dark:border-rose-900/50 rounded-xl">
+          <div className="text-center py-20 border border-dashed border-violet-200 dark:border-violet-900/50 rounded-xl">
             <p className="font-aladin text-3xl text-slate-400 dark:text-slate-500 italic opacity-60">
               "Our passions are the compass that leads us to our true selves."
             </p>

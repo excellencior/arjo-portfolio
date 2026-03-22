@@ -39,7 +39,7 @@ const Contact = () => {
           Contact
         </h1>
         <p className="block text-lg font-aladin text-cyan-900 dark:text-cyan-100 opacity-90 leading-snug">
-          Care to get in touch with me?
+          Care to get in touch with me? I will try my best to reply and connect. Love talking to new people!
         </p>
       </div>
 
@@ -83,16 +83,6 @@ const Contact = () => {
         </button>
       </form>
 
-      <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
-        <h3 className="text-2xl font-aladin bg-gradient-to-r from-slate-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent">Connect Elsewhere</h3>
-        <div className="mt-3 flex gap-4">
-          {['LinkedIn', 'GitHub', 'Instagram'].map((item) => (
-            <a key={item} href="#" className="font-aladin text-lg bg-gradient-to-r from-slate-500 to-slate-400 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent hover:from-blue-600 hover:to-blue-400 transition-all duration-300 underline-offset-2 decoration-blue-600/30 hover:underline">
-              {item}
-            </a>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
