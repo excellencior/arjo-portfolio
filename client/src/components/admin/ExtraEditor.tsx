@@ -6,14 +6,67 @@ interface ExtraEditorProps {
   content: any[];
   setContent: (content: any[]) => void;
   onSave: (content: any[]) => void;
+  token: string | null;
+  onRefreshDrafts: () => void;
+  draftKeys: string[];
 }
 
-const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }) => {
+const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys }) => {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
+
+  const getDraftKey = (item: any) => `draft_extra_${item?.id || 'new'}`;
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  // Persistence: Restore draft when modal opens
+  React.useEffect(() => {
+    const fetchDraft = async () => {
+      if (isModalOpen && editingItem) {
+        try {
+          const res = await fetch(`${API_URL}/api/drafts/${getDraftKey(editingItem)}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const draft = await res.json();
+            if (draft && JSON.stringify(draft.content) !== JSON.stringify(editingItem)) {
+              setEditingItem(draft.content);
+            }
+          }
+        } catch (e) {
+          console.error('Failed to fetch draft');
+        }
+      }
+    };
+    fetchDraft();
+  }, [isModalOpen, token]);
+
+  const handleSaveDraft = async () => {
+    if (editingItem) {
+      try {
+        const res = await fetch(`${API_URL}/api/drafts`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ key: getDraftKey(editingItem), content: editingItem })
+        });
+        if (res.ok) {
+          onRefreshDrafts();
+          setIsModalOpen(false);
+        }
+      } catch (err) {
+        console.error('Failed to save draft');
+      }
+    }
+  };
+
+  const hasDraft = (item: any) => {
+    return draftKeys.includes(getDraftKey(item));
+  };
 
   const handleAdd = () => {
     setEditingItem({ title: '', role: '', description: '' });
@@ -72,10 +125,17 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
             <div 
               key={idx} 
               onClick={() => handleEdit(item, idx)}
-              className="p-3 bg-slate-50 dark:bg-slate-800 rounded-md flex justify-between items-center group border border-transparent hover:border-orange-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+              className={`p-3 rounded-md flex justify-between items-center group border border-transparent hover:border-orange-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer ${
+                hasDraft(item) ? 'bg-yellow-50 dark:bg-yellow-900/10' : 'bg-slate-50 dark:bg-slate-800'
+              }`}
             >
               <div>
-                <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{item.title || 'Untitled Entry'}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{item.title || 'Untitled Entry'}</h3>
+                  {hasDraft(item) && (
+                    <span className="px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-[8px] font-bold rounded uppercase tracking-tighter">Draft</span>
+                  )}
+                </div>
                 <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider">
                   {item.role || 'No Role Specified'}
                 </p>
@@ -111,12 +171,21 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave }
         onClose={() => setIsModalOpen(false)}
         title={editingIndex !== null ? 'Edit Entry' : 'Add Entry'}
         footer={
-          <button 
-            onClick={handleModalSave}
-            className="px-4 py-1.5 bg-orange-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-orange-700 transition-all shadow-md disabled:opacity-50"
-          >
-            <Save size={16} /> Confirm Entry
-          </button>
+          <div className="flex justify-between w-full">
+            <button 
+              type="button"
+              onClick={handleSaveDraft}
+              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-base hover:bg-slate-200 transition-all border border-slate-200 dark:border-slate-700"
+            >
+              Save Draft
+            </button>
+            <button 
+              onClick={handleModalSave}
+              className="px-4 py-1.5 bg-orange-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-orange-700 transition-all shadow-md disabled:opacity-50"
+            >
+              <Save size={16} /> Confirm Entry
+            </button>
+          </div>
         }
       >
         <div className="space-y-4">

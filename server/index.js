@@ -19,12 +19,14 @@ const contentRoutes = require('./routes/content');
 const blogRoutes = require('./routes/blog');
 const brandingRoutes = require('./routes/branding');
 const photographyRoutes = require('./routes/photography');
+const draftsRoutes = require('./routes/drafts');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/content/blog', blogRoutes);
 app.use('/api/branding', brandingRoutes);
 app.use('/api/photography', photographyRoutes);
+app.use('/api/drafts', draftsRoutes);
 
 // Base Route
 app.get('/', (req, res) => {

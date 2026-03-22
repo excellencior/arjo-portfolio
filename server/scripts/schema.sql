@@ -1,8 +1,9 @@
 -- ============================================================
 -- Arjo Portfolio — Full Supabase Schema
 -- Run this in the Supabase SQL Editor to set up everything.
--- Last updated: 2026-03-19
+-- Last updated: 2026-03-22 (DB-Backed Drafts Support)
 -- ============================================================
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ========================
 -- 1. ADMIN SESSIONS
@@ -43,6 +44,8 @@ CREATE POLICY "Public read home_content"
     ON public.home_content FOR SELECT USING (true);
 CREATE POLICY "Admin update home_content"
     ON public.home_content FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Admin insert home_content"
+    ON public.home_content FOR INSERT WITH CHECK (true);
 
 -- Seed default row
 INSERT INTO public.home_content (id, title, subtitle, links)
@@ -83,7 +86,8 @@ CREATE TABLE IF NOT EXISTS public.academics (
     title TEXT DEFAULT '',
     start_year INTEGER,
     end_year INTEGER,
-    description TEXT DEFAULT ''
+    description TEXT DEFAULT '',
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 ALTER TABLE public.academics ENABLE ROW LEVEL SECURITY;
@@ -103,7 +107,8 @@ CREATE TABLE IF NOT EXISTS public.extra_activities (
     id BIGSERIAL PRIMARY KEY,
     title TEXT DEFAULT '',
     description TEXT DEFAULT '',
-    category TEXT DEFAULT ''
+    category TEXT DEFAULT '',
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 ALTER TABLE public.extra_activities ENABLE ROW LEVEL SECURITY;
@@ -163,3 +168,21 @@ CREATE POLICY "Admin insert branding_logos"
     ON public.branding_logos FOR INSERT WITH CHECK (true);
 CREATE POLICY "Admin delete branding_logos"
     ON public.branding_logos FOR DELETE USING (true);
+
+-- ========================
+-- 8. DRAFTS
+-- Stores unsaved form progress (JSON) indexed by a unique key.
+-- Admin: full access.
+-- ========================
+CREATE TABLE IF NOT EXISTS public.drafts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    key TEXT UNIQUE NOT NULL,
+    content JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+ALTER TABLE public.drafts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admin full access drafts"
+    ON public.drafts FOR ALL USING (auth.role() = 'authenticated') 
+    WITH CHECK (auth.role() = 'authenticated');

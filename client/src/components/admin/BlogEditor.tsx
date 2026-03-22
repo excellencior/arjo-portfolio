@@ -8,11 +8,13 @@ interface BlogEditorProps {
   token: string | null;
   onRefresh: () => void;
   onLogout?: () => void;
+  onRefreshDrafts: () => void;
+  draftKeys: string[];
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogout }) => {
+const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogout, onRefreshDrafts, draftKeys }) => {
   const { showAlert } = useAlert();
   const [editingPost, setEditingPost] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +23,56 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   const [showNewTagInput, setShowNewTagInput] = useState(false);
   const [newTagValue, setNewTagValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const getDraftKey = (post: any) => `draft_blog_${post?.id || 'new'}`;
+
+  // Persistence: Restore draft when modal opens
+  React.useEffect(() => {
+    const fetchDraft = async () => {
+      if (isModalOpen && editingPost) {
+        try {
+          const res = await fetch(`${API_URL}/api/drafts/${getDraftKey(editingPost)}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const draft = await res.json();
+            if (draft && JSON.stringify(draft.content) !== JSON.stringify(editingPost)) {
+              setEditingPost(draft.content);
+            }
+          }
+        } catch (e) {
+          console.error('Failed to fetch blog draft');
+        }
+      }
+    };
+    fetchDraft();
+  }, [isModalOpen, token]);
+
+  const handleSaveDraft = async () => {
+    if (editingPost) {
+      try {
+        const res = await fetch(`${API_URL}/api/drafts`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ key: getDraftKey(editingPost), content: editingPost })
+        });
+        if (res.ok) {
+          onRefreshDrafts();
+          setIsModalOpen(false);
+          setEditingPost(null);
+        }
+      } catch (err) {
+        console.error('Failed to save blog draft');
+      }
+    }
+  };
+
+  const hasDraft = (post: any) => {
+    return draftKeys.includes(getDraftKey(post));
+  };
 
   const existingTags = Array.from(new Set(posts.flatMap(p => (p.tags || []).map((t: string) => t.toUpperCase())))).sort();
 
@@ -114,7 +166,14 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
 
       if (res.ok) {
         showAlert('Success', editingPost.id ? 'Post updated!' : 'Post created!', 'success');
+        // Clear specific blog draft on success
+        await fetch(`${API_URL}/api/drafts/${getDraftKey(editingPost)}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        onRefreshDrafts();
         setIsModalOpen(false);
+        setEditingPost(null);
         onRefresh();
       } else {
         const errData = await res.json();
@@ -138,6 +197,12 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         return;
       }
       if (res.ok) {
+        // Clear draft if it exists
+        await fetch(`${API_URL}/api/drafts/${getDraftKey({ id: postToDelete })}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        onRefreshDrafts();
         onRefresh();
         setIsDeleteModalOpen(false);
       }
@@ -170,10 +235,17 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <div 
               key={post.id} 
               onClick={() => handleEdit(post)}
-              className="p-3 bg-slate-50 dark:bg-slate-800 rounded-md flex justify-between items-center group border border-transparent hover:border-purple-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+              className={`p-3 rounded-md flex justify-between items-center group border border-transparent hover:border-purple-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer ${
+                hasDraft(post) ? 'bg-yellow-50 dark:bg-yellow-900/10' : 'bg-slate-50 dark:bg-slate-800'
+              }`}
             >
               <div>
-                <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{post.title}</h3>
+                  {hasDraft(post) && (
+                    <span className="px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-[8px] font-bold rounded uppercase tracking-tighter">Draft</span>
+                  )}
+                </div>
                 <p className="w-full text-[10px] font-aladin text-slate-400 uppercase tracking-wider flex flex-wrap items-center gap-1.5 mt-0.5">
                   <span>{formatDateForDisplay(post.date)}</span>
                   {post.tags && post.tags.length > 0 && (
@@ -215,12 +287,21 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         onClose={() => setIsModalOpen(false)}
         title={editingPost?.id ? 'Edit Post' : 'New Post'}
         footer={
-          <button 
-            onClick={handleSave}
-            className="px-4 py-1.5 bg-purple-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-purple-700 transition-all shadow-md disabled:opacity-50"
-          >
-            <Save size={16} /> Save Post
-          </button>
+          <div className="flex justify-between w-full">
+            <button 
+              type="button"
+              onClick={handleSaveDraft}
+              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-base hover:bg-slate-200 transition-all border border-slate-200 dark:border-slate-700"
+            >
+              Save Draft
+            </button>
+            <button 
+              onClick={handleSave}
+              className="px-4 py-1.5 bg-purple-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-purple-700 transition-all shadow-md disabled:opacity-50"
+            >
+              <Save size={16} /> Save Post
+            </button>
+          </div>
         }
       >
         <div className="space-y-4">

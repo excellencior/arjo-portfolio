@@ -22,10 +22,12 @@ interface AdminDashboardProps {
   onSaveExtra: (data?: any[]) => void;
   onFetchContent: (type: string) => void;
   onLogout: () => void;
+  draftKeys: string[];
+  onRefreshDrafts: () => void;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
-  activeTab, onTabChange, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout 
+  activeTab, onTabChange, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout, draftKeys, onRefreshDrafts 
 }) => {
   const { branding } = useBranding();
   const [searchQuery, setSearchQuery] = useState('');
@@ -170,19 +172,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               transition={{ duration: 0.2 }}
             >
               {activeTab === 'home' && content && (
-                <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} token={token} />
+                <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} token={token} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} />
               )}
 
               {activeTab === 'blog' && content && (
-                <BlogEditor posts={filteredContent()} token={token} onRefresh={() => onFetchContent('blog')} onLogout={onLogout} />
+                <BlogEditor posts={filteredContent()} token={token} onRefresh={() => onFetchContent('blog')} onLogout={onLogout} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} />
               )}
 
               {activeTab === 'academics' && content && (
-                <AcademicsEditor content={filteredContent()} setContent={setContent} onSave={onSaveAcademics} />
+                <AcademicsEditor content={filteredContent()} setContent={setContent} onSave={onSaveAcademics} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} token={token} />
               )}
 
               {activeTab === 'extra' && content && (
-                <ExtraEditor content={filteredContent()} setContent={setContent} onSave={onSaveExtra} />
+                <ExtraEditor content={filteredContent()} setContent={setContent} onSave={onSaveExtra} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} token={token} />
               )}
               {activeTab === 'branding' && (
                 <BrandingEditor token={token} onLogout={onLogout} />

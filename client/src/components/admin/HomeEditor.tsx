@@ -24,9 +24,11 @@ interface HomeEditorProps {
   setContent: (content: any) => void;
   onSave: () => void;
   token: string | null;
+  onRefreshDrafts: () => void;
+  draftKeys: string[];
 }
 
-const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, token }) => {
+const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys }) => {
   const { showAlert } = useAlert();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
@@ -34,6 +36,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>('down');
   const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  const [hasDraft, setHasDraft] = useState(false);
 
   const applyFormatting = (prefix: string, suffix: string, textareaId: string) => {
     const textarea = document.getElementById(textareaId) as HTMLTextAreaElement;
@@ -89,6 +92,74 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [openDropdown]);
+
+  // Persistence: Restore from DB on mount
+  useEffect(() => {
+    const fetchDraft = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/drafts/draft_home_1`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const draft = await res.json();
+          if (draft && JSON.stringify(draft.content) !== JSON.stringify(content)) {
+            setContent(draft.content);
+            setHasDraft(true);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch home draft');
+      }
+    };
+    if (token) fetchDraft();
+  }, [token]);
+
+  useEffect(() => {
+    setHasDraft(draftKeys.includes('draft_home_1'));
+  }, [draftKeys]);
+
+  const handleSaveDraft = async () => {
+    if (content && Object.keys(content).length > 0) {
+      try {
+        const res = await fetch(`${API_URL}/api/drafts`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ key: 'draft_home_1', content })
+        });
+
+        if (res.ok) {
+          setHasDraft(true);
+          onRefreshDrafts();
+          showAlert('Draft Saved', 'Your changes have been saved to the database.', 'success');
+        } else {
+          showAlert('Error', 'Failed to save draft.', 'error');
+        }
+      } catch (err) {
+        showAlert('Error', 'Communication error.', 'error');
+      }
+    }
+  };
+
+  const discardDraft = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/drafts/draft_home_1`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setHasDraft(false);
+        onRefreshDrafts();
+        window.location.reload(); // Revert to DB version
+      } else {
+        showAlert('Error', 'Failed to discard draft.', 'error');
+      }
+    } catch (err) {
+      showAlert('Error', 'Communication error.', 'error');
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -156,7 +227,22 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-aladin text-blue-600 border-b border-blue-100 dark:border-blue-900 pb-2 uppercase tracking-wide">Edit Bio Section</h2>
+      <div className="flex justify-between items-center border-b border-blue-100 dark:border-blue-900 pb-2">
+        <h2 className="text-2xl font-aladin text-blue-600 uppercase tracking-wide">Edit Bio Section</h2>
+        {hasDraft && (
+          <div className="flex items-center gap-2 px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full border border-yellow-200 dark:border-yellow-800/50 animate-pulse">
+            <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">Draft Version Active</span>
+            <button 
+              onClick={discardDraft}
+              className="ml-2 hover:text-rose-500 transition-colors"
+              title="Discard Draft"
+            >
+              <Trash2 size={12} />
+            </button>
+          </div>
+        )}
+      </div>
       
       <div className="flex flex-col md:flex-row gap-8 items-start">
         {/* Profile Image Section */}
@@ -188,12 +274,21 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
             </label>
           </div>
           <p className="text-[10px] text-slate-400 font-aladin text-center uppercase tracking-widest">Optimized square shots work best (Max 5MB)</p>
-          <button 
-            onClick={onSave}
-            className="w-full flex items-center justify-center gap-2 px-4 py-1.5 bg-blue-600 text-white rounded-md font-aladin text-base hover:bg-blue-700 transition-all shadow-md active:scale-[0.98]"
-          >
-            <Save size={16} /> Save My Bio
-          </button>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={handleSaveDraft}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-sm hover:bg-slate-200 transition-all border border-slate-200 dark:border-slate-700"
+            >
+              Save Draft
+            </button>
+            <button 
+              onClick={onSave}
+              className="flex-[2] flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md font-aladin text-base hover:bg-blue-700 transition-all shadow-md active:scale-[0.98]"
+            >
+              <Save size={18} /> Save My Bio
+            </button>
+          </div>
         </div>
 
         {/* Text Fields & Links */}

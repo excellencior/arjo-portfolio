@@ -94,6 +94,7 @@ const Admin = () => {
       }
       if (res.ok) {
         showAlert('Success', 'Home content saved!', 'success');
+        clearSectionDrafts('draft_home_');
       } else {
         const data = await res.json();
         showAlert('Error', data.error || 'Failed to update content', 'error');
@@ -120,6 +121,7 @@ const Admin = () => {
       }
       if (res.ok) {
         showAlert('Success', 'Academics saved!', 'success');
+        clearSectionDrafts('draft_academics_');
       } else {
         const data = await res.json();
         showAlert('Error', data.error || 'Failed to update academics', 'error');
@@ -146,6 +148,7 @@ const Admin = () => {
       }
       if (res.ok) {
         showAlert('Success', 'Extracurriculars saved!', 'success');
+        clearSectionDrafts('draft_extra_');
       } else {
         const data = await res.json();
         showAlert('Error', data.error || 'Failed to update content', 'error');
@@ -166,6 +169,42 @@ const Admin = () => {
       }
     } catch (err) {
       console.error('Failed to fetch content');
+    }
+  };
+
+  const [draftKeys, setDraftKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (token) {
+      fetchDraftKeys();
+    }
+  }, [token]);
+
+  const fetchDraftKeys = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/drafts`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setDraftKeys(data.map((d: any) => d.key));
+      }
+    } catch (err) {
+      console.error('Failed to fetch draft keys');
+    }
+  };
+
+  const clearSectionDrafts = async (prefix: string) => {
+    try {
+      const res = await fetch(`${API_URL}/api/drafts/prefix/${prefix}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchDraftKeys();
+      }
+    } catch (err) {
+      console.error('Failed to clear drafts');
     }
   };
 
@@ -192,6 +231,8 @@ const Admin = () => {
         onSaveExtra={(data?: any[]) => { handleSaveExtra(data); }}
         onFetchContent={fetchContent}
         onLogout={handleLogout}
+        draftKeys={draftKeys} // Pass draftKeys to AdminDashboard
+        onRefreshDrafts={fetchDraftKeys} // Pass fetchDraftKeys to AdminDashboard
       />
     );
   }
