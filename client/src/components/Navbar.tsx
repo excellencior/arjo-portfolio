@@ -107,10 +107,9 @@ const Navbar = () => {
       initial={{ x: "-50%", y: 0 }}
       animate={{ x: "-50%", y: visible ? 0 : -100 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      style={{ maxWidth: 'calc(100vw - 2rem)' }}
-      className="fixed top-4 left-1/2 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-lg border border-gray-200 dark:border-gray-800"
+      className="fixed top-4 left-1/2 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-lg border border-gray-200 dark:border-gray-800 w-[95vw] min-[421px]:w-[80vw] min-[650px]:w-auto min-[650px]:max-w-[calc(100vw-2rem)]"
     >
-      <nav ref={navRef} className="relative flex items-center justify-between md:justify-start w-full gap-0.5 md:gap-1 px-2 md:px-3 py-1 flex-nowrap min-w-0">
+      <nav ref={navRef} className="relative flex items-center justify-between min-[650px]:justify-start w-full gap-0.5 min-[650px]:gap-1 px-2 min-[650px]:px-3 py-1 flex-nowrap min-w-0">
 
         {/* Sliding pill */}
         {pillStyle && activeItem && (
@@ -130,7 +129,7 @@ const Navbar = () => {
         <Link
           ref={el => { itemRefs.current['/'] = el; }}
           to="/"
-          className="relative flex items-center justify-center shrink-0 px-2 my-0.5 md:px-2 py-1.5 rounded-md transition-colors duration-200 w-[2.5rem] md:w-[3rem]"
+          className="relative flex items-center justify-center shrink-0 px-2 my-0.5 min-[650px]:px-2 py-1.5 rounded-md transition-colors duration-200 w-[2.5rem] min-[650px]:w-[3rem]"
         >
           {branding.active_logo_id ? (
             <img
@@ -155,14 +154,14 @@ const Navbar = () => {
               ref={el => { itemRefs.current[item.path] = el; }}
               to={item.path}
               className={cn(
-                "relative flex items-center gap-1 md:gap-1.5 px-3 md:px-3 py-2 md:py-1.5 my-0.5 rounded-md text-sm font-aladin transition-colors duration-200 shrink-0",
+                "relative flex items-center gap-1 min-[650px]:gap-1.5 px-3 min-[650px]:px-3 py-2 min-[650px]:py-1.5 my-0.5 rounded-md text-sm font-aladin transition-colors duration-200 shrink-0",
                 isActive
                   ? item.activeClass
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               )}
             >
               <item.icon size={14} />
-              <span className="hidden md:inline text-base font-bold">
+              <span className="hidden min-[650px]:inline text-base font-bold">
                 {item.name}
               </span>
             </Link>
