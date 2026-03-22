@@ -45,6 +45,11 @@ app.post('/api/contact', (req, res) => {
   res.json({ success: true, message: 'Message received!' });
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+// Only listen if not on Vercel or if running directly
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+module.exports = app;
