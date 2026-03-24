@@ -7,6 +7,7 @@ import BlogEditor from './BlogEditor';
 import AcademicsEditor from './AcademicsEditor';
 import ExtraEditor from './ExtraEditor';
 import BrandingEditor from './BrandingEditor';
+import PhotographyEditor from './PhotographyEditor';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useBranding } from '../../context/BrandingContext';
@@ -146,8 +147,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <Palette size={18} /> Branding
           </button>
           <button 
-            onClick={() => {/* Photography logic */}}
-            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg bg-white dark:bg-slate-900 text-slate-400 border border-gray-100 dark:border-gray-800 opacity-50 cursor-not-allowed"
+            onClick={() => onTabChange('photography')}
+            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg font-aladin text-lg transition-all ${activeTab === 'photography' ? 'bg-cyan-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-gray-100 dark:border-gray-800'}`}
           >
             <Camera size={18} /> Photography
           </button>
@@ -189,6 +190,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               )}
               {activeTab === 'branding' && (
                 <BrandingEditor token={token} onLogout={onLogout} />
+              )}
+              {activeTab === 'photography' && (
+                <PhotographyEditor token={token} onLogout={onLogout} />
               )}
 
               {searchQuery && filteredContent()?.length === 0 && (

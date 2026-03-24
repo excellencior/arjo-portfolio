@@ -2,11 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const dns = require('node:dns');
+dns.setDefaultResultOrder('ipv4first');
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 // Middleware
 app.use(cors());
@@ -28,6 +30,7 @@ app.use('/api/content', contentRoutes);
 app.use('/api/content/blog', blogRoutes);
 app.use('/api/branding', brandingRoutes);
 app.use('/api/photography', photographyRoutes);
+app.use('/api', photographyRoutes); // Mounts /api/images for the public photography page
 app.use('/api/drafts', draftsRoutes);
 
 // Health Check Route

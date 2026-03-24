@@ -185,3 +185,33 @@ ALTER TABLE public.drafts ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow all for drafts"
     ON public.drafts FOR ALL USING (true) WITH CHECK (true);
+
+
+-- ========================
+-- 9. PHOTOGRAPHY
+-- Stores photo metadata. Public: read. Admin: full access.
+-- ========================
+CREATE TABLE IF NOT EXISTS public.photography (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL DEFAULT '',
+    intent TEXT NOT NULL DEFAULT '',
+    category TEXT NOT NULL DEFAULT '',
+    cloudinary_url TEXT NOT NULL,
+    cloudinary_public_id TEXT NOT NULL,
+    width INTEGER DEFAULT 0,
+    height INTEGER DEFAULT 0,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.photography ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public read photography"
+    ON public.photography FOR SELECT USING (true);
+CREATE POLICY "Admin insert photography"
+    ON public.photography FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admin update photography"
+    ON public.photography FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Admin delete photography"
+    ON public.photography FOR DELETE USING (true);

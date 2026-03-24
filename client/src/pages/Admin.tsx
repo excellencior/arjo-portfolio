@@ -25,9 +25,9 @@ const Admin = () => {
       setStep('dashboard');
       const targetTab = (tab || 'home') as string;
       
-      if (['home', 'blog', 'academics', 'extra', 'branding'].includes(targetTab)) {
+      if (['home', 'blog', 'academics', 'extra', 'branding', 'photography'].includes(targetTab)) {
         setActiveTab(targetTab);
-        if (targetTab !== 'branding' && (targetTab !== activeTab || content === null)) {
+        if (!['branding', 'photography'].includes(targetTab) && (targetTab !== activeTab || content === null)) {
           fetchContent(targetTab);
         }
       }
