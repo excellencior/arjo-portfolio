@@ -22,15 +22,29 @@ const Admin = () => {
 
   useEffect(() => {
     if (token) {
-      setStep('dashboard');
-      const targetTab = (tab || 'home') as string;
-      
-      if (['home', 'blog', 'academics', 'extra', 'branding', 'photography'].includes(targetTab)) {
-        setActiveTab(targetTab);
-        if (!['branding', 'photography'].includes(targetTab) && (targetTab !== activeTab || content === null)) {
-          fetchContent(targetTab);
+      // Validate token with server before showing dashboard
+      fetch(`${API_URL}/api/drafts`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => {
+        if (res.status === 401) {
+          // Token is invalid/expired — force login
+          localStorage.removeItem('adminToken');
+          setToken(null);
+          setStep('email');
+        } else {
+          setStep('dashboard');
+          const targetTab = (tab || 'home') as string;
+          if (['home', 'blog', 'academics', 'extra', 'branding', 'photography'].includes(targetTab)) {
+            setActiveTab(targetTab);
+            if (!['branding', 'photography'].includes(targetTab) && (targetTab !== activeTab || content === null)) {
+              fetchContent(targetTab);
+            }
+          }
         }
-      }
+      }).catch(() => {
+        // Server unreachable — keep token, let individual calls handle errors
+        setStep('dashboard');
+      });
     }
   }, [token, tab]);
 
@@ -210,6 +224,8 @@ const Admin = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
+    setToken(null);
+    setStep('email');
     navigate('/');
   };
 
