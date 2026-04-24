@@ -147,11 +147,11 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
         }
 
         if (res.ok) {
-          showAlert('Success', 'Photo uploaded successfully.', 'success');
           setIsUploadModalOpen(false);
           setSelectedFile(null);
           setPreviewUrl(null);
-          fetchPhotos();
+          await fetchPhotos();
+          showAlert('Success', 'Photo uploaded successfully.', 'success');
         } else {
           let errorMessage = 'Upload failed.';
           try {
@@ -194,9 +194,9 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
       }
 
       if (res.ok) {
-        showAlert('Success', 'Photo metadata updated.', 'success');
         setIsEditModalOpen(false);
-        fetchPhotos();
+        await fetchPhotos();
+        showAlert('Success', 'Photo metadata updated.', 'success');
       } else {
         showAlert('Error', 'Update failed.', 'error');
       }
@@ -221,8 +221,8 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
         }
 
         if (res.ok) {
+          await fetchPhotos();
           showAlert('Success', 'Photo deleted.', 'success');
-          fetchPhotos();
         } else {
           showAlert('Error', 'Delete failed.', 'error');
         }
@@ -276,10 +276,10 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
           });
           if (res.ok) {
             const data = await res.json();
-            showAlert('Deleted', `${data.deleted} photo${data.deleted > 1 ? 's' : ''} removed.`, 'success');
             setSelectedIds(new Set());
             setSelectMode(false);
-            fetchPhotos();
+            await fetchPhotos();
+            showAlert('Deleted', `${data.deleted} photo${data.deleted > 1 ? 's' : ''} removed.`, 'success');
           } else {
             showAlert('Error', 'Bulk delete failed.', 'error');
           }
