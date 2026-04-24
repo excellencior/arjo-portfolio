@@ -10,6 +10,7 @@ router.get('/images', async (req, res) => {
     const { data, error } = await supabase
       .from('photography')
       .select('*')
+      .eq('visible', true)
       .order('sort_order', { ascending: true });
 
     if (error) return res.status(500).json({ error: error.message });
@@ -42,6 +43,63 @@ router.get('/admin/list', authenticate, async (req, res) => {
     res.json(data || []);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch photos' });
+  }
+});
+
+// Admin: Toggle photo visibility
+router.put('/visibility/:id', authenticate, async (req, res) => {
+  try {
+    const { visible } = req.body;
+    const { data, error } = await supabase
+      .from('photography')
+      .update({ visible, updated_at: new Date().toISOString() })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update visibility' });
+  }
+});
+
+// Admin: Bulk delete photos
+router.post('/bulk-delete', authenticate, async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'No IDs provided' });
+  }
+
+  try {
+    // Get cloudinary IDs first
+    const { data: photos, error: fetchError } = await supabase
+      .from('photography')
+      .select('cloudinary_public_id')
+      .in('id', ids);
+
+    if (fetchError) return res.status(500).json({ error: fetchError.message });
+
+    // Delete from Cloudinary
+    const cloudinary = require('../config/cloudinary').cloudinary;
+    for (const photo of (photos || [])) {
+      try {
+        await cloudinary.uploader.destroy(photo.cloudinary_public_id);
+      } catch (e) {
+        console.warn('Cloudinary delete warning:', e.message);
+      }
+    }
+
+    // Delete from Supabase
+    const { error: deleteError } = await supabase
+      .from('photography')
+      .delete()
+      .in('id', ids);
+
+    if (deleteError) return res.status(500).json({ error: deleteError.message });
+    res.json({ success: true, deleted: ids.length });
+  } catch (err) {
+    res.status(500).json({ error: 'Bulk delete failed' });
   }
 });
 

@@ -204,15 +204,22 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({ token, onLogout }) => {
                         className="max-w-full max-h-full object-contain dark:invert"
                       />
                     </div>
+
+                    {/* Loading Overlay */}
+                    {activeSavingId === logo.id && (
+                      <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-[2px] rounded-md flex items-center justify-center z-20">
+                        <Loader2 size={24} className="animate-spin text-blue-600" />
+                      </div>
+                    )}
                     
                     {/* Hover Actions */}
-                    <div className="absolute inset-x-0 bottom-0 p-1.5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all flex gap-1 z-10">
+                    <div className={`absolute inset-x-0 bottom-0 p-1.5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all flex gap-1 z-10 ${activeSavingId === logo.id ? 'hidden' : ''}`}>
                       <button
                         onClick={() => handleSetActive(logo.id)}
                         disabled={saving || isActive}
                         className={`flex-1 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'}`}
                       >
-                        {activeSavingId === logo.id ? <Loader2 size={12} className="animate-spin mx-auto" /> : (isActive ? 'Active' : 'Use')}
+                        {isActive ? 'Active' : 'Use'}
                       </button>
                       <button
                         onClick={() => handleDelete(logo.id)}

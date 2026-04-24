@@ -23,6 +23,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   const [showNewTagInput, setShowNewTagInput] = useState(false);
   const [newTagValue, setNewTagValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
 
   const getDraftKey = (post: any) => `draft_blog_${post?.id || 'new'}`;
 
@@ -61,8 +62,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         });
         if (res.ok) {
           onRefreshDrafts();
-          setIsModalOpen(false);
-          setEditingPost(null);
+          setDraftSaved(true);
+          setTimeout(() => setDraftSaved(false), 2000);
         }
       } catch (err) {
         console.error('Failed to save blog draft');
@@ -293,9 +294,13 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <button 
               type="button"
               onClick={handleSaveDraft}
-              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-base hover:bg-slate-200 transition-all border border-slate-200 dark:border-slate-700"
+              className={`px-4 py-1.5 rounded-md font-aladin text-base transition-all border ${
+                draftSaved 
+                  ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-300 dark:border-purple-700' 
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 border-slate-200 dark:border-slate-700'
+              }`}
             >
-              Save Draft
+              {draftSaved ? 'Draft Saved ✓' : 'Save Draft'}
             </button>
             <button 
               onClick={handleSave}
@@ -472,6 +477,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
         onClose={() => setIsDeleteModalOpen(false)}
         title="Confirm Deletion"
         size="sm"
+        variant="danger"
         footer={
           <>
             <button 

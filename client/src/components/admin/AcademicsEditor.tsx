@@ -17,6 +17,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
+  const [draftSaved, setDraftSaved] = useState(false);
 
   const getDraftKey = (item: any) => `draft_academics_${item?.id || 'new'}`;
   const API_URL = import.meta.env.VITE_API_URL;
@@ -56,7 +57,8 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
         });
         if (res.ok) {
           onRefreshDrafts();
-          setIsModalOpen(false);
+          setDraftSaved(true);
+          setTimeout(() => setDraftSaved(false), 2000);
         }
       } catch (err) {
         console.error('Failed to save draft');
@@ -175,9 +177,13 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
           <div className="flex justify-between w-full">
             <button 
               onClick={handleSaveDraft}
-              className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-base hover:bg-slate-200 transition-all border border-slate-200 dark:border-slate-700"
+              className={`px-4 py-1.5 rounded-md font-aladin text-base transition-all border ${
+                draftSaved 
+                  ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700' 
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 border-slate-200 dark:border-slate-700'
+              }`}
             >
-              Save Draft
+              {draftSaved ? 'Draft Saved ✓' : 'Save Draft'}
             </button>
             <button 
               onClick={handleModalSave}
@@ -245,6 +251,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
         onClose={() => setIsDeleteModalOpen(false)}
         title="Confirm Removal"
         size="sm"
+        variant="danger"
         footer={
           <>
             <button 

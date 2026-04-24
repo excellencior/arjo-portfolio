@@ -29,9 +29,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/content/blog', blogRoutes);
 app.use('/api/branding', brandingRoutes);
+app.use('/api/drafts', draftsRoutes);
 app.use('/api/photography', photographyRoutes);
 app.use('/api', photographyRoutes); // Mounts /api/images for the public photography page
-app.use('/api/drafts', draftsRoutes);
 
 // Health Check Route
 app.get('/health', (req, res) => {

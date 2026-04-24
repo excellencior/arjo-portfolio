@@ -11,6 +11,7 @@ interface CustomModalProps {
   children: ReactNode;
   footer?: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'default' | 'danger';
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({ 
@@ -19,8 +20,10 @@ const CustomModal: React.FC<CustomModalProps> = ({
   title, 
   children, 
   footer,
-  size = 'md'
+  size = 'md',
+  variant = 'default'
 }) => {
+  const isDanger = variant === 'danger';
   const sizeClasses = {
     sm: 'max-w-md',
     md: 'max-w-2xl',
@@ -52,7 +55,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            className={`fixed inset-0 backdrop-blur-sm z-[100] flex items-center justify-center p-4 ${isDanger ? 'bg-red-950/30' : 'bg-slate-900/40'}`}
           />
           
           {/* Modal Container */}
@@ -64,8 +67,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
               className={`w-full ${sizeClasses[size]} bg-white dark:bg-slate-900 rounded-xl shadow-lg overflow-hidden pointer-events-auto border border-white/20 dark:border-slate-800 flex flex-col max-h-[90vh]`}
             >
               {/* Header */}
-              <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
-                <h2 className="text-2xl font-aladin text-slate-800 dark:text-white uppercase tracking-tight">{title}</h2>
+              <div className={`px-6 py-4 border-b flex justify-between items-center ${isDanger ? 'border-red-100 dark:border-red-900/50 bg-red-50/80 dark:bg-red-950/30' : 'border-gray-100 dark:border-gray-800 bg-slate-50/50 dark:bg-slate-800/50'}`}>
+                <h2 className={`text-2xl font-aladin uppercase tracking-tight ${isDanger ? 'text-red-700 dark:text-red-300' : 'text-slate-800 dark:text-white'}`}>{title}</h2>
                 <button 
                   onClick={onClose}
                   className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-white"

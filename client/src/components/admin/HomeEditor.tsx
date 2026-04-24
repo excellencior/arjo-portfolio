@@ -490,6 +490,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
         onClose={() => setIsDeleteModalOpen(false)}
         title="Remove Connection"
         size="sm"
+        variant="danger"
         footer={
           <div className="flex gap-3">
             <button 

@@ -5,6 +5,7 @@ import Download from "yet-another-react-lightbox/plugins/download";
 import "yet-another-react-lightbox/styles.css";
 
 interface Photo {
+  id?: number;
   src: string;
   width: number;
   height: number;
@@ -29,71 +30,31 @@ const Photography = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(-1);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`${API_URL}/api/images`)
       .then(res => res.json())
       .then(data => {
-        if (data && !data.error) {
-          setPhotos(data);
-          setLoading(false);
-        } else {
-          // Fallback to mock if API fails
-          const mockPhotos: Photo[] = [
-            { 
-              src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b", 
-              width: 1080, height: 720, 
-              title: "Ethereal Peaks", 
-              intent: "Capturing the silent majesty of the Himalayas at first light, where the mist meets the morning sun.",
-              category: "Landscape"
-            },
-            { 
-              src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470", 
-              width: 1080, height: 1620, 
-              title: "Urban Geometry", 
-              intent: "A study on the interplay of light and shadow against the brutalist architecture of the city.",
-              category: "Architecture"
-            },
-            { 
-              src: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e", 
-              width: 1080, height: 720, 
-              title: "Nature's Palette", 
-              intent: "Exploring the vibrant colors of a hidden valley during the golden hour.",
-              category: "Nature"
-            },
-            { 
-              src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", 
-              width: 1080, height: 1620, 
-              title: "Solitude", 
-              intent: "Finding peace in the deep woods, where the only sound is the rustling of leaves.",
-              category: "Nature"
-            },
-            {
-              src: "https://images.unsplash.com/photo-1532270660266-d47260c30de2",
-              width: 1080, height: 720,
-              title: "Forgotten Path",
-              intent: "A journey through time along a trail reclaimed by the wild forest.",
-              category: "Adventure"
-            },
-            {
-              src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
-              width: 1080, height: 1620,
-              title: "Morning Mist",
-              intent: "The world waking up in a blanket of soft, silver fog.",
-              category: "Atmospheric"
-            }
-          ];
-          setPhotos(mockPhotos);
-          setLoading(false);
-        }
+        setPhotos(Array.isArray(data) ? data : []);
+        setLoading(false);
       })
       .catch(() => {
+        setPhotos([]);
         setLoading(false);
       });
   }, []);
 
+  // Derive unique categories from photos
+  const categories = Array.from(new Set(photos.map(p => p.category).filter(Boolean))).sort();
+  
+  // Filter photos by active category
+  const filteredPhotos = activeCategory 
+    ? photos.filter(p => p.category === activeCategory) 
+    : photos;
+
   return (
-    <div className="space-y-4 animate-in transition-all duration-700 pb-16">
+    <div className="space-y-6 animate-in transition-all duration-700 pb-16">
       <div className="space-y-1 text-center mx-auto w-full">
         <h1 className="inline-block text-4xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent uppercase mb-2">
           Photography
@@ -103,19 +64,48 @@ const Photography = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 px-2">
+      {/* Category Filter */}
+      {!loading && categories.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 border ${
+              activeCategory === null
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white'
+                : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700'
+            }`}
+          >
+            All
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 border ${
+                activeCategory === cat
+                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white'
+                  : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 px-2">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} />)
-        ) : photos.length > 0 ? (
-          photos.map((photo, idx) => (
+        ) : filteredPhotos.length > 0 ? (
+          filteredPhotos.map((photo, idx) => (
             <motion.div
-              key={idx}
+              key={photo.id ?? idx}
               initial={{ opacity: 0, y: 100 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               className="group relative"
-              onClick={() => setIndex(idx)}
+              onClick={() => setIndex(photos.indexOf(photo))}
             >
               <div className="relative p-3 border border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-500 hover:border-blue-700/50 hover:shadow-md">
                 <div className="aspect-[4/3] overflow-hidden relative rounded-md">
@@ -125,11 +115,13 @@ const Photography = () => {
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     loading="lazy"
                   />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-full">
-                      {photo.category}
-                    </span>
-                  </div>
+                  {photo.category && (
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-full">
+                        {photo.category}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-3 space-y-1">
@@ -137,11 +129,15 @@ const Photography = () => {
                     <h2 className="inline-block text-2xl font-aladin bg-gradient-to-r from-black via-blue-950 to-blue-900 dark:from-white dark:via-blue-100 dark:to-blue-200 bg-clip-text text-transparent tracking-wide">
                       {photo.title || "Untitled Photo"}
                     </h2>
-                    <span className="text-xs font-mono text-slate-400">0{idx + 1}</span>
+                    <span className="text-xs font-mono text-slate-400">
+                      {String(photos.indexOf(photo) + 1).padStart(2, '0')}
+                    </span>
                   </div>
-                  <p className="text-base font-aladin text-blue-900 dark:text-blue-100 leading-snug border-l-4 border-blue-900 dark:border-blue-500 pl-3 py-0.5">
-                    {photo.intent || "No description provided."}
-                  </p>
+                  {photo.intent && (
+                    <p className="text-base font-aladin text-blue-900 dark:text-blue-100 leading-snug border-l-4 border-blue-900 dark:border-blue-500 pl-3 py-0.5">
+                      {photo.intent}
+                    </p>
+                  )}
                 </div>
               </div>
             </motion.div>
