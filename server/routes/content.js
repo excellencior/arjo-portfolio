@@ -18,11 +18,24 @@ const cleanData = (data) => {
 // --- Home Content ---
 router.get('/home', async (req, res) => {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('home_content')
-      .select('id, title, subtitle, links, quote, updated_at')
+      .select('id, title, subtitle, links, quote, profile_image_url, updated_at')
       .eq('id', 1)
       .single();
+
+    let { data, error } = await query;
+    
+    // Fallback if the profile_image_url column does not exist yet (migration not run)
+    if (error && error.message && error.message.includes('profile_image_url')) {
+      const fallback = await supabase
+        .from('home_content')
+        .select('id, title, subtitle, links, quote, updated_at')
+        .eq('id', 1)
+        .single();
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error && error.code !== 'PGRST116') return res.status(500).json({ error: error.message });
     if (!data) {
@@ -41,9 +54,10 @@ router.put('/home', authenticate, async (req, res) => {
     updated_at: new Date().toISOString() 
   };
   
-  // Explicitly ensure we don't accidentally send null blobs if they somehow leaked in
+  // Explicitly ensure we don't accidentally send null blobs or URLs if they somehow leaked in
   delete updateData.profile_image_blob;
   delete updateData.profile_image_mime_type;
+  delete updateData.profile_image_url;
 
   const { error } = await supabase
     .from('home_content')
@@ -60,20 +74,38 @@ router.put('/home', authenticate, async (req, res) => {
 // Profile Image Upload
 router.post('/home/image', authenticate, async (req, res) => {
   try {
-    const { image, mimeType } = req.body;
+    const { image, mimeType, profile_image_url } = req.body;
+
+    if (profile_image_url) {
+      const { error } = await supabase
+        .from('home_content')
+        .upsert({ 
+          id: 1,
+          profile_image_url: profile_image_url,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Upload error:', error);
+        return res.status(500).json({ error: 'Failed to save profile image URL.' });
+      }
+      return res.json({ success: true });
+    }
+
     if (!image) return res.status(400).json({ error: 'No image provided' });
 
-    // Server-side size check (7MB base64 limit for ~5MB binary)
-    if (image.length > 7 * 1024 * 1024) { 
-      return res.status(400).json({ error: 'Image size exceeds 5MB limit.' });
+    // Server-side size check (15MB base64 limit for larger images in fallback mode)
+    if (image.length > 15 * 1024 * 1024) { 
+      return res.status(400).json({ error: 'Image size exceeds limit.' });
     }
 
     const { error } = await supabase
       .from('home_content')
       .upsert({ 
         id: 1,
-        profile_image_blob: image, // Store base64 directly as branding does
+        profile_image_blob: image, // Store base64 directly (legacy fallback)
         profile_image_mime_type: mimeType,
+        profile_image_url: null, // Clear URL to prioritize blob if uploaded via old client
         updated_at: new Date().toISOString()
       });
 
@@ -91,32 +123,56 @@ router.post('/home/image', authenticate, async (req, res) => {
 // Serve Profile Image
 router.get('/home/image', async (req, res) => {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('home_content')
-      .select('profile_image_blob, profile_image_mime_type')
+      .select('profile_image_url')
       .eq('id', 1)
       .single();
 
-    if (error || !data || !data.profile_image_blob) {
+    let { data, error } = await query;
+
+    // Fallback if the profile_image_url column does not exist yet (migration not run)
+    if (error && error.message && error.message.includes('profile_image_url')) {
+      const fallback = await supabase
+        .from('home_content')
+        .select('profile_image_blob, profile_image_mime_type')
+        .eq('id', 1)
+        .single();
+      data = fallback.data;
+      error = fallback.error;
+
+      if (error || !data || !data.profile_image_blob) {
+        return res.status(404).send('Image not found');
+      }
+
+      let buffer;
+      const blob = data.profile_image_blob;
+      
+      // Robust decoding matching branding.js logic
+      if (typeof blob === 'string' && blob.startsWith('\\x')) {
+        // Postgres hex format to base64 conversion if needed
+        buffer = Buffer.from(Buffer.from(blob.slice(2), 'hex').toString('utf8'), 'base64');
+      } else if (typeof blob === 'string') {
+        buffer = Buffer.from(blob, 'base64');
+      } else {
+        buffer = Buffer.from(blob);
+      }
+
+      res.set('Content-Type', data.profile_image_mime_type || 'image/png');
+      res.set('Cache-Control', 'public, max-age=3600');
+      return res.send(buffer);
+    }
+
+    if (error || !data) {
       return res.status(404).send('Image not found');
     }
 
-    let buffer;
-    const blob = data.profile_image_blob;
-    
-    // Robust decoding matching branding.js logic
-    if (typeof blob === 'string' && blob.startsWith('\\x')) {
-      // Postgres hex format to base64 conversion if needed
-      buffer = Buffer.from(Buffer.from(blob.slice(2), 'hex').toString('utf8'), 'base64');
-    } else if (typeof blob === 'string') {
-      buffer = Buffer.from(blob, 'base64');
-    } else {
-      buffer = Buffer.from(blob);
+    // Direct redirect to Cloudinary if URL exists
+    if (data.profile_image_url) {
+      return res.redirect(data.profile_image_url);
     }
 
-    res.set('Content-Type', data.profile_image_mime_type || 'image/png');
-    res.set('Cache-Control', 'public, max-age=3600');
-    res.send(buffer);
+    return res.status(404).send('Image not found');
   } catch (err) {
     res.status(500).send('Error serving image');
   }

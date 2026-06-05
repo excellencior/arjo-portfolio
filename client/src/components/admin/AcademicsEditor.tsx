@@ -1,26 +1,56 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Edit3, Save } from 'lucide-react';
+import { Plus, Trash2, Edit3, Save, GripVertical, Loader2 } from 'lucide-react';
 import CustomModal from './CustomModal';
 
 interface AcademicsEditorProps {
   content: any[];
   setContent: (content: any[]) => void;
-  onSave: (content: any[]) => void;
+  onSave: (content: any[]) => Promise<any>;
   token: string | null;
   onRefreshDrafts: () => void;
   draftKeys: string[];
+  isSaving?: boolean;
 }
 
-const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys }) => {
+const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys, isSaving = false }) => {
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [originalItem, setOriginalItem] = useState<any>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const getDraftKey = (item: any) => `draft_academics_${item?.id || 'new'}`;
   const API_URL = import.meta.env.VITE_API_URL;
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.setData('text/plain', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+    const newContent = [...content];
+    const [draggedItem] = newContent.splice(draggedIndex, 1);
+    newContent.splice(targetIndex, 0, draggedItem);
+
+    setContent(newContent);
+    onSave(newContent);
+    setDraggedIndex(null);
+  };
 
   // Persistence: Restore draft when modal opens
   React.useEffect(() => {
@@ -71,18 +101,21 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
   };
 
   const handleAdd = () => {
-    setEditingItem({ title: '', institution: '', start_year: new Date().getFullYear(), end_year: null, description: '' });
+    const newItem = { title: '', institution: '', start_year: new Date().getFullYear(), end_year: null, description: '' };
+    setEditingItem(newItem);
+    setOriginalItem(newItem);
     setEditingIndex(null);
     setIsModalOpen(true);
   };
 
   const handleEdit = (item: any, index: number) => {
     setEditingItem({ ...item });
+    setOriginalItem({ ...item });
     setEditingIndex(index);
     setIsModalOpen(true);
   };
 
-  const handleModalSave = () => {
+  const handleModalSave = async () => {
     const newContent = [...content];
     if (editingIndex !== null) {
       newContent[editingIndex] = editingItem;
@@ -90,8 +123,10 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
       newContent.push(editingItem);
     }
     setContent(newContent);
-    onSave(newContent);
-    setIsModalOpen(false);
+    const success = await onSave(newContent);
+    if (success) {
+      setIsModalOpen(false);
+    }
   };
 
   const handleRemove = () => {
@@ -121,45 +156,64 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
         </button>
       </div>
 
+      {content && content.length > 1 && (
+        <p className="text-xs font-aladin text-slate-400 dark:text-slate-500 mb-3 italic shrink-0">
+          💡 Tip: You can drag and drop cards to reorder your academic timeline.
+        </p>
+      )}
+
       <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar pb-10">
         <div className="space-y-3">
         {content && content.length > 0 ? (
-          content.map((item, idx) => (
-            <div 
-              key={idx} 
-              onClick={() => handleEdit(item, idx)}
-              className={`p-3 rounded-md flex justify-between items-center group border border-transparent hover:border-emerald-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer ${
-                hasDraft(item) ? 'bg-yellow-50 dark:bg-yellow-900/10' : 'bg-slate-50 dark:bg-slate-800'
-              }`}
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight">{item.title || 'Untitled Entry'}</h3>
-                  {hasDraft(item) && (
-                    <span className="px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-[8px] font-bold rounded uppercase tracking-tighter">Draft</span>
-                  )}
+          content.map((item, idx) => {
+            const isDraggingThis = draggedIndex === idx;
+            return (
+              <div 
+                key={idx} 
+                draggable
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDragOver={handleDragOver}
+                onDragEnd={handleDragEnd}
+                onDrop={(e) => handleDrop(e, idx)}
+                onClick={() => handleEdit(item, idx)}
+                className={`p-3 rounded-md flex justify-between items-center group border border-transparent hover:border-emerald-500/20 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-grab active:cursor-grabbing ${
+                  hasDraft(item) ? 'bg-yellow-50 dark:bg-yellow-900/10' : 'bg-slate-50 dark:bg-slate-800'
+                } ${isDraggingThis ? 'opacity-40 scale-[0.98] border-dashed border-emerald-500 bg-emerald-50/10 dark:bg-emerald-950/10' : ''}`}
+              >
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="text-slate-300 dark:text-slate-600 group-hover:text-emerald-500 transition-colors shrink-0">
+                    <GripVertical size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-aladin text-lg text-slate-900 dark:text-white uppercase leading-tight truncate">{item.title || 'Untitled Entry'}</h3>
+                      {hasDraft(item) && (
+                        <span className="px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-[8px] font-bold rounded uppercase tracking-tighter shrink-0">Draft</span>
+                      )}
+                    </div>
+                    <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider truncate">
+                      {item.institution} {item.start_year && ` • ${item.start_year} - ${item.end_year || 'Present'}`}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-[10px] font-aladin text-slate-400 uppercase tracking-wider">
-                  {item.institution} {item.start_year && ` • ${item.start_year} - ${item.end_year || 'Present'}`}
-                </p>
+                <div className="flex gap-2 shrink-0 ml-4">
+                  <button 
+                    className="p-2 text-emerald-500 opacity-0 group-hover:opacity-100 transition-all"
+                    title="Edit"
+                  >
+                    <Edit3 size={18} />
+                  </button>
+                  <button 
+                    onClick={(e) => confirmRemove(e, idx)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button 
-                  className="p-2 text-emerald-500 opacity-0 group-hover:opacity-100 transition-all"
-                  title="Edit"
-                >
-                  <Edit3 size={18} />
-                </button>
-                <button 
-                  onClick={(e) => confirmRemove(e, idx)}
-                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
-                  title="Delete"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-center py-10 text-slate-400 font-aladin text-xl opacity-60">
             No academic entries yet. Document your learning journey!
@@ -177,19 +231,36 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
           <div className="flex justify-between w-full">
             <button 
               onClick={handleSaveDraft}
+              disabled={draftSaved || (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))}
               className={`px-4 py-1.5 rounded-md font-aladin text-base transition-all border ${
                 draftSaved 
                   ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700' 
+                  : (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border-transparent'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 border-slate-200 dark:border-slate-700'
               }`}
             >
               {draftSaved ? 'Draft Saved ✓' : 'Save Draft'}
             </button>
-            <button 
+             <button 
               onClick={handleModalSave}
-              className="px-4 py-1.5 bg-emerald-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-emerald-700 transition-all shadow-md disabled:opacity-50"
+              disabled={isSaving || (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))}
+              className={`px-4 py-1.5 rounded-md flex items-center justify-center gap-1.5 font-aladin text-base transition-all shadow-md active:scale-[0.98] ${
+                isSaving || (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border border-transparent'
+                  : 'bg-emerald-600 text-white hover:bg-emerald-700'
+              }`}
             >
-              <Save size={16} /> Confirm Entry
+              {isSaving ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save size={16} /> Confirm Entry
+                </>
+              )}
             </button>
           </div>
         }
@@ -200,7 +271,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
             <input 
               value={editingItem?.title || ''}
               onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               placeholder="e.g. Bachelor of Science"
             />
           </div>
@@ -210,7 +281,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
               <input 
                 value={editingItem?.institution || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, institution: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               />
             </div>
             <div>
@@ -219,7 +290,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
                 type="number"
                 value={editingItem?.start_year || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, start_year: e.target.value ? parseInt(e.target.value) : null })}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
                 placeholder="2019"
               />
             </div>
@@ -229,7 +300,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
                 type="number"
                 value={editingItem?.end_year || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, end_year: e.target.value ? parseInt(e.target.value) : null })}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
                 placeholder="2023"
               />
             </div>
@@ -239,7 +310,7 @@ const AcademicsEditor: React.FC<AcademicsEditorProps> = ({ content, setContent, 
             <textarea 
               value={editingItem?.description || ''}
               onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-32 resize-y"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-emerald-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-32 resize-y"
             />
           </div>
         </div>

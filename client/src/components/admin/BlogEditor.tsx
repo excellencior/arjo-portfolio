@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit3, Trash2, Save, X } from 'lucide-react';
+import { Plus, Edit3, Trash2, Save, X, Loader2 } from 'lucide-react';
 import CustomModal from './CustomModal';
 import { useAlert } from '../../context/AlertContext';
 
@@ -17,6 +17,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogout, onRefreshDrafts, draftKeys }) => {
   const { showAlert } = useAlert();
   const [editingPost, setEditingPost] = useState<any>(null);
+  const [originalPost, setOriginalPost] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
@@ -24,6 +25,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   const [newTagValue, setNewTagValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const getDraftKey = (post: any) => `draft_blog_${post?.id || 'new'}`;
 
@@ -111,20 +113,24 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
   };
 
   const handleEdit = (post: any) => {
-    setEditingPost({ 
+    const editPost = { 
       ...post, 
       tags: (post.tags || []).map((t: string) => t.toUpperCase())
-    });
+    };
+    setEditingPost(editPost);
+    setOriginalPost(editPost);
     setIsModalOpen(true);
   };
 
   const handleCreate = () => {
-    setEditingPost({ 
+    const newPost = { 
       title: '', 
       date: new Date().toISOString(), 
       content: '',
       tags: []
-    });
+    };
+    setEditingPost(newPost);
+    setOriginalPost(newPost);
     setShowNewTagInput(false);
     setIsDropdownOpen(false);
     setNewTagValue('');
@@ -149,6 +155,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
       tags: Array.isArray(editingPost.tags) ? editingPost.tags : []
     };
 
+    setSaving(true);
     try {
       const res = await fetch(url, {
         method,
@@ -182,6 +189,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
       }
     } catch (err) {
       showAlert('Error', 'An unexpected error occurred.', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -294,9 +303,12 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <button 
               type="button"
               onClick={handleSaveDraft}
+              disabled={draftSaved || (editingPost && originalPost && JSON.stringify(editingPost) === JSON.stringify(originalPost))}
               className={`px-4 py-1.5 rounded-md font-aladin text-base transition-all border ${
                 draftSaved 
                   ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-300 dark:border-purple-700' 
+                  : (editingPost && originalPost && JSON.stringify(editingPost) === JSON.stringify(originalPost))
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border-transparent'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 border-slate-200 dark:border-slate-700'
               }`}
             >
@@ -304,9 +316,23 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             </button>
             <button 
               onClick={handleSave}
-              className="px-4 py-1.5 bg-purple-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-purple-700 transition-all shadow-md disabled:opacity-50"
+              disabled={saving || (editingPost && originalPost && JSON.stringify(editingPost) === JSON.stringify(originalPost))}
+              className={`px-4 py-1.5 rounded-md flex items-center justify-center gap-1.5 font-aladin text-base transition-all shadow-md active:scale-[0.98] ${
+                saving || (editingPost && originalPost && JSON.stringify(editingPost) === JSON.stringify(originalPost))
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border border-transparent'
+                  : 'bg-purple-600 text-white hover:bg-purple-700'
+              }`}
             >
-              <Save size={16} /> Save Post
+              {saving ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save size={16} /> Save Post
+                </>
+              )}
             </button>
           </div>
         }
@@ -317,7 +343,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
             <input 
               value={editingPost?.title || ''}
               onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-purple-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
             />
           </div>
           <div className="grid grid-cols-1 gap-4">
@@ -344,7 +370,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
                   <button 
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all font-arial text-sm text-slate-400 text-left flex justify-between items-center"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-slate-200 dark:border-slate-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all font-arial text-sm text-slate-400 text-left flex justify-between items-center"
                   >
                     <span>Select a tag to add...</span>
                     <span className="text-slate-400 text-[10px]">▼</span>
@@ -466,7 +492,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ posts, token, onRefresh, onLogo
               id="blog-content-area"
               value={editingPost?.content || ''}
               onChange={(e) => setEditingPost({...editingPost, content: e.target.value})}
-              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-transparent focus:border-purple-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400 h-48 resize-y"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-md outline-none border border-slate-200 dark:border-slate-700 focus:border-purple-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400 h-48 resize-y"
             />
           </div>
         </div>

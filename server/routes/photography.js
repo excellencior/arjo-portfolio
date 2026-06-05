@@ -103,27 +103,63 @@ router.post('/bulk-delete', authenticate, async (req, res) => {
   }
 });
 
-// Admin: Upload image to Cloudinary (Base64) + save metadata to Supabase
+// Admin: Generate signature for direct Cloudinary upload
+router.post('/signature', authenticate, async (req, res) => {
+  try {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const folder = 'portfolio-gallery';
+    const paramsToSign = {
+      timestamp,
+      folder
+    };
+    
+    const signature = cloudinary.utils.api_sign_request(
+      paramsToSign,
+      process.env.CLOUDINARY_API_SECRET
+    );
+
+    res.json({
+      signature,
+      timestamp,
+      folder,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY
+    });
+  } catch (err) {
+    console.error('Signature generation error:', err);
+    res.status(500).json({ error: 'Failed to generate signature' });
+  }
+});
+
+// Admin: Upload/Save photo metadata
 router.post('/upload', authenticate, async (req, res) => {
-  console.log('Received base64 upload request');
+  console.log('Received upload/save request');
   
   try {
-    const { image, title, intent, category, sort_order } = req.body;
+    const { image, title, intent, category, sort_order, cloudinary_url, cloudinary_public_id, width, height } = req.body;
 
-    if (!image) {
-      return res.status(400).json({ error: 'No image data provided' });
+    let finalUrl = cloudinary_url;
+    let finalPublicId = cloudinary_public_id;
+    let finalWidth = width;
+    let finalHeight = height;
+
+    if (!cloudinary_url || !cloudinary_public_id) {
+      if (!image) {
+        return res.status(400).json({ error: 'No image data or Cloudinary URL provided' });
+      }
+
+      console.log('Uploading base64 to Cloudinary...');
+      const uploadRes = await cloudinary.uploader.upload(image, {
+        folder: 'portfolio-gallery',
+        resource_type: 'auto'
+      });
+
+      console.log('Cloudinary upload success:', uploadRes.public_id);
+      finalUrl = uploadRes.secure_url;
+      finalPublicId = uploadRes.public_id;
+      finalWidth = uploadRes.width;
+      finalHeight = uploadRes.height;
     }
-
-    console.log('Uploading to Cloudinary...');
-    
-    // Upload base64 to Cloudinary
-    // image should be in format "data:image/jpeg;base64,..."
-    const uploadRes = await cloudinary.uploader.upload(image, {
-      folder: 'portfolio-gallery',
-      resource_type: 'auto'
-    });
-
-    console.log('Cloudinary upload success:', uploadRes.public_id);
 
     const { data, error } = await supabase
       .from('photography')
@@ -131,10 +167,10 @@ router.post('/upload', authenticate, async (req, res) => {
         title: title || '',
         intent: intent || '',
         category: category || '',
-        cloudinary_url: uploadRes.secure_url,
-        cloudinary_public_id: uploadRes.public_id,
-        width: uploadRes.width || 0,
-        height: uploadRes.height || 0,
+        cloudinary_url: finalUrl,
+        cloudinary_public_id: finalPublicId,
+        width: finalWidth || 0,
+        height: finalHeight || 0,
         sort_order: parseInt(sort_order) || 0,
       })
       .select()
@@ -142,8 +178,9 @@ router.post('/upload', authenticate, async (req, res) => {
 
     if (error) {
       console.error('Supabase photography insert error:', error);
-      // Optional: clean up Cloudinary if DB save fails
-      await cloudinary.uploader.destroy(uploadRes.public_id);
+      if (!cloudinary_url && finalPublicId) {
+        await cloudinary.uploader.destroy(finalPublicId);
+      }
       return res.status(500).json({ error: `Database error: ${error.message}` });
     }
 

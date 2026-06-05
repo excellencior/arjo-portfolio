@@ -26,9 +26,11 @@ interface HomeEditorProps {
   token: string | null;
   onRefreshDrafts: () => void;
   draftKeys: string[];
+  isSaving?: boolean;
+  isDirty?: boolean;
 }
 
-const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys }) => {
+const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys, isSaving = false, isDirty = false }) => {
   const { showAlert } = useAlert();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [indexToRemove, setIndexToRemove] = useState<number | null>(null);
@@ -37,6 +39,11 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
   const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>('down');
   const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const [hasDraft, setHasDraft] = useState(false);
+
+  // Upload preview modal states
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const applyFormatting = (prefix: string, suffix: string, textareaId: string) => {
     const textarea = document.getElementById(textareaId) as HTMLTextAreaElement;
@@ -130,7 +137,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
   const handleSaveDraft = async () => {
     if (content && Object.keys(content).length > 0) {
       // Create a clean copy without binary blobs if any somehow existed
-      const { profile_image_blob, profile_image_mime_type, ...cleanContent } = content;
+      const { profile_image_blob, profile_image_mime_type, profile_image_url, ...cleanContent } = content;
       
       try {
         const res = await fetch(`${API_URL}/api/drafts`, {
@@ -177,42 +184,101 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      showAlert('Error', 'Image must be smaller than 5MB.', 'error');
+    if (file.size > 10 * 1024 * 1024) {
+      showAlert('Error', 'Image must be smaller than 10MB.', 'error');
       return;
     }
 
-    setUploading(true);
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64Full = reader.result as string;
-      const pureBase64 = base64Full.split(',')[1];
-      try {
-        const res = await fetch(`${API_URL}/api/content/home/image`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            image: pureBase64,
-            mimeType: file.type
-          })
-        });
+    if (!file.type.startsWith('image/')) {
+      showAlert('Error', 'Only image files are allowed.', 'error');
+      return;
+    }
 
-        if (res.ok) {
-          showAlert('Success', 'Profile image updated.', 'success');
-          setContent({ ...content, updated_at: new Date().toISOString() });
-        } else {
-          showAlert('Error', 'Failed to upload image.', 'error');
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setIsUploadModalOpen(true);
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!selectedFile || !token) return;
+    setUploading(true);
+
+    try {
+      // 1. Get secure signature and credentials from backend
+      const sigRes = await fetch(`${API_URL}/api/photography/signature`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      } catch {
-        showAlert('Error', 'Communication error.', 'error');
-      } finally {
-        setUploading(false);
+      });
+
+      if (!sigRes.ok) {
+        let errorMsg = 'Failed to generate upload signature.';
+        try {
+          const sigError = await sigRes.json();
+          errorMsg = sigError.error || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
       }
-    };
-    reader.readAsDataURL(file);
+
+      const { signature, timestamp, folder, cloudName, apiKey } = await sigRes.json();
+
+      if (!signature || !timestamp || !folder || !cloudName || !apiKey) {
+        throw new Error('Incomplete upload configuration received from backend.');
+      }
+
+      // 2. Upload file directly to Cloudinary
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('api_key', apiKey);
+      formData.append('timestamp', timestamp.toString());
+      formData.append('signature', signature);
+      formData.append('folder', folder);
+
+      const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!cloudRes.ok) {
+        let cloudErrorMsg = 'Failed to upload image to Cloudinary.';
+        try {
+          const cloudData = await cloudRes.json();
+          cloudErrorMsg = cloudData.error?.message || cloudErrorMsg;
+        } catch {}
+        throw new Error(cloudErrorMsg);
+      }
+
+      const cloudData = await cloudRes.json();
+      const { secure_url } = cloudData;
+
+      // 3. Save profile image URL to backend
+      const res = await fetch(`${API_URL}/api/content/home/image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          profile_image_url: secure_url
+        })
+      });
+
+      if (res.ok) {
+        showAlert('Success', 'Profile image updated.', 'success');
+        setContent({ ...content, updated_at: new Date().toISOString() });
+        setIsUploadModalOpen(false);
+        setSelectedFile(null);
+        setPreviewUrl(null);
+      } else {
+        showAlert('Error', 'Failed to update profile image.', 'error');
+      }
+    } catch (err) {
+      showAlert('Error', err instanceof Error ? err.message : 'Connection failed.', 'error');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const confirmRemove = (index: number) => {
@@ -285,20 +351,40 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
               <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
             </label>
           </div>
-          <p className="text-[10px] text-slate-400 font-aladin text-center uppercase tracking-widest">Optimized square shots work best (Max 5MB)</p>
+          <p className="text-[10px] text-slate-400 font-aladin text-center uppercase tracking-widest">Optimized square shots work best (Max 10MB)</p>
           
           <div className="flex gap-2">
             <button 
               onClick={handleSaveDraft}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md font-aladin text-sm hover:bg-slate-200 transition-all border border-slate-200 dark:border-slate-700"
+              disabled={!isDirty}
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-1.5 rounded-md font-aladin text-sm transition-all border ${
+                !isDirty
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border-transparent'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 border-slate-200 dark:border-slate-700'
+              }`}
             >
               Save Draft
             </button>
             <button 
               onClick={onSave}
-              className="flex-[2] flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md font-aladin text-base hover:bg-blue-700 transition-all shadow-md active:scale-[0.98]"
+              disabled={isSaving || !isDirty}
+              className={`flex-[2] flex items-center justify-center gap-2 px-4 py-2 rounded-md font-aladin text-base transition-all shadow-md active:scale-[0.98] ${
+                isSaving || !isDirty 
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border border-transparent' 
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
             >
-              <Save size={18} /> Save My Bio
+              {isSaving ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  Save My Bio
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -311,7 +397,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
               <input 
                 value={content.title || ''}
                 onChange={(e) => setContent({...content, title: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-slate-200 dark:border-slate-700 focus:border-blue-500 transition-all font-arial text-base"
               />
             </div>
             <div>
@@ -348,7 +434,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
                 id="bio-textarea"
                 value={content.subtitle || ''}
                 onChange={(e) => setContent({...content, subtitle: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base h-32 resize-y"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-slate-200 dark:border-slate-700 focus:border-blue-500 transition-all font-arial text-base h-32 resize-y"
                 placeholder="Tell your story here..."
               />
             </div>
@@ -387,7 +473,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
                 id="quote-textarea"
                 value={content.quote || ''}
                 onChange={(e) => setContent({...content, quote: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-base h-24 resize-y"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border border-slate-200 dark:border-slate-700 focus:border-blue-500 transition-all font-arial text-base h-24 resize-y"
                 placeholder="Add an inspiring quote or side note..."
               />
             </div>
@@ -468,7 +554,7 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
                         );
                         setContent({...content, links: newLinks});
                       }}
-                      className="flex-1 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-blue-500 transition-all font-arial text-sm"
+                      className="flex-1 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-blue-500 transition-all font-arial text-sm"
                     />
                     <button 
                       onClick={() => confirmRemove(idx)}
@@ -511,6 +597,55 @@ const HomeEditor: React.FC<HomeEditorProps> = ({ content, setContent, onSave, to
         <p className="font-aladin text-xl text-slate-600 dark:text-slate-400 text-center py-4">
           Are you sure you want to remove this connection?
         </p>
+      </CustomModal>
+
+      {/* Upload Profile Image Modal */}
+      <CustomModal
+        isOpen={isUploadModalOpen}
+        onClose={() => {
+          if (!uploading) {
+            setIsUploadModalOpen(false);
+            setPreviewUrl(null);
+            setSelectedFile(null);
+          }
+        }}
+        title="Upload Profile Picture"
+        footer={
+          <div className="flex gap-3 w-full justify-end">
+            <button
+              onClick={() => {
+                setIsUploadModalOpen(false);
+                setPreviewUrl(null);
+                setSelectedFile(null);
+              }}
+              disabled={uploading}
+              className="px-4 py-2 font-aladin text-slate-500 hover:text-slate-700 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmUpload}
+              disabled={uploading}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-aladin hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2"
+            >
+              {uploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
+              {uploading ? 'Uploading...' : 'Confirm Upload'}
+            </button>
+          </div>
+        }
+      >
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div className="aspect-square w-48 bg-slate-100 dark:bg-slate-800 rounded-full border-2 border-dashed border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shadow-inner">
+            {previewUrl && (
+              <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+            )}
+          </div>
+          {selectedFile && (
+            <div className="text-sm font-aladin text-slate-500 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700">
+              File Size: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+            </div>
+          )}
+        </div>
       </CustomModal>
     </div>
   );

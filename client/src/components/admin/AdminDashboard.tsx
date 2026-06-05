@@ -11,6 +11,8 @@ import PhotographyEditor from './PhotographyEditor';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useBranding } from '../../context/BrandingContext';
+import ThemeToggle from '../ThemeToggle';
+
 
 interface AdminDashboardProps {
   activeTab: string;
@@ -18,21 +20,44 @@ interface AdminDashboardProps {
   content: any;
   token: string | null;
   setContent: (content: any) => void;
-  onSaveHome: () => void;
-  onSaveAcademics: (data?: any[]) => void;
-  onSaveExtra: (data?: any[]) => void;
+  onSaveHome: () => Promise<any>;
+  onSaveAcademics: (data?: any[]) => Promise<any>;
+  onSaveExtra: (data?: any[]) => Promise<any>;
   onFetchContent: (type: string) => void;
   onLogout: () => void;
   draftKeys: string[];
   onRefreshDrafts: () => void;
+  isSaving?: boolean;
+  isDirty?: boolean;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
-  activeTab, onTabChange, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout, draftKeys, onRefreshDrafts 
+  activeTab, onTabChange, content, token, setContent, onSaveHome, onSaveAcademics, onSaveExtra, onFetchContent, onLogout, draftKeys, onRefreshDrafts, isSaving = false, isDirty = false 
 }) => {
   const { branding } = useBranding();
   const [searchQuery, setSearchQuery] = useState('');
   const isDevModeAllowed = import.meta.env.VITE_DEV_MODE_ALLOWED === 'true';
+  const [adminName, setAdminName] = useState('');
+
+  // Fetch admin name on mount
+  useEffect(() => {
+    fetch(`${API_URL}/api/content/home`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.title) {
+          setAdminName(data.title);
+        }
+      })
+      .catch(err => console.error('Failed to fetch admin name', err));
+  }, []);
+
+  // Update dynamically if name is changed in Home editor
+  useEffect(() => {
+    if (activeTab === 'home' && content && content.title) {
+      setAdminName(content.title);
+    }
+  }, [content, activeTab]);
+
   
   // 10-minute Inactivity Logout
   useEffect(() => {
@@ -90,21 +115,26 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </span>
           )}
           <div className="flex flex-col">
-            <p className="text-xs font-aladin text-slate-500 uppercase tracking-widest mt-0.5 opacity-80">Welcome back</p>
+            <p className="text-xs font-aladin text-slate-500 uppercase tracking-widest mt-0.5 opacity-80 animate-in fade-in duration-300">
+              Welcome back{adminName ? <>, <span className="font-bold text-slate-800 dark:text-slate-200">{adminName}</span></> : ''}
+            </p>
           </div>
         </div>
-        {activeTab === 'blog' && (
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input 
-              type="text"
-              placeholder={`Search ${activeTab}...`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400"
-            />
-          </div>
-        )}
+        <div className="flex items-center gap-3 self-end md:self-auto">
+          {activeTab === 'blog' && (
+            <div className="relative w-full md:w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input 
+                type="text"
+                placeholder={`Search ${activeTab}...`}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-gray-800 outline-none focus:border-blue-500 transition-all font-arial text-sm placeholder:font-arial placeholder:text-slate-400"
+              />
+            </div>
+          )}
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 flex-1 min-h-0">
@@ -174,7 +204,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               className="flex-1 flex flex-col h-full overflow-hidden"
             >
               {activeTab === 'home' && content && (
-                <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} token={token} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} />
+                <HomeEditor content={content} setContent={setContent} onSave={onSaveHome} token={token} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} isSaving={isSaving} isDirty={isDirty} />
               )}
 
               {activeTab === 'blog' && content && (
@@ -182,11 +212,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               )}
 
               {activeTab === 'academics' && content && (
-                <AcademicsEditor content={filteredContent()} setContent={setContent} onSave={onSaveAcademics} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} token={token} />
+                <AcademicsEditor content={filteredContent()} setContent={setContent} onSave={onSaveAcademics} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} token={token} isSaving={isSaving} />
               )}
 
               {activeTab === 'extra' && content && (
-                <ExtraEditor content={filteredContent()} setContent={setContent} onSave={onSaveExtra} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} token={token} />
+                <ExtraEditor content={filteredContent()} setContent={setContent} onSave={onSaveExtra} onRefreshDrafts={onRefreshDrafts} draftKeys={draftKeys} token={token} isSaving={isSaving} />
               )}
               {activeTab === 'branding' && (
                 <BrandingEditor token={token} onLogout={onLogout} />

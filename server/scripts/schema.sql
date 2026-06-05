@@ -32,8 +32,7 @@ CREATE TABLE IF NOT EXISTS public.home_content (
     title TEXT DEFAULT 'Welcome',
     subtitle TEXT DEFAULT 'Bio coming soon...',
     links JSONB DEFAULT '[]'::JSONB,
-    profile_image_blob BYTEA,
-    profile_image_mime_type TEXT,
+    profile_image_url TEXT,
     quote TEXT DEFAULT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

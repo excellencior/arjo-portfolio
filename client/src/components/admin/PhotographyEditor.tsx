@@ -121,54 +121,104 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
     if (!selectedFile || !token) return;
     setUploading(true);
     
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64Image = reader.result as string;
-      
-      try {
-        const res = await fetch(`${API_URL}/api/photography/upload`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` 
-          },
-          body: JSON.stringify({
-            image: base64Image,
-            title: currentPhoto.title || '',
-            intent: currentPhoto.intent || '',
-            category: currentPhoto.category || '',
-            sort_order: (photos.length > 0 ? Math.max(...photos.map(p => p.sort_order)) + 1 : 0)
-          })
-        });
-
-        if (res.status === 401 && onLogout) {
-          onLogout();
-          return;
+    try {
+      // 1. Get secure signature and credentials from backend
+      const sigRes = await fetch(`${API_URL}/api/photography/signature`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
+      });
 
-        if (res.ok) {
-          setIsUploadModalOpen(false);
-          setSelectedFile(null);
-          setPreviewUrl(null);
-          await fetchPhotos();
-          showAlert('Success', 'Photo uploaded successfully.', 'success');
-        } else {
-          let errorMessage = 'Upload failed.';
-          try {
-            const data = await res.json();
-            errorMessage = data.error || errorMessage;
-          } catch (e) {
-            errorMessage = `Server Error (${res.status}): ${res.statusText}`;
-          }
-          showAlert('Error', errorMessage, 'error');
-        }
-      } catch (err) {
-        showAlert('Error', `Connection failed: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error');
-      } finally {
-        setUploading(false);
+      if (sigRes.status === 401 && onLogout) {
+        onLogout();
+        return;
       }
-    };
-    reader.readAsDataURL(selectedFile);
+
+      if (!sigRes.ok) {
+        let errorMsg = 'Failed to generate upload signature.';
+        try {
+          const sigError = await sigRes.json();
+          errorMsg = sigError.error || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
+      }
+
+      const { signature, timestamp, folder, cloudName, apiKey } = await sigRes.json();
+
+      if (!signature || !timestamp || !folder || !cloudName || !apiKey) {
+        throw new Error('Incomplete upload configuration received from backend.');
+      }
+
+      // 2. Upload file directly to Cloudinary
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('api_key', apiKey);
+      formData.append('timestamp', timestamp.toString());
+      formData.append('signature', signature);
+      formData.append('folder', folder);
+
+      const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!cloudRes.ok) {
+        let cloudErrorMsg = 'Failed to upload image to Cloudinary.';
+        try {
+          const cloudData = await cloudRes.json();
+          cloudErrorMsg = cloudData.error?.message || cloudErrorMsg;
+        } catch {}
+        throw new Error(cloudErrorMsg);
+      }
+
+      const cloudData = await cloudRes.json();
+      const { secure_url, public_id, width, height } = cloudData;
+
+      // 3. Save photo metadata to database
+      const res = await fetch(`${API_URL}/api/photography/upload`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          cloudinary_url: secure_url,
+          cloudinary_public_id: public_id,
+          width: width || 0,
+          height: height || 0,
+          title: currentPhoto.title || '',
+          intent: currentPhoto.intent || '',
+          category: currentPhoto.category || '',
+          sort_order: (photos.length > 0 ? Math.max(...photos.map(p => p.sort_order)) + 1 : 0)
+        })
+      });
+
+      if (res.status === 401 && onLogout) {
+        onLogout();
+        return;
+      }
+
+      if (res.ok) {
+        setIsUploadModalOpen(false);
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        await fetchPhotos();
+        showAlert('Success', 'Photo uploaded successfully.', 'success');
+      } else {
+        let errorMessage = 'Upload failed.';
+        try {
+          const data = await res.json();
+          errorMessage = data.error || errorMessage;
+        } catch {}
+        showAlert('Error', errorMessage, 'error');
+      }
+    } catch (err) {
+      showAlert('Error', err instanceof Error ? err.message : 'Connection failed.', 'error');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleUpdate = async () => {
@@ -351,20 +401,7 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
   const hiddenCount = photos.filter(p => !p.visible).length;
 
   return (
-    <div 
-      className={`space-y-8 animate-in transition-all duration-500 flex flex-col h-full overflow-hidden relative ${isDragging ? 'ring-2 ring-cyan-500 ring-inset rounded-xl' : ''}`}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      {/* Drag Overlay */}
-      {isDragging && (
-        <div className="absolute inset-0 bg-cyan-500/10 backdrop-blur-[2px] z-50 rounded-xl flex flex-col items-center justify-center pointer-events-none">
-          <Upload size={48} className="text-cyan-500 mb-3 animate-bounce" />
-          <p className="font-aladin text-2xl text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">Drop your photo here</p>
-          <p className="font-aladin text-sm text-slate-500 mt-1">Supported: JPG, PNG, WebP (max 10MB)</p>
-        </div>
-      )}
+    <div className="space-y-8 animate-in transition-all duration-500 flex flex-col h-full overflow-hidden relative">
 
       {/* Header */}
       <div className="border-b border-gray-100 dark:border-gray-800 pb-4 shrink-0">
@@ -433,10 +470,30 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
         )}
       </div>
 
-      {/* Grid */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
+      {/* Grid / Upload Container */}
+      <div 
+        className={`flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10 relative rounded-xl transition-all ${
+          isDragging && photos.length > 0 ? 'ring-2 ring-cyan-500 ring-inset' : ''
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {/* Drag Overlay (only when grid contains photos) */}
+        {isDragging && photos.length > 0 && (
+          <div className="absolute inset-0 bg-cyan-500/10 backdrop-blur-[2px] z-50 rounded-xl flex flex-col items-center justify-center pointer-events-none">
+            <Upload size={48} className="text-cyan-500 mb-3 animate-bounce" />
+            <p className="font-aladin text-2xl text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">Drop your photo here</p>
+            <p className="font-aladin text-sm text-slate-500 mt-1">Supported: JPG, PNG, WebP (max 10MB)</p>
+          </div>
+        )}
+
         {photos.length === 0 ? (
-          <label className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer hover:border-cyan-400 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-all">
+          <label className={`flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-xl bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer transition-all ${
+            isDragging 
+              ? 'border-cyan-500 bg-cyan-50/10 dark:bg-cyan-900/10 ring-2 ring-cyan-500/30 shadow-lg' 
+              : 'border-slate-200 dark:border-slate-800 hover:border-cyan-400 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10'
+          }`}>
             <Upload className="text-slate-300 dark:text-slate-700 mb-4" size={48} strokeWidth={1} />
             <p className="font-aladin text-xl text-slate-400">Drop photos here or click to upload</p>
             <p className="font-aladin text-sm text-slate-400 opacity-60 mt-1">JPG, PNG, WebP • Max 10MB</p>
@@ -596,11 +653,18 @@ const PhotographyEditor: React.FC<PhotographyEditorProps> = ({ token, onLogout }
         }
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-            {previewUrl ? (
-              <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-            ) : (
-              <ImageIcon className="text-slate-300" size={64} />
+          <div className="flex flex-col items-center gap-2 w-full">
+            <div className="aspect-[4/3] w-full bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                <ImageIcon className="text-slate-300" size={64} />
+              )}
+            </div>
+            {selectedFile && (
+              <div className="text-xs font-aladin text-slate-500 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-250 dark:border-slate-700 mt-1">
+                File Size: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+              </div>
             )}
           </div>
           

@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Edit3, Save } from 'lucide-react';
+import { Plus, Trash2, Edit3, Save, Loader2 } from 'lucide-react';
 import CustomModal from './CustomModal';
 
 interface ExtraEditorProps {
   content: any[];
   setContent: (content: any[]) => void;
-  onSave: (content: any[]) => void;
+  onSave: (content: any[]) => Promise<any>;
   token: string | null;
   onRefreshDrafts: () => void;
   draftKeys: string[];
+  isSaving?: boolean;
 }
 
-const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys }) => {
+const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, token, onRefreshDrafts, draftKeys, isSaving = false }) => {
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [originalItem, setOriginalItem] = useState<any>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -71,18 +73,21 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
   };
 
   const handleAdd = () => {
-    setEditingItem({ title: '', role: '', description: '' });
+    const newItem = { title: '', role: '', description: '' };
+    setEditingItem(newItem);
+    setOriginalItem(newItem);
     setEditingIndex(null);
     setIsModalOpen(true);
   };
 
   const handleEdit = (item: any, index: number) => {
     setEditingItem({ ...item });
+    setOriginalItem({ ...item });
     setEditingIndex(index);
     setIsModalOpen(true);
   };
 
-  const handleModalSave = () => {
+  const handleModalSave = async () => {
     const newContent = [...content];
     if (editingIndex !== null) {
       newContent[editingIndex] = editingItem;
@@ -90,8 +95,10 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
       newContent.push(editingItem);
     }
     setContent(newContent);
-    onSave(newContent);
-    setIsModalOpen(false);
+    const success = await onSave(newContent);
+    if (success) {
+      setIsModalOpen(false);
+    }
   };
 
   const handleRemove = () => {
@@ -178,19 +185,36 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
             <button 
               type="button"
               onClick={handleSaveDraft}
+              disabled={draftSaved || (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))}
               className={`px-4 py-1.5 rounded-md font-aladin text-base transition-all border ${
                 draftSaved 
                   ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-700' 
+                  : (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border-transparent'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 border-slate-200 dark:border-slate-700'
               }`}
             >
               {draftSaved ? 'Draft Saved ✓' : 'Save Draft'}
             </button>
-            <button 
+             <button 
               onClick={handleModalSave}
-              className="px-4 py-1.5 bg-orange-600 text-white rounded-md flex items-center justify-center gap-1.5 font-aladin text-base hover:bg-orange-700 transition-all shadow-md disabled:opacity-50"
+              disabled={isSaving || (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))}
+              className={`px-4 py-1.5 rounded-md flex items-center justify-center gap-1.5 font-aladin text-base transition-all shadow-md active:scale-[0.98] ${
+                isSaving || (editingItem && originalItem && JSON.stringify(editingItem) === JSON.stringify(originalItem))
+                  ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 opacity-60 cursor-not-allowed border border-transparent'
+                  : 'bg-orange-600 text-white hover:bg-orange-700'
+              }`}
             >
-              <Save size={16} /> Confirm Entry
+              {isSaving ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save size={16} /> Confirm Entry
+                </>
+              )}
             </button>
           </div>
         }
@@ -201,7 +225,7 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
             <input 
               value={editingItem?.title || ''}
               onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               placeholder="e.g. Photography Club"
             />
           </div>
@@ -210,7 +234,7 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
             <input 
               value={editingItem?.role || ''}
               onChange={(e) => setEditingItem({ ...editingItem, role: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400"
               placeholder="e.g. Lead Photographer"
             />
           </div>
@@ -219,7 +243,7 @@ const ExtraEditor: React.FC<ExtraEditorProps> = ({ content, setContent, onSave, 
             <textarea 
               value={editingItem?.description || ''}
               onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-transparent focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-32 resize-y"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg outline-none border border-slate-200 dark:border-slate-700 focus:border-orange-500 transition-all font-arial text-base placeholder:font-arial placeholder:text-slate-400 h-32 resize-y"
             />
           </div>
         </div>

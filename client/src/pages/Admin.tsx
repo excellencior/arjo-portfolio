@@ -19,6 +19,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(tab || 'home');
   const [content, setContent] = useState<any>(null);
+  const [initialContent, setInitialContent] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -93,6 +95,7 @@ const Admin = () => {
   };
 
   const handleSaveHome = async () => {
+    setSaving(true);
     try {
       const res = await fetch(`${API_URL}/api/content/home`, {
         method: 'PUT',
@@ -104,21 +107,29 @@ const Admin = () => {
       });
       if (res.status === 401) {
         showAlert('Session Expired', 'Please log in again.', 'error');
-        return handleLogout();
+        handleLogout();
+        return false;
       }
       if (res.ok) {
         showAlert('Success', 'Home content saved!', 'success');
+        setInitialContent(JSON.parse(JSON.stringify(content)));
         clearSectionDrafts('draft_home_');
+        return true;
       } else {
         const data = await res.json();
         showAlert('Error', data.error || 'Failed to update content', 'error');
+        return false;
       }
     } catch (err) {
       showAlert('Error', 'Failed to save.', 'error');
+      return false;
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleSaveAcademics = async (dataOverride?: any[]) => {
+    setSaving(true);
     try {
       const dataToSave = dataOverride || content;
       const res = await fetch(`${API_URL}/api/content/academics`, {
@@ -131,21 +142,29 @@ const Admin = () => {
       });
       if (res.status === 401) {
         showAlert('Session Expired', 'Please log in again.', 'error');
-        return handleLogout();
+        handleLogout();
+        return false;
       }
       if (res.ok) {
         showAlert('Success', 'Academics saved!', 'success');
+        setInitialContent(JSON.parse(JSON.stringify(dataToSave)));
         clearSectionDrafts('draft_academics_');
+        return true;
       } else {
         const data = await res.json();
         showAlert('Error', data.error || 'Failed to update academics', 'error');
+        return false;
       }
     } catch (err) {
       showAlert('Error', 'Failed to save.', 'error');
+      return false;
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleSaveExtra = async (dataOverride?: any[]) => {
+    setSaving(true);
     try {
       const dataToSave = dataOverride || content;
       const res = await fetch(`${API_URL}/api/content/extra`, {
@@ -158,17 +177,24 @@ const Admin = () => {
       });
       if (res.status === 401) {
         showAlert('Session Expired', 'Please log in again.', 'error');
-        return handleLogout();
+        handleLogout();
+        return false;
       }
       if (res.ok) {
         showAlert('Success', 'Extracurriculars saved!', 'success');
+        setInitialContent(JSON.parse(JSON.stringify(dataToSave)));
         clearSectionDrafts('draft_extra_');
+        return true;
       } else {
         const data = await res.json();
         showAlert('Error', data.error || 'Failed to update content', 'error');
+        return false;
       }
     } catch (err) {
       showAlert('Error', 'Failed to save.', 'error');
+      return false;
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -178,6 +204,7 @@ const Admin = () => {
       if (res.ok) {
         const data = await res.json();
         setContent(data);
+        setInitialContent(JSON.parse(JSON.stringify(data)));
       } else {
         console.error('Failed to fetch content:', res.statusText);
       }
@@ -235,6 +262,7 @@ const Admin = () => {
   };
 
   if (step === 'dashboard' && token) {
+    const isDirty = content && initialContent && JSON.stringify(content) !== JSON.stringify(initialContent);
     return (
       <AdminDashboard 
         activeTab={activeTab}
@@ -243,12 +271,14 @@ const Admin = () => {
         token={token || 'dev-token'}
         setContent={setContent}
         onSaveHome={handleSaveHome}
-        onSaveAcademics={(data?: any[]) => { handleSaveAcademics(data); }}
-        onSaveExtra={(data?: any[]) => { handleSaveExtra(data); }}
+        onSaveAcademics={(data?: any[]) => handleSaveAcademics(data)}
+        onSaveExtra={(data?: any[]) => handleSaveExtra(data)}
         onFetchContent={fetchContent}
         onLogout={handleLogout}
         draftKeys={draftKeys} // Pass draftKeys to AdminDashboard
         onRefreshDrafts={fetchDraftKeys} // Pass fetchDraftKeys to AdminDashboard
+        isSaving={saving}
+        isDirty={isDirty}
       />
     );
   }
